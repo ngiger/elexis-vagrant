@@ -18,3 +18,15 @@ h2. Elexis-Server aufstarten
 on the command line execute: @vagrant up@
 this will take a few minutes. Afterwards point your browser at "http://localhost:8880/" and you should
 see something like @Hello from the vagrant VM running a MySQL-server for Elexis@
+
+h2. TODO
+
+* mysql-server
+* elexis 2.1.4 automatisch installieren
+* x2go client
+* Deutsch als Vorgabesprache
+* gollum/mediawiki/"pmwiki":http://www.pmwiki.org/
+  Evtl. convert "pmwiki_mediawiki":http://sourceforge.net/projects/pm2media/
+* setup/create initial box (e.g. using "WeeVee":https://github.com/jedi4ever/veewee)
+* postgresql
+* and a lot more
