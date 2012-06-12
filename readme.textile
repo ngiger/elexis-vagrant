@@ -1,0 +1,20 @@
+h1. Bootstrapping Elexis
+
+h2. Installation
+
+* install virtualbox
+For details see https://www.virtualbox.org/wiki/Downloads
+Debian/Ubuntu: sudo apt-get install virtualbox
+
+* install ruby
+Windows: For details see http://www.ruby-lang.org/de/downloads/
+Debian/Ubuntu sudo apt-get install ruby-full
+
+* install vagrant
+Auf der Kommandozeile: gem install vagrant
+
+h2. Elexis-Server aufstarten
+
+on the command line execute: @vagrant up@
+this will take a few minutes. Afterwards point your browser at "http://localhost:8880/" and you should
+see something like @Hello from the vagrant VM running a MySQL-server for Elexis@
