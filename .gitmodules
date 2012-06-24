@@ -1,0 +1,3 @@
+[submodule "modules/x2go"]
+	path = modules/x2go
+	url = https://github.com/ngiger/puppet-x2go

@@ -2,33 +2,46 @@
 # Copyright (c) Niklaus Giger, <niklaus.giger@member.fsf.org>
 # License: GPLv2
 # Boxes are stored under ~/.vagrant.d/boxes/
+
 Vagrant::Config.run do |config|
   # Setup the box
-#  config.vm.box     = "elexis.server"
-#  config.vm.box_url = "http://files.vagrantup.com/precise64.box"
-#  config.vm.host_name = "elexis.server"
-#  config.vm.network :bridged { :adapter => "eth0", :bridge => "elexis-network", :mac => "02:04:06:08:0a:0c"}
-  config.vm.network :bridged
+#  config.vm.network :bridged
+
+  config.vm.provision :puppet do |puppet|
+    puppet.manifests_path = "manifests"
+    puppet.manifest_file = "default.pp"
+    puppet.module_path = "modules"
+    puppet.options = '--verbose --debug'
+  end
+
+  config.vm.provision :puppet_server do |puppet|
+    # First step: simple one. Use the files here, see http://vagrantup.com/v1/docs/provisioners/puppet.html    
+#    puppet.manifests_path = "manifests"
+#    puppet.manifest_file = "default.pp"
+#    puppet.module_path = "modules"
+    # Second step: if you are using a real puppet server
+    # puppet.puppet_server = '192.168.1.111'
+    # puppet.options = '--verbose --debug --genconfig'
+  end
   config.vm.define :elexisServer do |server|
+    server.vm.network :hostonly, "192.168.2.114"
+#    server.vm.network :bridged
     server.vm.box     = "elexisServer"
     server.vm.host_name = "elexisServer"
     server.vm.box_url = "http://files.vagrantup.com/precise64.box"
     server.vm.forward_port 80, 8880
     server.vm.forward_port 3306, 33306
-    server.vm.network :bridged
     # Enable the Puppet provisioner
-    server.vm.provision :puppet
+#    server.vm.provision :puppet
 #    server.vm.share_folder("v-root", "/vagrant", ".", :nfs => true)
 
 #    server.ssh.port   = 2223
   end
 
   config.vm.define :elexisClient do |client|
+    client.vm.network :bridged
     client.vm.box     = "elexisClient"
     client.vm.host_name = "elexisClient"
     client.vm.box_url = "http://files.vagrantup.com/precise64.box"
-    client.vm.box = "db"
-    client.vm.network :bridged
-    client.ssh.port   = 2224
-  end
+  end if false
 end

@@ -1,5 +1,22 @@
 h1. Bootstrapping Elexis
 
+h2. TestSystem
+
+Was an Ubuntu-Server 12.04 LTS (servername ubuntu) via USB-Stick (copied via
+		sudo dd if=ubu*.ios of=/dev/sdb).
+bq. sudo dd if=ubuntu-12.04-server-amd64.iso of=/dev/sdb
+Minimaler Server nur OpenSSH
+Dann sudo apt-get install etckeeper git vagrant
+Installs a lot of packages (must be able to compile a few  files! installs
+		also virtualbox)
+sudo mkdir /opt/vagrant-elexis
+cd /opt/vagrant-elexis
+sudo chown $USER:$USER .
+git clone ..
+vagrant up
+
+
+
 h2. Installation
 
 * install virtualbox
@@ -17,7 +34,18 @@ h2. Elexis-Server aufstarten
 
 on the command line execute: @vagrant up@
 this will take a few minutes. Afterwards point your browser at "http://localhost:8880/" and you should
-see something like @Hello from the vagrant VM running a MySQL-server for Elexis@
+see something like @Hello from the vagrant VM running a MySQL-server for Elexis@¨
+
+h1. puppet development
+
+Test the module java on a machine where you have a working copy of this project, just call:
+@cd /path/to/checkout@
+@sudo puppet apply --debug --confdir . modules/java/tests/init.pp@
+
+h2. git howto
+
+http://git-scm.com/book/en/Git-Tools-Submodules
+git submodule add https://github.com/ngiger/puppet-x2go modules/x2go
 
 h2. TODO
 
