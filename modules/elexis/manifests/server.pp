@@ -3,16 +3,32 @@
 
 class elexis::server inherits elexis::common {
 
-  include x2go::server
   package{  ['cups', 'cups-bsd']:
     ensure => present,
   }
-  gem('gollum', 'install', nil, '--no-rdoc --no-ri') # install gollum wiki, TODO: Start server, set default to .textile  # TODO:
-#  include mysql  # TODO:
+    class { 'mysql::server':
+	config_hash => { 'root_password' => 'elexisTest' }
+    }
+
+    database { 'mysql':
+      ensure  => 'present',
+      charset => 'utf8',
+    }
+
+    mysql::db { 'myElexis':
+      user     => 'elexis',
+      password => 'elexisTest',
+      host     => 'localhost',
+      grant    => ['all'],
+    }
+
+# TODO: Add grants for all Elexis users!
+    database_grant { ['arzt@localhost/myElexis', 'niklaus@localhost/myElexis', 'vagrant@localhost/myElexis']:
+      privileges => ['all'] ,
+    }
+
+# see http://puppetlabs.com/blog/module-of-the-week-puppetlabs-mysql-mysql-management/
 #  include postgresql # TODO:
-#  include h2sql # TODO:
- # define database # TODO:
- # define optional import
- # define backup # TODO:
- # define test (anonymized) # TODO:
+ # define backup # TODO: Dritte Priorität
+ # define test-deb (anonymized) # TODO: Vierte Priorität (Nice to have)
 }

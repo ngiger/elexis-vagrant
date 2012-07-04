@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>Branch 2.1.7 von Elexis mit Hilfe von ant-Script BuildElexis/build.xml bauen (Nur für Linux und Windows)</description>
+  <logRotator>
+    <daysToKeep>60</daysToKeep>
+    <numToKeep>5</numToKeep>
+    <artifactDaysToKeep>-1</artifactDaysToKeep>
+    <artifactNumToKeep>-1</artifactNumToKeep>
+  </logRotator>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>ChooseBranch</name>
+          <description>Branch/Tag zum Builden</description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>2.1.7</string>
+              <string>2.1.7.1</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+    <hudson.plugins.disk__usage.DiskUsageProperty/>
+  </properties>
+  <scm class="hudson.plugins.mercurial.MercurialSCM">
+    <source>https://bitbucket.org/ngiger/elexis-bootstrap</source>
+    <modules></modules>
+    <branch>2.1.7</branch>
+    <clean>false</clean>
+    <forest>false</forest>
+    <browser class="hudson.plugins.mercurial.browser.HgWeb">
+      <url>https://bitbucket.org/ngiger/elexis-bootstrap/</url>
+    </browser>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers class="vector">
+    <hudson.triggers.SCMTrigger>
+      <spec>10 * * * *
+</spec>
+    </hudson.triggers.SCMTrigger>
+  </triggers>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command># Create downloads dir one up, to minimizes fetch
+mkdir -p ../downloads
+mkdir -p ../lib 
+# First a step to bootstrap our main repository
+./gen_repo.rb --branch $ChooseBranch .
+echo &quot;,ch.marlovits.addressSearch,ch.marlovits.vornamen,ch.marlovits.plz,at.medevit.elexis.gdt.customed,medshare-licence-generator,de.ralfebert.rcputils,de.ralfebert.rcputils.feature&quot; &gt;skipPlugins.add
+./prepareJenkins.rb --branch $ChooseBranch
+cd elexis-base/BuildElexis
+ant -Dos=macosx clean macosx
+ant -Dos=linux linux doc doc-plugins javadoc
+ant -Dos=windows windows
+ant -Dos=macosx macosx
+</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers>
+    <hudson.tasks.ArtifactArchiver>
+      <artifacts>deploy/**</artifacts>
+      <latestOnly>false</latestOnly>
+    </hudson.tasks.ArtifactArchiver>
+    <hudson.tasks.BuildTrigger>
+      <childProjects>jubula-elexis-2.1.7, jubula-elexis-2.1.7-macosx,  jubula-elexis-2.1.7-windows-7</childProjects>
+      <threshold>
+        <name>SUCCESS</name>
+        <ordinal>0</ordinal>
+        <color>BLUE</color>
+      </threshold>
+    </hudson.tasks.BuildTrigger>
+    <com.michelin.cio.hudson.plugins.copytoslave.CopyToMasterNotifier>
+      <includes>deploy/*linux*.jar</includes>
+      <excludes></excludes>
+    </com.michelin.cio.hudson.plugins.copytoslave.CopyToMasterNotifier>
+    <hudson.tasks.Mailer>
+      <recipients>niklaus.giger@member.fsf.org   </recipients>
+      <dontNotifyEveryUnstableBuild>true</dontNotifyEveryUnstableBuild>
+      <sendToIndividuals>false</sendToIndividuals>
+    </hudson.tasks.Mailer>
+  </publishers>
+  <buildWrappers>
+    <hudson.plugins.build__timeout.BuildTimeoutWrapper>
+      <timeoutMinutes>90</timeoutMinutes>
+      <failBuild>true</failBuild>
+    </hudson.plugins.build__timeout.BuildTimeoutWrapper>
+    <hudson.plugins.timestamper.TimestamperBuildWrapper/>
+  </buildWrappers>
+</project>

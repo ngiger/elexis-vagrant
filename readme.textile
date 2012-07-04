@@ -49,12 +49,20 @@ git submodule add https://github.com/ngiger/puppet-x2go modules/x2go
 
 h2. TODO
 
-* mysql-server
-* elexis 2.1.4 automatisch installieren
-* x2go client
+* gem should be able to use jruby
+* gem should honour --noop
+* gem -> /opt/vagrant_ruby/bin/gem for vagrant?
+* elexis::server -> elexis::mysql_server und myElexis richtig installieren
+* elexis 2.1.7 automatisch installieren
+* os-user elexis einrichten (dito Arztx, MPAx,oc)
 * Deutsch als Vorgabesprache
 * gollum/mediawiki/"pmwiki":http://www.pmwiki.org/
   Evtl. convert "pmwiki_mediawiki":http://sourceforge.net/projects/pm2media/
 * setup/create initial box (e.g. using "WeeVee":https://github.com/jedi4ever/veewee)
 * postgresql
+* add util for curl, adding source/opt for apt-get?
 * and a lot more
+
+Niklaus TODO:
+sudo apt-get install ruby1.9.1-full make libxslt-dev libxml2-dev
+ruby-switch --set ruby1.9.1

@@ -1,0 +1,21 @@
+#!/bin/sh -e
+### BEGIN INIT INFO
+# Provides:          gollum
+# Required-Start:    $local_fs  $remote_fs $network
+# Required-Stop:
+# Default-Start:     S
+# Default-Stop:
+# Short-Description: Gollum: a nice simple Wiki
+### END INIT INFO
+#
+# Start the gollum wiki
+
+case "$1" in
+  start) ;;
+  stop|restart|force-reload) exit 0 ;;
+  *) echo "Usage: $0 {start|stop|restart|force-reload}" >&2; exit 1 ;;
+esac
+
+[ -x /usr/local/bin/gollum ] \
+    && cd /home/elexis/praxis_wiki && exec /usr/bin/sudo -u elexis -b /usr/local/bin/gollum
+                                                                                                                                                 

@@ -1,0 +1,379 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hudson>
+  <disabledAdministrativeMonitors/>
+  <version>1.471</version>
+  <numExecutors>2</numExecutors>
+  <mode>NORMAL</mode>
+  <useSecurity>true</useSecurity>
+  <authorizationStrategy class="hudson.security.GlobalMatrixAuthorizationStrategy">
+    <permission>hudson.model.Computer.Configure:elexis</permission>
+    <permission>hudson.model.Computer.Configure:medevit</permission>
+    <permission>hudson.model.Computer.Configure:niklaus</permission>
+    <permission>hudson.model.Computer.Configure:rgw-ch</permission>
+    <permission>hudson.model.Computer.Configure:thomas</permission>
+    <permission>hudson.model.Computer.Connect:elexis</permission>
+    <permission>hudson.model.Computer.Create:elexis</permission>
+    <permission>hudson.model.Computer.Create:medevit</permission>
+    <permission>hudson.model.Computer.Create:thomas</permission>
+    <permission>hudson.model.Computer.Delete:elexis</permission>
+    <permission>hudson.model.Computer.Delete:medevit</permission>
+    <permission>hudson.model.Computer.Delete:niklaus</permission>
+    <permission>hudson.model.Computer.Delete:rgw-ch</permission>
+    <permission>hudson.model.Computer.Delete:thomas</permission>
+    <permission>hudson.model.Computer.Disconnect:elexis</permission>
+    <permission>hudson.model.Hudson.Administer:elexis</permission>
+    <permission>hudson.model.Hudson.Administer:niklaus</permission>
+    <permission>hudson.model.Hudson.ConfigureUpdateCenter:elexis</permission>
+    <permission>hudson.model.Hudson.Read:anonymous</permission>
+    <permission>hudson.model.Hudson.Read:elexis</permission>
+    <permission>hudson.model.Hudson.Read:medevit</permission>
+    <permission>hudson.model.Hudson.Read:niklaus</permission>
+    <permission>hudson.model.Hudson.Read:rgw-ch</permission>
+    <permission>hudson.model.Hudson.Read:thomas</permission>
+    <permission>hudson.model.Hudson.RunScripts:elexis</permission>
+    <permission>hudson.model.Hudson.UploadPlugins:elexis</permission>
+    <permission>hudson.model.Item.Build:elexis</permission>
+    <permission>hudson.model.Item.Build:medevit</permission>
+    <permission>hudson.model.Item.Build:niklaus</permission>
+    <permission>hudson.model.Item.Build:rgw-ch</permission>
+    <permission>hudson.model.Item.Build:thomas</permission>
+    <permission>hudson.model.Item.Cancel:elexis</permission>
+    <permission>hudson.model.Item.Configure:elexis</permission>
+    <permission>hudson.model.Item.Configure:medevit</permission>
+    <permission>hudson.model.Item.Configure:niklaus</permission>
+    <permission>hudson.model.Item.Configure:rgw-ch</permission>
+    <permission>hudson.model.Item.Configure:thomas</permission>
+    <permission>hudson.model.Item.Create:elexis</permission>
+    <permission>hudson.model.Item.Create:medevit</permission>
+    <permission>hudson.model.Item.Create:niklaus</permission>
+    <permission>hudson.model.Item.Create:rgw-ch</permission>
+    <permission>hudson.model.Item.Create:thomas</permission>
+    <permission>hudson.model.Item.Delete:elexis</permission>
+    <permission>hudson.model.Item.Delete:medevit</permission>
+    <permission>hudson.model.Item.Delete:niklaus</permission>
+    <permission>hudson.model.Item.Delete:rgw-ch</permission>
+    <permission>hudson.model.Item.Delete:thomas</permission>
+    <permission>hudson.model.Item.Discover:elexis</permission>
+    <permission>hudson.model.Item.Read:anonymous</permission>
+    <permission>hudson.model.Item.Read:elexis</permission>
+    <permission>hudson.model.Item.Read:medevit</permission>
+    <permission>hudson.model.Item.Read:niklaus</permission>
+    <permission>hudson.model.Item.Read:rgw-ch</permission>
+    <permission>hudson.model.Item.Read:thomas</permission>
+    <permission>hudson.model.Item.Release:elexis</permission>
+    <permission>hudson.model.Item.Workspace:anonymous</permission>
+    <permission>hudson.model.Item.Workspace:elexis</permission>
+    <permission>hudson.model.Item.Workspace:medevit</permission>
+    <permission>hudson.model.Item.Workspace:niklaus</permission>
+    <permission>hudson.model.Item.Workspace:rgw-ch</permission>
+    <permission>hudson.model.Item.Workspace:thomas</permission>
+    <permission>hudson.model.Run.Delete:elexis</permission>
+    <permission>hudson.model.Run.Delete:medevit</permission>
+    <permission>hudson.model.Run.Delete:niklaus</permission>
+    <permission>hudson.model.Run.Delete:rgw-ch</permission>
+    <permission>hudson.model.Run.Delete:thomas</permission>
+    <permission>hudson.model.Run.Update:elexis</permission>
+    <permission>hudson.model.Run.Update:medevit</permission>
+    <permission>hudson.model.Run.Update:niklaus</permission>
+    <permission>hudson.model.Run.Update:rgw-ch</permission>
+    <permission>hudson.model.Run.Update:thomas</permission>
+    <permission>hudson.model.View.Configure:elexis</permission>
+    <permission>hudson.model.View.Configure:medevit</permission>
+    <permission>hudson.model.View.Configure:niklaus</permission>
+    <permission>hudson.model.View.Configure:rgw-ch</permission>
+    <permission>hudson.model.View.Configure:thomas</permission>
+    <permission>hudson.model.View.Create:elexis</permission>
+    <permission>hudson.model.View.Create:medevit</permission>
+    <permission>hudson.model.View.Create:niklaus</permission>
+    <permission>hudson.model.View.Create:rgw-ch</permission>
+    <permission>hudson.model.View.Create:thomas</permission>
+    <permission>hudson.model.View.Delete:elexis</permission>
+    <permission>hudson.model.View.Delete:medevit</permission>
+    <permission>hudson.model.View.Delete:niklaus</permission>
+    <permission>hudson.model.View.Delete:rgw-ch</permission>
+    <permission>hudson.model.View.Delete:thomas</permission>
+    <permission>hudson.model.View.Read:elexis</permission>
+    <permission>hudson.scm.SCM.Tag:elexis</permission>
+    <permission>hudson.scm.SCM.Tag:medevit</permission>
+    <permission>hudson.scm.SCM.Tag:niklaus</permission>
+    <permission>hudson.scm.SCM.Tag:rgw-ch</permission>
+    <permission>hudson.scm.SCM.Tag:thomas</permission>
+  </authorizationStrategy>
+  <securityRealm class="hudson.security.HudsonPrivateSecurityRealm">
+    <disableSignup>true</disableSignup>
+    <enableCaptcha>false</enableCaptcha>
+  </securityRealm>
+  <projectNamingStrategy class="jenkins.model.ProjectNamingStrategy$DefaultProjectNamingStrategy"/>
+  <workspaceDir>${ITEM_ROOTDIR}/workspace</workspaceDir>
+  <buildsDir>${ITEM_ROOTDIR}/builds</buildsDir>
+  <systemMessage>&lt;h2&gt;Continuos Integration of elexis&lt;/h2&gt;&#xd;
+&#xd;
+See www.elexis.org.</systemMessage>
+  <markupFormatter class="hudson.markup.RawHtmlMarkupFormatter">
+    <disableSyntaxHighlighting>false</disableSyntaxHighlighting>
+  </markupFormatter>
+  <jdks/>
+  <viewsTabBar class="hudson.views.DefaultViewsTabBar"/>
+  <myViewsTabBar class="hudson.views.DefaultMyViewsTabBar"/>
+  <clouds/>
+  <slaves>
+    <slave>
+      <name>172.25.1.42</name>
+      <description>Windows-7</description>
+      <remoteFS>E:\hudson</remoteFS>
+      <numExecutors>1</numExecutors>
+      <mode>EXCLUSIVE</mode>
+      <retentionStrategy class="hudson.slaves.RetentionStrategy$Demand">
+        <inDemandDelay>1</inDemandDelay>
+        <idleDelay>1</idleDelay>
+      </retentionStrategy>
+      <launcher class="hudson.os.windows.ManagedWindowsServiceLauncher">
+        <userName>niklaus</userName>
+        <password>6kfHXFi3dbI/WpAkfQnm96VjhCrcioEId94CwWGyZIo=</password>
+      </launcher>
+      <label>Win7</label>
+      <nodeProperties/>
+    </slave>
+    <slave>
+      <name>win-xp-de</name>
+      <description>Windows-XP-Slave</description>
+      <remoteFS>C:\hudson</remoteFS>
+      <numExecutors>1</numExecutors>
+      <mode>EXCLUSIVE</mode>
+      <retentionStrategy class="hudson.slaves.RetentionStrategy$Always"/>
+      <launcher class="hudson.slaves.JNLPLauncher"/>
+      <label>windows</label>
+      <nodeProperties/>
+    </slave>
+    <slave>
+      <name>macosx</name>
+      <description>Elexis/Jubula-Slave under MacOSX</description>
+      <remoteFS>/Users/Gyong/Public/jenkins</remoteFS>
+      <numExecutors>2</numExecutors>
+      <mode>EXCLUSIVE</mode>
+      <retentionStrategy class="hudson.slaves.RetentionStrategy$Always"/>
+      <launcher class="hudson.slaves.JNLPLauncher"/>
+      <label>macosx</label>
+      <nodeProperties/>
+    </slave>
+    <slave>
+      <name>ng-hp</name>
+      <description>Niklaus Laptop</description>
+      <remoteFS>/opt/jenkins-ng-hp-slave</remoteFS>
+      <numExecutors>1</numExecutors>
+      <mode>EXCLUSIVE</mode>
+      <retentionStrategy class="hudson.slaves.RetentionStrategy$Always"/>
+      <launcher class="hudson.plugins.sshslaves.SSHLauncher">
+        <host>ng-hp</host>
+        <port>22</port>
+        <username>niklaus</username>
+        <password>+qpXPCDsKTvYGwEGBiMxG53lPLxI/Sbx2GHt+s2Fjps=</password>
+        <jdk>
+          <id>jdk-6u16-oth-JPR@CDS-CDS_Developer</id>
+          <acceptLicense>true</acceptLicense>
+        </jdk>
+      </launcher>
+      <label>linux</label>
+      <nodeProperties/>
+    </slave>
+    <slave>
+      <name>lenny</name>
+      <description>Niklaus Laptop</description>
+      <remoteFS>/opt/jenkins-lenny-slave</remoteFS>
+      <numExecutors>1</numExecutors>
+      <mode>EXCLUSIVE</mode>
+      <retentionStrategy class="hudson.slaves.RetentionStrategy$Always"/>
+      <launcher class="hudson.plugins.sshslaves.SSHLauncher">
+        <host>lenny</host>
+        <port>22</port>
+        <username>niklaus</username>
+        <password>6kfHXFi3dbI/WpAkfQnm96VjhCrcioEId94CwWGyZIo=</password>
+        <jdk>
+          <id>jdk-6u16-oth-JPR@CDS-CDS_Developer</id>
+          <acceptLicense>true</acceptLicense>
+        </jdk>
+      </launcher>
+      <label>linux</label>
+      <nodeProperties/>
+    </slave>
+    <slave>
+      <name>Jenkins-win7</name>
+      <description>IP 172.25.1.42 (Kein Remote Desktop möglich!)</description>
+      <remoteFS>e:\jenkins-slave</remoteFS>
+      <numExecutors>1</numExecutors>
+      <mode>EXCLUSIVE</mode>
+      <retentionStrategy class="hudson.slaves.RetentionStrategy$Always"/>
+      <launcher class="hudson.slaves.JNLPLauncher">
+        <tunnel>172.25.1.41:8981</tunnel>
+      </launcher>
+      <label>windows Windows-7</label>
+      <nodeProperties/>
+    </slave>
+  </slaves>
+  <quietPeriod>1</quietPeriod>
+  <scmCheckoutRetryCount>1</scmCheckoutRetryCount>
+  <views>
+    <hudson.model.AllView>
+      <owner class="hudson" reference="../../.."/>
+      <name>Alle</name>
+      <filterExecutors>false</filterExecutors>
+      <filterQueue>false</filterQueue>
+    </hudson.model.AllView>
+    <listView>
+      <owner class="hudson" reference="../../.."/>
+      <name>2.1.6</name>
+      <description>Elexis 2.1.6 (Released december 2011)</description>
+      <filterExecutors>false</filterExecutors>
+      <filterQueue>false</filterQueue>
+      <properties class="hudson.model.View$PropertyList"/>
+      <jobNames class="tree-set">
+        <comparator class="hudson.util.CaseInsensitiveComparator"/>
+      </jobNames>
+      <jobFilters/>
+      <columns>
+        <hudson.views.StatusColumn/>
+        <hudson.views.WeatherColumn/>
+        <hudson.views.JobColumn/>
+        <hudson.views.LastSuccessColumn/>
+        <hudson.views.LastFailureColumn/>
+        <hudson.views.LastDurationColumn/>
+        <hudson.views.BuildButtonColumn/>
+      </columns>
+      <includeRegex>.*2.1.6.*</includeRegex>
+    </listView>
+    <listView>
+      <owner class="hudson" reference="../../.."/>
+      <name>Medelexis</name>
+      <description>Spezielle Builds, welche für Medelexis durchgeführt werden.</description>
+      <filterExecutors>false</filterExecutors>
+      <filterQueue>false</filterQueue>
+      <properties class="hudson.model.View$PropertyList"/>
+      <jobNames class="tree-set">
+        <comparator class="hudson.util.CaseInsensitiveComparator"/>
+        <string>jubula-medelexis-windows-7</string>
+      </jobNames>
+      <jobFilters/>
+      <columns>
+        <hudson.views.StatusColumn/>
+        <hudson.views.WeatherColumn/>
+        <hudson.views.JobColumn/>
+        <hudson.views.LastSuccessColumn/>
+        <hudson.views.LastFailureColumn/>
+        <hudson.views.LastDurationColumn/>
+        <hudson.views.BuildButtonColumn/>
+      </columns>
+      <includeRegex>.*edelexis.*</includeRegex>
+    </listView>
+    <listView>
+      <owner class="hudson" reference="../../.."/>
+      <name>Jubula</name>
+      <filterExecutors>false</filterExecutors>
+      <filterQueue>false</filterQueue>
+      <properties class="hudson.model.View$PropertyList"/>
+      <jobNames class="tree-set">
+        <comparator class="hudson.util.CaseInsensitiveComparator"/>
+      </jobNames>
+      <jobFilters/>
+      <columns>
+        <hudson.views.StatusColumn/>
+        <hudson.views.WeatherColumn/>
+        <hudson.views.JobColumn/>
+        <hudson.views.LastSuccessColumn/>
+        <hudson.views.LastFailureColumn/>
+        <hudson.views.LastDurationColumn/>
+        <hudson.views.BuildButtonColumn/>
+      </columns>
+      <includeRegex>jubula.*</includeRegex>
+    </listView>
+    <listView>
+      <owner class="hudson" reference="../../.."/>
+      <name>2.1.7</name>
+      <description>Elexis 2.1.7 Builds (Release geplant auf März 2012)</description>
+      <filterExecutors>false</filterExecutors>
+      <filterQueue>false</filterQueue>
+      <properties class="hudson.model.View$PropertyList"/>
+      <jobNames class="tree-set">
+        <comparator class="hudson.util.CaseInsensitiveComparator"/>
+      </jobNames>
+      <jobFilters/>
+      <columns>
+        <hudson.views.StatusColumn/>
+        <hudson.views.WeatherColumn/>
+        <hudson.views.JobColumn/>
+        <hudson.views.LastSuccessColumn/>
+        <hudson.views.LastFailureColumn/>
+        <hudson.views.LastDurationColumn/>
+        <hudson.views.BuildButtonColumn/>
+      </columns>
+      <includeRegex>.*2.1.7.*</includeRegex>
+    </listView>
+    <listView>
+      <owner class="hudson" reference="../../.."/>
+      <name>2.2.dev</name>
+      <description>Next major release of Elexis, somewhere second half of 2012</description>
+      <filterExecutors>false</filterExecutors>
+      <filterQueue>false</filterQueue>
+      <properties class="hudson.model.View$PropertyList"/>
+      <jobNames class="tree-set">
+        <comparator class="hudson.util.CaseInsensitiveComparator"/>
+      </jobNames>
+      <jobFilters/>
+      <columns>
+        <hudson.views.StatusColumn/>
+        <hudson.views.WeatherColumn/>
+        <hudson.views.JobColumn/>
+        <hudson.views.LastSuccessColumn/>
+        <hudson.views.LastFailureColumn/>
+        <hudson.views.LastDurationColumn/>
+        <hudson.views.BuildButtonColumn/>
+      </columns>
+      <includeRegex>.*2.2.dev.*</includeRegex>
+    </listView>
+    <listView>
+      <owner class="hudson" reference="../../.."/>
+      <name>buildr</name>
+      <description>Various efforts to use buildr.apache.org</description>
+      <filterExecutors>false</filterExecutors>
+      <filterQueue>false</filterQueue>
+      <properties class="hudson.model.View$PropertyList"/>
+      <jobNames class="tree-set">
+        <comparator class="hudson.util.CaseInsensitiveComparator" reference="../../../listView[5]/jobNames/comparator"/>
+        <string>buildr</string>
+        <string>buildrizpack</string>
+        <string>Elexis-2.1.6-Buildr</string>
+        <string>elexis-2.1.7-Buildr</string>
+        <string>elexis-2.2.dev_jpa-Buildr</string>
+      </jobNames>
+      <jobFilters/>
+      <columns>
+        <hudson.views.StatusColumn/>
+        <hudson.views.WeatherColumn/>
+        <hudson.views.JobColumn/>
+        <hudson.views.LastSuccessColumn/>
+        <hudson.views.LastFailureColumn/>
+        <hudson.views.LastDurationColumn/>
+        <hudson.views.BuildButtonColumn/>
+      </columns>
+      <includeRegex>.*uildr.*</includeRegex>
+    </listView>
+  </views>
+  <primaryView>Alle</primaryView>
+  <slaveAgentPort>8981</slaveAgentPort>
+  <label></label>
+  <nodeProperties/>
+  <globalNodeProperties>
+    <hudson.slaves.EnvironmentVariablesNodeProperty>
+      <envVars serialization="custom">
+        <unserializable-parents/>
+        <tree-map>
+          <default>
+            <comparator class="hudson.util.CaseInsensitiveComparator"/>
+          </default>
+          <int>1</int>
+          <string>JUBULA</string>
+          <string>/opt/jubula_5.2.00266/</string>
+        </tree-map>
+      </envVars>
+    </hudson.slaves.EnvironmentVariablesNodeProperty>
+  </globalNodeProperties>
+</hudson>

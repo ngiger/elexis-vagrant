@@ -1,18 +1,8 @@
 
-
-def gemIsPresent(gemName, version = nil)
-  gemCmd = "/usr/bin/gem"
-  cmd = gemCmd
-  installed = false
-  gemName += " --version=#{version}" if version && version != "nil"
-  listCmd  = gemCmd + " list #{gemName} --install"
-  installed = `#{listCmd}`.chomp
-  return installed == 'true'
-end
-
 module Puppet::Parser::Functions
-  newfunction(:gem) do |args|
+  newfunction(:installElexis) do |args|
     gemCmd = "/usr/bin/gem"
+    Puppet::Parser::Functions.autoloader.loadall 
     gemName   = args[0]
     operation = args[1]
     version   = args[2]
@@ -26,7 +16,11 @@ module Puppet::Parser::Functions
     else
       return if operation == "absent" || operation == "uninstall"
       cmd += " install #{gemName} #{options}"
-    end    
-    system(cmd)
+    end
+    if Puppet[:noop]
+	puts "#{__FILE__}: noop #{cmd}"
+    else
+      system(cmd)
+    end
   end
 end
