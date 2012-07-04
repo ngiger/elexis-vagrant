@@ -2,10 +2,6 @@
 class elexis::common {
 
   include java
-  package{  ['vim', 'vim-nox', 'vim-puppet', 'git', 'etckeeper', 'puppet', 'dlocate', 'mlocate', 'htop']:
-    ensure => present,
-  }
-
   group { 'elexis':
     ensure => present,
     gid => 1300,

@@ -1,7 +1,7 @@
 [submodule "modules/x2go"]
 	path = modules/x2go
-# url = https://github.com/ngiger/puppet-x2go
-	url = git@github.com:ngiger/puppet-x2go.git
+	url = https://github.com/ngiger/puppet-x2go
+#	url = git@github.com:ngiger/puppet-x2go.git
 [submodule "modules/mysql"]
 	path = modules/mysql
 	url = https://github.com/puppetlabs/puppetlabs-mysql

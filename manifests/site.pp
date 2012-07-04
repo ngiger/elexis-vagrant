@@ -1,13 +1,17 @@
 # kate: replace-tabs on; indent-width 2; indent-mode cstyle; syntax ruby
+package{  ['vim', 'vim-nox', 'vim-puppet', 'git', 'etckeeper', 'puppet', 'dlocate', 'mlocate', 'htop']:
+  ensure => present,
+}
 
-include x2go::common
+
+# include x2go::common
 
 file {'/etc/apt/apt.conf.d/41_proxy':
   ensure => present,
   owner   => root,
 #  content => "Acquire::http::Proxy \"$APTPROXY\";\n",
   content => "Acquire::http::Proxy \"http://172.25.1.61:3142\";\n",
-  notify => Exec['x2go_apt_update'],
+#  notify => Exec['x2go_apt_update'],
 }
 
 $vcsRoot = '/home/vagrant'
@@ -27,5 +31,5 @@ import "nodes/*.pp"
 
 node default {
     notify { "site.pp node default": }
-    include x2go
+#    include x2go
 }
