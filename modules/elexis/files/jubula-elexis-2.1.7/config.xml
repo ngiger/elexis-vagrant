@@ -9,21 +9,17 @@
     <artifactNumToKeep>-1</artifactNumToKeep>
   </logRotator>
   <keepDependencies>false</keepDependencies>
-  <properties>
-    <hudson.plugins.disk__usage.DiskUsageProperty/>
-  </properties>
+  <properties/>
   <scm class="hudson.plugins.mercurial.MercurialSCM">
     <source>https://bitbucket.org/ngiger/jubula-elexis</source>
     <modules></modules>
     <branch>jubula-1.1</branch>
     <clean>true</clean>
-    <forest>false</forest>
     <browser class="hudson.plugins.mercurial.browser.BitBucket">
       <url>https://bitbucket.org/ngiger/jubula-elexis/</url>
     </browser>
   </scm>
-  <assignedNode>ng-hp||lenny</assignedNode>
-  <canRoam>false</canRoam>
+  <canRoam>true</canRoam>
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>true</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>true</blockBuildWhenUpstreamBuilding>
@@ -46,26 +42,27 @@
       <latestOnly>false</latestOnly>
     </hudson.tasks.ArtifactArchiver>
     <hudson.tasks.Mailer>
-      <recipients>niklaus.giger@member.fsf.org</recipients>
-      <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild>
+      <recipients></recipients>
+      <dontNotifyEveryUnstableBuild>true</dontNotifyEveryUnstableBuild>
       <sendToIndividuals>false</sendToIndividuals>
     </hudson.tasks.Mailer>
   </publishers>
   <buildWrappers>
     <hudson.plugins.build__timeout.BuildTimeoutWrapper>
       <timeoutMinutes>30</timeoutMinutes>
-      <failBuild>true</failBuild>
+      <failBuild>false</failBuild>
+      <writingDescription>false</writingDescription>
+      <timeoutPercentage>0</timeoutPercentage>
+      <timeoutType>absolute</timeoutType>
+      <timeoutMinutesElasticDefault>3</timeoutMinutesElasticDefault>
     </hudson.plugins.build__timeout.BuildTimeoutWrapper>
     <hudson.plugins.timestamper.TimestamperBuildWrapper/>
     <hudson.plugins.locksandlatches.LockWrapper>
       <locks>
         <hudson.plugins.locksandlatches.LockWrapper_-LockWaitConfig>
-          <name>Jubula-Linux</name>
+          <name>(default)</name>
         </hudson.plugins.locksandlatches.LockWrapper_-LockWaitConfig>
       </locks>
     </hudson.plugins.locksandlatches.LockWrapper>
-    <hudson.plugins.xvnc.Xvnc>
-      <takeScreenshot>true</takeScreenshot>
-    </hudson.plugins.xvnc.Xvnc>
   </buildWrappers>
 </project>

@@ -1,3 +1,4 @@
+# kate: replace-tabs on; indent-width 2; indent-mode cstyle; syntax ruby
 
 class java($version = 6, $variant = 'openjdk', $hasJdk = false, $hasJre = true ) {
   case $variant {

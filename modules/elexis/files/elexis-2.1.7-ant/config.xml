@@ -1,7 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>Branch 2.1.7 von Elexis mit Hilfe von ant-Script BuildElexis/build.xml bauen (Nur für Linux und Windows)</description>
+  <description>&lt;h2&gt;Branch 2.1.7&lt;/h2&gt;&#xd;
+von Elexis mit Hilfe von ant-Script BuildElexis/build.xml bauen.&#xd;
+&lt;br&gt;&#xd;
+&lt;h2&gt;Adapted for vagrant/Jenkins&lt;/h2&gt;</description>
   <logRotator>
     <daysToKeep>60</daysToKeep>
     <numToKeep>5</numToKeep>
@@ -24,14 +27,12 @@
         </hudson.model.ChoiceParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
-    <hudson.plugins.disk__usage.DiskUsageProperty/>
   </properties>
   <scm class="hudson.plugins.mercurial.MercurialSCM">
     <source>https://bitbucket.org/ngiger/elexis-bootstrap</source>
     <modules></modules>
     <branch>2.1.7</branch>
     <clean>false</clean>
-    <forest>false</forest>
     <browser class="hudson.plugins.mercurial.browser.HgWeb">
       <url>https://bitbucket.org/ngiger/elexis-bootstrap/</url>
     </browser>
@@ -57,10 +58,11 @@ mkdir -p ../lib
 echo &quot;,ch.marlovits.addressSearch,ch.marlovits.vornamen,ch.marlovits.plz,at.medevit.elexis.gdt.customed,medshare-licence-generator,de.ralfebert.rcputils,de.ralfebert.rcputils.feature&quot; &gt;skipPlugins.add
 ./prepareJenkins.rb --branch $ChooseBranch
 cd elexis-base/BuildElexis
-ant -Dos=macosx clean macosx
-ant -Dos=linux linux doc doc-plugins javadoc
-ant -Dos=windows windows
-ant -Dos=macosx macosx
+ant -Dos=linux.x86_64 clean linux.x86_64
+ant -Dos=linux.x86_64 doc doc-plugins javadoc
+# ant -Dos=linux linux
+# ant -Dos=windows windows
+# ant -Dos=macosx macosx
 </command>
     </hudson.tasks.Shell>
   </builders>
@@ -70,7 +72,7 @@ ant -Dos=macosx macosx
       <latestOnly>false</latestOnly>
     </hudson.tasks.ArtifactArchiver>
     <hudson.tasks.BuildTrigger>
-      <childProjects>jubula-elexis-2.1.7, jubula-elexis-2.1.7-macosx,  jubula-elexis-2.1.7-windows-7</childProjects>
+      <childProjects>jubula-elexis-2.1.7</childProjects>
       <threshold>
         <name>SUCCESS</name>
         <ordinal>0</ordinal>
@@ -80,9 +82,11 @@ ant -Dos=macosx macosx
     <com.michelin.cio.hudson.plugins.copytoslave.CopyToMasterNotifier>
       <includes>deploy/*linux*.jar</includes>
       <excludes></excludes>
+      <overrideDestinationFolder>false</overrideDestinationFolder>
+      <destinationFolder></destinationFolder>
     </com.michelin.cio.hudson.plugins.copytoslave.CopyToMasterNotifier>
     <hudson.tasks.Mailer>
-      <recipients>niklaus.giger@member.fsf.org   </recipients>
+      <recipients></recipients>
       <dontNotifyEveryUnstableBuild>true</dontNotifyEveryUnstableBuild>
       <sendToIndividuals>false</sendToIndividuals>
     </hudson.tasks.Mailer>
@@ -90,7 +94,11 @@ ant -Dos=macosx macosx
   <buildWrappers>
     <hudson.plugins.build__timeout.BuildTimeoutWrapper>
       <timeoutMinutes>90</timeoutMinutes>
-      <failBuild>true</failBuild>
+      <failBuild>false</failBuild>
+      <writingDescription>false</writingDescription>
+      <timeoutPercentage>0</timeoutPercentage>
+      <timeoutType>absolute</timeoutType>
+      <timeoutMinutesElasticDefault>3</timeoutMinutesElasticDefault>
     </hudson.plugins.build__timeout.BuildTimeoutWrapper>
     <hudson.plugins.timestamper.TimestamperBuildWrapper/>
   </buildWrappers>

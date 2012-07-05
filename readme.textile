@@ -38,9 +38,23 @@ see something like @Hello from the vagrant VM running a MySQL-server for Elexis@
 
 h1. puppet development
 
-Test the module java on a machine where you have a working copy of this project, just call:
+h2. puppet testing on the development
+
+Test the module java on a machine where you have a working copy of this project, just call (in your own development environemnt):
 @cd /path/to/checkout@
-@sudo puppet apply --debug --confdir . modules/java/tests/init.pp@
+@vagrant provision@
+
+h2. puppet testing on the target
+
+@cd /path/to/checkout@
+@vagrant ssh@
+@/tmp/vagrant-puppet/@ # now you are on your checked out
+@sudo puppet apply --debug --confdir . --modulepath modules-0 modules-0/java/tests/init.pp@
+
+h2. manual interventions to get Jenkins up & running
+
+@sudo aptitude remove  apt-get remove jenkins-common jenkins jenkins-cli@ # Ubuntu used tomcat for jenkins
+@sudo aptitude install jenkins=1.473@
 
 h2. git howto
 
@@ -55,14 +69,16 @@ h2. TODO
 * elexis::server -> elexis::mysql_server und myElexis richtig installieren
 * elexis 2.1.7 automatisch installieren
 * os-user elexis einrichten (dito Arztx, MPAx,oc)
-* Deutsch als Vorgabesprache
 * gollum/mediawiki/"pmwiki":http://www.pmwiki.org/
   Evtl. convert "pmwiki_mediawiki":http://sourceforge.net/projects/pm2media/
 * setup/create initial box (e.g. using "WeeVee":https://github.com/jedi4ever/veewee)
 * postgresql
 * add util for curl, adding source/opt for apt-get?
+* mysql: Should be able to modify user password of an existing user
 * and a lot more
+* Deutsch als Vorgabesprache (veewee with elexisBaseBox passes validation, but cannot be used)
+* users elexis, et al should be able to log in
 
 Niklaus TODO:
-sudo apt-get install ruby1.9.1-full make libxslt-dev libxml2-dev
-ruby-switch --set ruby1.9.1
+* ?? sudo apt-get install ruby1.9.1-full make libxslt-dev libxml2-dev
+* ?? ruby-switch --set ruby1.9.1

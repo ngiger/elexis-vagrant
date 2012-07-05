@@ -7,7 +7,6 @@ class elexis::devel inherits elexis::common {
     ensure => latest
   }
   include eclipse
-  include jenkins
   include elexis::jenkins_2_1_7
   $vcsRoot = '/home/elexis'
   file { $vcsRoot:
@@ -20,6 +19,6 @@ class elexis::devel inherits elexis::common {
       source => "https://bitbucket.org/ngiger/elexis-bootstrap",
   }
 #  include elexis::jenkins_2_2_dev_jpa # TODO: Zweite Priorität , dito 2.1.6/zdavatz and buildr)
-  include jubula # TODO: Zweite Priorität
+  include jubula 
 #  include buildr # TODO: Dritte Priorität, da mit 2.1.7 mit ant gebuildet werden kann
 }

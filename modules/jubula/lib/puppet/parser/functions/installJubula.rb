@@ -19,10 +19,9 @@ module Puppet::Parser::Functions
       end
     else
 	puts "#{__FILE__}: skipping get : #{setupLocation}"
-    end 
-    p installPath
-    p File.directory?(installPath)
-    if !File.directory?(installPath)
+    end
+    if !File.directory?(installPath+'/jubula')
+      Dir.chdir(File.dirname(setupLocation))
       if Puppet[:noop]
 	puts "#{__FILE__}: noop: #{cmd2}"
       else

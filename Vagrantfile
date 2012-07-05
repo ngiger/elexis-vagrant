@@ -12,7 +12,9 @@ Vagrant::Config.run do |config|
   # remove it or uncomment it, if you don't have an apt cache
   # /etc/puppet/puppet.conf
   config.vm.provision :puppet, :facter => { "APTPROXY" => "http://172.25.1.61:3142/" }
-
+  config.vm.customize do |vm|
+    vm.memory_size = 2048 # MB
+  end
   config.vm.provision :puppet do |puppet|
     puppet.manifests_path = "manifests"
     puppet.manifest_file = "site.pp"
@@ -24,9 +26,10 @@ Vagrant::Config.run do |config|
     server.vm.host_name = "elexisDev"
     server.vm.box_url = "http://files.vagrantup.com/precise64.box"
 #    server.vm.box_url = "http://ngiger.dyndns.org/elexisBaseBox.box"
-#    config.vm.boot_mode = :gui # :gui or :headless (default)
-    server.vm.forward_port 80, 8880		# Apache
+    config.vm.boot_mode = :gui # :gui or :headless (default)
+    server.vm.forward_port   80, 30080		# Apache
     server.vm.forward_port 3306, 33306		# MySQL
     server.vm.forward_port 4567, 34567		# Gollum (elexis-admin Wiki)
+    server.vm.forward_port 8080, 38080		# Jenkins
   end
 end

@@ -7,6 +7,10 @@ class elexis::common {
     gid => 1300,
   }
 
+  group {[ 'adm','dialout', 'cdrom', 'plugdev', 'netdev',]:
+    ensure => present,
+  }
+
   user { 'elexis':
     ensure => present,
     uid => 1300,

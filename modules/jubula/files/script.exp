@@ -56,14 +56,18 @@ expect -exact "1,2,3\r
 Create symlinks?\r
 Yes \[y, Enter\], No \[n\]\r
 "
+sleep 1
 send -- "y\r"
 expect -exact "y\r
 Select the folder where you would like Jubula to create symlinks, then click Next.\r
 \[/usr/local/bin\]\r
 "
-send -- "\r"
+sleep 1
+send -- "/usr/local/bin\r"
 expect {
-      eof { exit 0 }
+    "You have successfully installed Jubula." { sleep 1; exit 0 }
     "Would you like Setup to overwrite it?\r\nYes \[y\], Yes to All \[ya\], No \[n\], No to All \[na\]" { puts "ya\r" }
 }
-expect eof
+expect "You have successfully installed Jubula."
+sleep 1
+exit 0
