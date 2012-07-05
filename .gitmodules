@@ -20,3 +20,6 @@
 [submodule "modules/postgresql"]
 	path = modules/postgresql
 	url = https://github.com/akumria/puppet-postgresql
+[submodule "modules/etckeeper"]
+	path = modules/etckeeper
+	url = https://github.com/thomasvandoren/puppet-etckeeper.git
