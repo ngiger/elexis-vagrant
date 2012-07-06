@@ -9,7 +9,7 @@
 	url = https://github.com/puppetlabs/puppetlabs-vcsrepo.git
 [submodule "modules/jenkins"]
 	path = modules/jenkins
-	url  = git@github.com:ngiger/puppet-jenkins.git
+	url  = https://github.com/ngiger/puppet-jenkins.git
 [submodule "modules/apt"]
 	path = modules/apt
 	url = https://github.com/puppetlabs/puppetlabs-apt

@@ -6,6 +6,8 @@ class elexis::vagrant {
       ensure => directory,
   }
 
+  if !defined(Package['git']) { package{ 'git': ensure => present } }
+  
   vcsrepo { "$vcsRoot/elexis-vagrant":
       ensure => present,
       provider => git,
