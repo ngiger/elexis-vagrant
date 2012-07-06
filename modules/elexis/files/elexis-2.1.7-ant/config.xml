@@ -58,9 +58,10 @@ mkdir -p ../lib
 echo &quot;,ch.marlovits.addressSearch,ch.marlovits.vornamen,ch.marlovits.plz,at.medevit.elexis.gdt.customed,medshare-licence-generator,de.ralfebert.rcputils,de.ralfebert.rcputils.feature&quot; &gt;skipPlugins.add
 ./prepareJenkins.rb --branch $ChooseBranch
 cd elexis-base/BuildElexis
+# we generate both a 32 (for Jubula) and a 64 bit Elexis (for the developer)
 ant -Dos=linux.x86_64 clean linux.x86_64
+ant -Dos=linux linux
 ant -Dos=linux.x86_64 doc doc-plugins javadoc
-# ant -Dos=linux linux
 # ant -Dos=windows windows
 # ant -Dos=macosx macosx
 </command>

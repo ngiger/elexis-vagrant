@@ -63,6 +63,17 @@ git submodule add https://github.com/ngiger/puppet-x2go modules/x2go
 
 h2. TODO
 
+h3. Beheben Fehler beim ersten Durchlauf
+
+* Could not set 'present on ensure: can't find user for elexis at /tmp/vagrant-puppet/modules-0/elexis/manifests/praxis_wiki.pp:33
+* x2goserver,cups-bsd, eclipse, kde* nicht installiert
+* floatflt could not find unzip
+* get_jubula failed
+* Creation of /var/lib/jenkins/jobs/elexis-2.1.7-ant failed
+
+
+h3. Erweiterungen
+
 * gem should be able to use jruby
 * gem should honour --noop
 * gem -> /opt/vagrant_ruby/bin/gem for vagrant?

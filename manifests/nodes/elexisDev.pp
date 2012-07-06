@@ -1,5 +1,7 @@
-node "elexisDev" {
-    notify { "node/elexisDev.pp": }
+
+class includeAllThingsForA_Developer {
+    notify { "node/elexisDev.pp includeAllThingsForA_Developer": }
+    include etckeeper
     include elexis::client
     include elexis::server
     include elexis::devel
@@ -9,4 +11,13 @@ node "elexisDev" {
     include elexis::praxis_wiki
     include kde
 }
+
+node 'elexisDev' {
+  include includeAllThingsForA_Developer
+}
+
+node 'elexisDev32bit' {
+  include includeAllThingsForA_Developer
+}
+
 

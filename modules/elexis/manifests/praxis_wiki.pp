@@ -29,7 +29,7 @@ class elexis::praxis_wiki inherits elexis::common {
       owner => 'elexis',
       group => 'elexis',
       source => "https://github.com/ngiger/elexis-admin.wiki.git",
-      require => Package['git'],
+      require => [User['elexis'], Package['git']],
   }
 }
 

@@ -1,0 +1,1 @@
+require elexis::vagrant

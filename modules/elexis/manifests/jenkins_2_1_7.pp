@@ -1,49 +1,23 @@
 # Here we setup a few 2.1.7 related jenkins job configuration files
+# TODO: Jubula needs a 32-bit Java (and a 32-bit Elexis)
+# TODO: 32-bit java, eg. sudo apt-get install openjdk-6-jdk:i386 openjdk-6-jre-headless:i386
+# TODO: use local MySQL-jenkins database. Must be loaded first
 # TODO: Split this up into jenkins-base, user. Use ERB-templates for common tasks like poll, building.
+# TODO: Adapt for new path of Jubula under vagrant!
 
 notify { "This is elexis::jenkins_2_1_7": }
+require jenkins
 
 file { '/var/lib/jenkins/jobs':
   ensure => directory, # so make this a directory
+  owner => 'jenkins',
+  require => User['jenkins'],
 }
-
-class elexis::constants {
-  $jubulaRoot = '/var/lib/jenkins'
-  $downloadDir = "${jubulaRoot}/downloads"
-  $destZip = "${downloadDir}/floatflt.zip"
-}
-
-class elexis::download_floatflt inherits elexis::constants {
-  exec { "floatflt.zip":
-    command => "wget --timestamp http://mirror.ctan.org/macros/latex/contrib/floatflt.zip",
-    creates => $destZip,
-    cwd => $downloadDir,
-    path => '/usr/bin:/bin',
-    require => File[$downloadDir],
-    notify => Class['elexis::add_floatflt'],
-  }
-}
-
-class elexis::add_floatflt inherits elexis::constants {
-  # Add the latex package floatflt
-  $floatStyName = '/usr/share/texmf/tex/latex/misc/floatflt.sty'
-  exec {$floatStyName:
-    command => "unzip ${destZip} && cd floatflt && latex floatflt.ins && cp floatflt.sty ${floatStyName} && texhash",
-    creates => $floatStyName,
-    cwd => "/tmp",
-    path => '/usr/bin:/bin',
-  }
-}
-
-class {
-      'elexis::download_floatflt': stage => first;
-      'elexis::add_floatflt': stage => main;
-    }
 
 define elexis::install_eclipse_version(
   $baseURL,
   $file_base = $title,
-  $downloadDir = '/var/lib/jenkins/downloads',
+  $downloadDir = '/var/lib/jenkins/downloads'
  ) {
   $fullName = "$downloadDir/$filename"
   $cmd = "wget --timestamping ${baseURL}"
@@ -84,13 +58,20 @@ define elexis::add_jenkins_jobs(
   $configXML,
   $jobName = $title,
   $downloadDir = '/var/lib/jenkins',
+  $jobsDir = '/var/lib/jenkins/jobs',
 ) {
   # specify some default values for all files to be created,
   File {
     owner => 'jenkins',
     mode => '644',
     notify => Service['jenkins'],
-    require => [Class["jenkins::package"],Package["jenkins"], User['elexis']]
+    require => [User['jenkins','elexis']]
+  }
+
+  if (!defined(File[$jobsDir])) {
+    file {$jobsDir:
+      ensure => directory, # so make this a directory
+    }
   }
 
   file { "/var/lib/jenkins/jobs/$jobName":
@@ -108,21 +89,15 @@ define elexis::add_jenkins_jobs(
 }
 
 class elexis::jenkins_2_1_7 inherits elexis::common {
-  include elexis::add_floatflt
+  include elexis::latex
   # include jenkins::repo::debian # This does not work under Ubuntu to get the latest version!!
   class { 'jenkins': version => latest }
   include jenkins
+  include jenkins::package
   include jenkins::repo::debian
+  include apt
+
   include jenkins::service
-  # notify {"jenkins ohne tomcat":} # we need to remove these packages under Ubuntu
-  package { ['jenkins-plugins', 'libjenkins-remoting-java', 'jenkins-cli']:
-    ensure => absent,
-  }
-
-  package {['texlive', 'texinfo', 'texlive-lang-german', 'texlive-latex-extra']:
-    ensure => present,
-  }
-
   jenkins::plugin {
     [ "mercurial", "subversion", "git", "ant", "buckminster", "build-timeout", "cvs", "disk-usage", "javadoc",
       "jobConfigHistory", "copy-to-slave", "locks-and-latches", "ssh-slaves", "ruby", "timestamper", ]:
@@ -133,8 +108,7 @@ class elexis::jenkins_2_1_7 inherits elexis::common {
     owner => 'jenkins',
     mode => '644',
     notify => Service['jenkins'],
-
-    require => [Class["jenkins::package"],Package["jenkins"], User['elexis']]
+    require => [User['jenkins']]
   }
 
   $downloadDir = '/var/lib/jenkins/downloads'

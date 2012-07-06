@@ -8,6 +8,7 @@ node "ng-hp" {
       target => '/etc/hosts',
     }
 
+    include etckeeper
     include x2go::server
     include elexis::jenkins_2_1_7
     include elexis::server

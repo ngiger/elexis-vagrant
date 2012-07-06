@@ -32,7 +32,7 @@
   <builders>
     <hudson.tasks.Shell>
       <command>rm -f *.jar
-./run_jenkins.rb -i ${JOB_URL}../elexis-2.1.7-ant/ws/deploy/elexis-linux-install.jar
+./run_jenkins.rb -i ${JOB_URL}../elexis-2.1.7-ant/ws/deploy/elexis-linux.x86_64-install.jar
 </command>
     </hudson.tasks.Shell>
   </builders>

@@ -1,4 +1,5 @@
 # Here we define a few packages which are common to all elexis instances
+
 class elexis::devel inherits elexis::common {
 
   include elexis::client
@@ -8,6 +9,7 @@ class elexis::devel inherits elexis::common {
   }
   include eclipse
   include elexis::jenkins_2_1_7
+  include elexis::jubula
   $vcsRoot = '/home/elexis'
   file { $vcsRoot:
     ensure => directory,
@@ -19,6 +21,5 @@ class elexis::devel inherits elexis::common {
       source => "https://bitbucket.org/ngiger/elexis-bootstrap",
   }
 #  include elexis::jenkins_2_2_dev_jpa # TODO: Zweite Priorität , dito 2.1.6/zdavatz and buildr)
-  include jubula 
 #  include buildr # TODO: Dritte Priorität, da mit 2.1.7 mit ant gebuildet werden kann
 }

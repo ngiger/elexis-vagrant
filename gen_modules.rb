@@ -16,6 +16,7 @@ puts "Generating directory structure for puppet module #{ModuleName}"
 }
 
 init = <<EOF
+# kate: replace-tabs on; indent-width 2; indent-mode cstyle; syntax ruby
 class #{ModuleName} {
 # class #{ModuleName}($parameter1 = default1, $parameter2 = default2) {
 # case $parameter1 {
@@ -26,6 +27,7 @@ class #{ModuleName} {
 }
 EOF
 test = <<EOF
+# kate: replace-tabs on; indent-width 2; indent-mode cstyle; syntax ruby
 include #{ModuleName}
 EOF
 
