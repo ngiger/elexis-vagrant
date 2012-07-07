@@ -40,28 +40,16 @@ while {1} {
 expect "\[/opt/jubula_"
 sleep 0.1
 send -- "[lindex $argv 1]\r"
-expect -exact "jubula_6"
-sleep 0.1
+expect [lindex $argv 1]
+sleep 1
 send -- "\r"
-expect -exact "\r
-Which components should be installed?\r
-1: Jubula\r
-2: AUT Agent\r
-3: Jubula documentation\r
-Please enter a comma-separated list of the selected values or \[Enter\] for the default selection:\r
-\[1,2,3\]\r
-"
+expect "default selection:"
+sleep 1
 send -- "1,2,3\r"
-expect -exact "1,2,3\r
-Create symlinks?\r
-Yes \[y, Enter\], No \[n\]\r
-"
+expect "Create symlinks?"
 sleep 1
 send -- "y\r"
-expect -exact "y\r
-Select the folder where you would like Jubula to create symlinks, then click Next.\r
-\[/usr/local/bin\]\r
-"
+expect "Select the folder"
 sleep 1
 send -- "/usr/local/bin\r"
 expect {

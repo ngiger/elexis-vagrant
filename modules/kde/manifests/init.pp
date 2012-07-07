@@ -1,4 +1,5 @@
 class kde {
+  include apt
     package{
 	[ # 'task-german-kde-desktop', # exists only under Debian
 	'kde-plasma-desktop', # KDE Plasma Desktop and minimal set of applications
@@ -10,5 +11,6 @@ class kde {
 	#  language-pack-kde-de language-pack-kde-de-base
       ]:
       ensure => present,
+#      require => [Class['apt::update']],
     }
 }

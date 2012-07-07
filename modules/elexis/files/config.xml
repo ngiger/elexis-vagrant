@@ -60,7 +60,6 @@
     <permission>hudson.model.Item.Read:niklaus</permission>
     <permission>hudson.model.Item.Read:rgw-ch</permission>
     <permission>hudson.model.Item.Read:thomas</permission>
-    <permission>hudson.model.Item.Release:elexis</permission>
     <permission>hudson.model.Item.Workspace:anonymous</permission>
     <permission>hudson.model.Item.Workspace:elexis</permission>
     <permission>hudson.model.Item.Workspace:medevit</permission>
@@ -108,7 +107,11 @@
   <buildsDir>${ITEM_ROOTDIR}/builds</buildsDir>
   <systemMessage>&lt;h2&gt;Continuos Integration of elexis&lt;/h2&gt;&#xd;
 &#xd;
-See www.elexis.org.</systemMessage>
+See &lt;a href=&quot;www.elexis.org&quot;&gt;Elexis-Home page&lt;/a&gt;.&#xd;
+&#xd;
+&lt;br&gt;Jenkins setup via Vagrant/Puppet.&#xd;
+&lt;br&gt;For details look at the &lt;a href=&quot;https://github.com/ngiger/elexis-vagrant&quot;&gt;elexis-vagrant&lt;/a&gt; github project.&#xd;
+&lt;br&gt;Post questions to the &lt;a href=&quot;http://sourceforge.net/mailarchive/forum.php?forum_name=elexis-develop&quot;&gt;Elexis-developper&lt;/a&gt; mailing list!</systemMessage>
   <markupFormatter class="hudson.markup.RawHtmlMarkupFormatter">
     <disableSyntaxHighlighting>false</disableSyntaxHighlighting>
   </markupFormatter>
@@ -117,23 +120,6 @@ See www.elexis.org.</systemMessage>
   <myViewsTabBar class="hudson.views.DefaultMyViewsTabBar"/>
   <clouds/>
   <slaves>
-    <slave>
-      <name>172.25.1.42</name>
-      <description>Windows-7</description>
-      <remoteFS>E:\hudson</remoteFS>
-      <numExecutors>1</numExecutors>
-      <mode>EXCLUSIVE</mode>
-      <retentionStrategy class="hudson.slaves.RetentionStrategy$Demand">
-        <inDemandDelay>1</inDemandDelay>
-        <idleDelay>1</idleDelay>
-      </retentionStrategy>
-      <launcher class="hudson.os.windows.ManagedWindowsServiceLauncher">
-        <userName>niklaus</userName>
-        <password>6kfHXFi3dbI/WpAkfQnm96VjhCrcioEId94CwWGyZIo=</password>
-      </launcher>
-      <label>Win7</label>
-      <nodeProperties/>
-    </slave>
     <slave>
       <name>win-xp-de</name>
       <description>Windows-XP-Slave</description>
@@ -157,56 +143,19 @@ See www.elexis.org.</systemMessage>
       <nodeProperties/>
     </slave>
     <slave>
-      <name>ng-hp</name>
-      <description>Niklaus Laptop</description>
-      <remoteFS>/opt/jenkins-ng-hp-slave</remoteFS>
+      <name>linux-i386</name>
+      <description>Log-in via SSH into the localhost</description>
+      <remoteFS>/opt/jenkins-slave</remoteFS>
       <numExecutors>1</numExecutors>
-      <mode>EXCLUSIVE</mode>
+      <mode>NORMAL</mode>
       <retentionStrategy class="hudson.slaves.RetentionStrategy$Always"/>
       <launcher class="hudson.plugins.sshslaves.SSHLauncher">
-        <host>ng-hp</host>
+        <host>localhost</host>
         <port>22</port>
-        <username>niklaus</username>
-        <password>+qpXPCDsKTvYGwEGBiMxG53lPLxI/Sbx2GHt+s2Fjps=</password>
-        <jdk>
-          <id>jdk-6u16-oth-JPR@CDS-CDS_Developer</id>
-          <acceptLicense>true</acceptLicense>
-        </jdk>
+        <username>jenkins-slave</username>
+        <password>Lm58awJ98lU8xJiCpTuan8Oj+5VMmIcuTzTUIa10e+k=</password>
       </launcher>
-      <label>linux</label>
-      <nodeProperties/>
-    </slave>
-    <slave>
-      <name>lenny</name>
-      <description>Niklaus Laptop</description>
-      <remoteFS>/opt/jenkins-lenny-slave</remoteFS>
-      <numExecutors>1</numExecutors>
-      <mode>EXCLUSIVE</mode>
-      <retentionStrategy class="hudson.slaves.RetentionStrategy$Always"/>
-      <launcher class="hudson.plugins.sshslaves.SSHLauncher">
-        <host>lenny</host>
-        <port>22</port>
-        <username>niklaus</username>
-        <password>6kfHXFi3dbI/WpAkfQnm96VjhCrcioEId94CwWGyZIo=</password>
-        <jdk>
-          <id>jdk-6u16-oth-JPR@CDS-CDS_Developer</id>
-          <acceptLicense>true</acceptLicense>
-        </jdk>
-      </launcher>
-      <label>linux</label>
-      <nodeProperties/>
-    </slave>
-    <slave>
-      <name>Jenkins-win7</name>
-      <description>IP 172.25.1.42 (Kein Remote Desktop möglich!)</description>
-      <remoteFS>e:\jenkins-slave</remoteFS>
-      <numExecutors>1</numExecutors>
-      <mode>EXCLUSIVE</mode>
-      <retentionStrategy class="hudson.slaves.RetentionStrategy$Always"/>
-      <launcher class="hudson.slaves.JNLPLauncher">
-        <tunnel>172.25.1.41:8981</tunnel>
-      </launcher>
-      <label>windows Windows-7</label>
+      <label></label>
       <nodeProperties/>
     </slave>
   </slaves>
@@ -240,29 +189,6 @@ See www.elexis.org.</systemMessage>
         <hudson.views.BuildButtonColumn/>
       </columns>
       <includeRegex>.*2.1.6.*</includeRegex>
-    </listView>
-    <listView>
-      <owner class="hudson" reference="../../.."/>
-      <name>Medelexis</name>
-      <description>Spezielle Builds, welche für Medelexis durchgeführt werden.</description>
-      <filterExecutors>false</filterExecutors>
-      <filterQueue>false</filterQueue>
-      <properties class="hudson.model.View$PropertyList"/>
-      <jobNames class="tree-set">
-        <comparator class="hudson.util.CaseInsensitiveComparator"/>
-        <string>jubula-medelexis-windows-7</string>
-      </jobNames>
-      <jobFilters/>
-      <columns>
-        <hudson.views.StatusColumn/>
-        <hudson.views.WeatherColumn/>
-        <hudson.views.JobColumn/>
-        <hudson.views.LastSuccessColumn/>
-        <hudson.views.LastFailureColumn/>
-        <hudson.views.LastDurationColumn/>
-        <hudson.views.BuildButtonColumn/>
-      </columns>
-      <includeRegex>.*edelexis.*</includeRegex>
     </listView>
     <listView>
       <owner class="hudson" reference="../../.."/>
@@ -328,33 +254,6 @@ See www.elexis.org.</systemMessage>
         <hudson.views.BuildButtonColumn/>
       </columns>
       <includeRegex>.*2.2.dev.*</includeRegex>
-    </listView>
-    <listView>
-      <owner class="hudson" reference="../../.."/>
-      <name>buildr</name>
-      <description>Various efforts to use buildr.apache.org</description>
-      <filterExecutors>false</filterExecutors>
-      <filterQueue>false</filterQueue>
-      <properties class="hudson.model.View$PropertyList"/>
-      <jobNames class="tree-set">
-        <comparator class="hudson.util.CaseInsensitiveComparator" reference="../../../listView[5]/jobNames/comparator"/>
-        <string>buildr</string>
-        <string>buildrizpack</string>
-        <string>Elexis-2.1.6-Buildr</string>
-        <string>elexis-2.1.7-Buildr</string>
-        <string>elexis-2.2.dev_jpa-Buildr</string>
-      </jobNames>
-      <jobFilters/>
-      <columns>
-        <hudson.views.StatusColumn/>
-        <hudson.views.WeatherColumn/>
-        <hudson.views.JobColumn/>
-        <hudson.views.LastSuccessColumn/>
-        <hudson.views.LastFailureColumn/>
-        <hudson.views.LastDurationColumn/>
-        <hudson.views.BuildButtonColumn/>
-      </columns>
-      <includeRegex>.*uildr.*</includeRegex>
     </listView>
   </views>
   <primaryView>Alle</primaryView>

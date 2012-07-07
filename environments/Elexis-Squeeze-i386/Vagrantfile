@@ -13,7 +13,7 @@ Vagrant::Config.run do |config|
   # /etc/puppet/puppet.conf
   config.vm.provision :puppet, :facter => { "APTPROXY" => "http://172.25.1.61:3142/" }
   config.vm.customize do |vm|
-    vm.memory_size = 1024 # MB
+    vm.memory_size = 2048 # MB
   end
   config.vm.provision :puppet do |puppet|
     puppet.manifests_path = "manifests"
@@ -22,7 +22,7 @@ Vagrant::Config.run do |config|
   end
   config.vm.define :elexisDev do |server|
     server.vm.network :hostonly, "10.11.12.43"
-    server.vm.box     = "squeeze32bit"
+    server.vm.box     = "Elexis-Squeeze-i386"
     server.vm.host_name = "elexisDev32bit"
     # my box has puppet 2.7.17 installed
     server.vm.box_url = "/opt/fileserver/elexis/boxes/debian-6.0.5-amd64-netinst.iso"

@@ -1,0 +1,50 @@
+h1. How I created a vagrant base box for Elexis
+
+My needs were:
+
+* i386. In the past there were problems running Elexis on a 64 bit machine.
+** Jubula needs a 32-bit Java
+* SUN-Java-6
+* Debian squeeze
+* Swiss german keyboard & localization
+
+The following links got me up and working using the great "veewee":https://github.com/jedi4ever/veewee project. Thanks!
+* http://seletz.github.com/blog/2012/01/17/creating-vagrant-base-boxes-with-veewee/
+* http://www.whitewashing.de/2012/05/31/virtual_machines_with_vagrant__veewee_and_puppet.html
+
+h2. Steps to create a new box
+
+@vagrant basebox define 'Elexis-Squeeze-i386' 'Debian-6.0.5-i386-netboot'@ copied the contents of templates/Debian-6.0.5-i386-netboot
+into definitions/Elexis-Squeeze-i386
+
+Then I changed a few things in
+* definitions/Elexis-Squeeze-i386/definition.rb
+* definitions/Elexis-Squeeze-i386/base.sh
+* definitions/Elexis-Squeeze-i386/preseed.cfg
+
+Building was done using the following steps
+* @vagrant basebox build 'Elexis-Squeeze-i386'@ took a few minutes to finish
+* @vagrant basebox validate 'Elexis-Squeeze-i386'@ confirmed in a few seconds that my new box was ready to be used by vagrant
+* @vagrant basebox export 'Elexis-Squeeze-i386'@ create @Elexis-Squeeze-i386.box@ (about 300 MB)
+* @vagrant box add 'Elexis-Squeeze-i386'@ 'Elexis-Squeeze-i386.box' makes this box available to be used by vagrant. The output into ~/.vagrant.d/boxes/Elexis-Squeeze-i386/
+
+h3. Want to try it?
+
+Then call (in the top level directory of elexis-vagrant)
+
+bc..
+git clone https://github.com/jedi4ever/veewee
+cd vewee
+ln -s ../definitions/Elexis-Squeeze-i386 definitions
+# Change the definitions to you liking
+vagrant basebox build 'Elexis-Squeeze-i386'
+vagrant basebox validate 'Elexis-Squeeze-i386'
+vagrant basebox export 'Elexis-Squeeze-i386'
+vagrant box add 'Elexis-Squeeze-i386' 
+
+Watch out for:
+* preseed.cfg defines a mirror for apt, using @d-i mirror/http/proxy string http://172.25.1.61:3142/@. Adapt it to you needs before calling @vagrant basebox build@
+* if you want to install a apt-proxy-cache I recommend @sudo apt-get install apt-cacher-ng@
+
+Niklaus Giger, 7 July 2012
+

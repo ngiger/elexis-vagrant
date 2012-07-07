@@ -100,7 +100,7 @@ class elexis::jenkins_2_1_7 inherits elexis::common {
   include jenkins::service
   jenkins::plugin {
     [ "mercurial", "subversion", "git", "ant", "buckminster", "build-timeout", "cvs", "disk-usage", "javadoc",
-      "jobConfigHistory", "copy-to-slave", "locks-and-latches", "ssh-slaves", "ruby", "timestamper", ]:
+      "jobConfigHistory", "copy-to-slave", "locks-and-latches", "ssh-slaves", "ruby", "timestamper","xvnc" ]:
   }
 
   # specify some default values for all files to be created,
@@ -109,11 +109,6 @@ class elexis::jenkins_2_1_7 inherits elexis::common {
     mode => '644',
     notify => Service['jenkins'],
     require => [User['jenkins']]
-  }
-
-  $downloadDir = '/var/lib/jenkins/downloads'
-  file { $downloadDir:
-  ensure => directory, # so make this a directory
   }
 
 #  $eclipseBaseURL = "http://ftp.medelexis.ch/downloads_opensource/eclipse"
@@ -142,9 +137,15 @@ class elexis::jenkins_2_1_7 inherits elexis::common {
   file { [ '/var/lib/jenkins/users', '/var/lib/jenkins/users/elexis']:
   ensure => directory, # so make this a directory
   }
+
   file { '/var/lib/jenkins/users/elexis/config.xml':
     ensure => present,
     source => 'puppet:///modules/elexis/users/elexis.xml',
+  }
+
+  file { '/var/lib/jenkins/config.xml':
+    ensure => present,
+    source => 'puppet:///modules/elexis/config.xml',
   }
 
 }

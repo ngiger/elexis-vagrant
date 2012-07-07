@@ -9,7 +9,7 @@ class elexis::devel inherits elexis::common {
   }
   include eclipse
   include elexis::jenkins_2_1_7
-  include elexis::jubula
+  include elexis::jubula_elexis
   $vcsRoot = '/home/elexis'
   file { $vcsRoot:
     ensure => directory,

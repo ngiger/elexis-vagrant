@@ -1,6 +1,9 @@
 # Here we define all the LaTeX packages, which we need to create Elexis documentation
 
 class elexis::download_floatflt inherits elexis::common {
+  package {['texlive', 'texinfo', 'texlive-lang-german', 'texlive-latex-extra']:
+    ensure => present,
+  }
   exec { "floatflt.zip":
     command => "wget --timestamp http://mirror.ctan.org/macros/latex/contrib/floatflt.zip",
     creates => $destZip,
@@ -13,7 +16,16 @@ class elexis::download_floatflt inherits elexis::common {
 
 class elexis::add_floatflt inherits elexis::common {
   # Add the latex package floatflt
-  $floatStyName = '/usr/share/texmf/tex/latex/misc/floatflt.sty'
+
+  include elexis::download_floatflt
+  $destDir  = '/usr/share/texmf/tex/latex/misc'
+  $floatStyName = "$destDir/floatflt.sty"
+  file {$destDir:
+    ensure => directory,
+  }
+
+  if !defined(Package['unzip']) { package {'unzip': ensure => present, } }
+#  install_floatflt($destDir,$destZip)
   exec {$floatStyName:
     command => "unzip ${destZip} && cd floatflt && latex floatflt.ins && cp floatflt.sty ${floatStyName} && texhash",
     creates => $floatStyName,
@@ -24,9 +36,6 @@ class elexis::add_floatflt inherits elexis::common {
 }
 
 class elexis::latex inherits elexis::common {
-  package {['texlive', 'texinfo', 'texlive-lang-german', 'texlive-latex-extra']:
-    ensure => present,
-  }
-
+  include elexis::add_floatflt
 }
 

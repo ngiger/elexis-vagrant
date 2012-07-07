@@ -11,7 +11,6 @@
     <modules></modules>
     <branch>2.1.7</branch>
     <clean>false</clean>
-    <forest>false</forest>
     <browser class="hudson.plugins.mercurial.browser.HgWeb">
       <url>http://elexis.hg.sourceforge.net/hgweb/elexis/elexis-addons/</url>
     </browser>

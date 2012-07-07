@@ -46,8 +46,8 @@ set timeout -1
 spawn vncpasswd
 match_max 100000
 expect -exact "Password:"
-send -- "elexisTe\r"
+send -- "elexisTest\r"
 expect -exact "\r
 Verify:"
-send -- "elexisTe\r"
+send -- "elexisTest\r"
 expect eof

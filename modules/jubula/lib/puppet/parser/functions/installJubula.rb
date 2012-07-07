@@ -1,10 +1,16 @@
+# got it via https://github.com/camptocamp/puppet-common
+# written by David Schmitt
+# Copyright (C) 2007 David Schmitt
+# <david@schmitt.edv-bus.at>
 module Puppet::Parser::Functions
   newfunction(:installJubula) do |args|
     Puppet::Parser::Functions.autoloader.loadall
+    puts "in installJubula"
     url           = args[0]
     setupLocation = args[1]
     installPath   = args[2]
     scriptFile    = args[3]
+    p url
     dir = File.dirname(setupLocation)
     FileUtils.makedirs(dir) if !File.directory?(dir)
     cmd1  = "curl -s -o #{setupLocation} #{url}"

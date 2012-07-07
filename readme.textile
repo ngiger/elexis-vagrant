@@ -1,42 +1,60 @@
-h1. Bootstrapping Elexis
+h1. Bootstrapping an Elexis development and testing environment made easy!
 
-h2. TestSystem
+Bootstrapping and testing Elexis took me (Niklaus) many hours when I started working on Elexis.
+Therefore I was always looking for clever shortcuts to create a simple, reproducible build environment.
+With this project I am coming much closer! 
 
-Was an Ubuntu-Server 12.04 LTS (servername ubuntu) via USB-Stick (copied via
-		sudo dd if=ubu*.ios of=/dev/sdb).
-bq. sudo dd if=ubuntu-12.04-server-amd64.iso of=/dev/sdb
-Minimaler Server nur OpenSSH
-Dann sudo apt-get install etckeeper git vagrant
-Installs a lot of packages (must be able to compile a few  files! installs
-		also virtualbox)
-sudo mkdir /opt/vagrant-elexis
-cd /opt/vagrant-elexis
-sudo chown $USER:$USER .
-git clone ..
-vagrant up
+Preparing the 0.1 release took me about 7 days of work and
+confronted me (again) with all the small, pesky details I had to overcome to run my Jenkins CI under
+http://ngiger.dyndns.org/jenkins/.
 
+h2. Requirements
+* Sufficientyl powerfull HW (e.g needed for this task)
+** disk space (about 30 GB, 20 GB reservev for the VM, 10 GB were not enough, with 256 MB RAM I did see Out of memory situations)
+** 1 GB/1 CPU for the virtual machine (with 256
+** CPUs with support for virtualization
+* Needed SW (available for most Linux, Windows & MacOSX)
+** "VirtualBox":https://www.virtualbox.org/
+** "Vagrant":http://vagrantup.com/
+* A good, reliable connection to the internet. The whole process will download something like 5 or 10 GB
 
+On a Debian wheezy, Ubuntu 12.04 LTS this is done issuing the command @sudo apt-get install vagrant virtualbox@. For other OS its up to you.
 
-h2. Installation
+h2. Bring-up of a TestSystem
 
-* install virtualbox
-For details see https://www.virtualbox.org/wiki/Downloads
-Debian/Ubuntu: sudo apt-get install virtualbox
+* Ubuntu-Server 12.04 LTS (servername ubuntu) via USB-Stick, e.g. @sudo dd if=ubuntu-12.04-server-amd64.iso of=/dev/sdb@
+* Choose server, but only activated OpenSSH
+* @sudo apt-get install etckeeper git vagrant virtualbox@ # this installs a lot of packages
+* @git clone https://github.com/ngiger/elexis-vagrant /opt/vagrant-elexis@
+* @cd /opt/vagrant-elexis@
+* APT-Proy
+** Adapt the lines in @manifests/site.pp@ which define a proxy_host for apt to match your host/port number.
+** If you do not have such proxy (and don't want to install one, e.g. @sudo apt-get install apt-cacher-ng@) then simply remove the line
+   @class { 'apt': proxy_host => "172.25.1.61", proxy_port => 3142, }@
+* @vagrant up@
+  Now you have to wait a long time (30 minutes with caches filled! May be one hour or more)
+** Ignore the error lines containing  @Could not find group puppet@. The puppet port to squeeze does not support all features.
+* Point your browser at "http:://localhost:48080":http:://localhost:48080 and you should be able to see a running Jenkins
+  !images/jenkins_1.png(running Jenkins)!
+* The jenkins will download the Elexis 2.1.7 branch, build it for several OS
+* Then it will launch the Jubula GUI-Tests (takes 7 minutes on my big AMD64 machine, more than 14 minutes as VM (1 CPU/256 MB RAM) on my notebook. If you are happy (and nobody pushed a breaking commit into the 2.1.7 branch) you should end up with 4 projects showing a blue sky under a bright sun.
 
-* install ruby
-Windows: For details see http://www.ruby-lang.org/de/downloads/
-Debian/Ubuntu sudo apt-get install ruby-full
+h2. What you can do with your fancy new virtual machine
 
-* install vagrant
-Auf der Kommandozeile: gem install vagrant
-
-h2. Elexis-Server aufstarten
+* have look at the installed apache server, which is accessible on main machine via http://localhost:40080. The content rendered may be found
+  in the file @modules/apache/manifests/init.pp@
+* Log-in as vagrant (password vagrant) and use the Eclipse (with Mercurial, Jinto, copyright plugins) using the GUI
+* Login via ssh @ssh vagrant@10.11.12.43@ or even simpler with @vagrant ssh@. In the second case you don't even have to give the password
+* Use the mysql client/server, eg. on the command line @mysql -u elexis --password=elexisTest elexis@. You should have two databases:
+** elexis
+** jubula_vagrant
+* Login via x2goclient IP 10.11.12.43, user vagrant/vagrant
 
 on the command line execute: @vagrant up@
 this will take a few minutes. Afterwards point your browser at "http://localhost:8880/" and you should
 see something like @Hello from the vagrant VM running a MySQL-server for Elexis@¨
 
-h1. puppet development
+h1. Howto improve/extend the existing puppet receipes
 
 h2. puppet testing on the development
 
@@ -48,48 +66,58 @@ h2. puppet testing on the target
 
 @cd /path/to/checkout@
 @vagrant ssh@
-@/tmp/vagrant-puppet/@ # now you are on your checked out
-@sudo puppet apply --debug --confdir . --modulepath modules-0 modules-0/java/tests/init.pp@
-
-h2. manual interventions to get Jenkins up & running
-
-@sudo aptitude remove  apt-get remove jenkins-common jenkins jenkins-cli@ # Ubuntu used tomcat for jenkins
-@sudo aptitude install jenkins=1.473@
+@sudo puppet apply --modulepath /tmp/vagrant-puppet/modules-0 /tmp/vagrant-puppet/modules-0/java/tests/init.pp --debug@
 
 h2. git howto
 
-http://git-scm.com/book/en/Git-Tools-Submodules
-git submodule add https://github.com/ngiger/puppet-x2go modules/x2go
+* See "Git-Tools":http://git-scm.com/book/en/Git-Tools-Submodules
+* Common usage
+* If you make changes or add a new module, fork the original module into your github account, then
+* @git submodule add https://github.com/<yourname>/puppet-x2go modules/x2go@
+* To ease pushing to your personal github account use @git remote add github git@github.com:<yourname>/puppetlabs-mysql.git@
+* This enables you to use @cd modules/x2go && git push github@
 
-h2. TODO
+h2. create a base box
 
-h3. Beheben Fehler beim ersten Durchlauf
+See the readme.texile in the subfolder definitions. This was used to create the Elexis-Squeeze-i386.box which can be downloaded
+via http://ftp.medelexis.ch/downloads_opensource/boxes
 
-* Could not set 'present on ensure: can't find user for elexis at /tmp/vagrant-puppet/modules-0/elexis/manifests/praxis_wiki.pp:33
-* x2goserver,cups-bsd, eclipse, kde* nicht installiert
-* floatflt could not find unzip
-* get_jubula failed
-* Creation of /var/lib/jenkins/jobs/elexis-2.1.7-ant failed
+h2. TODO/Goals
 
+h3. Goals to be achieved before declaring feature completeness
 
-h3. Erweiterungen
-
-* gem should be able to use jruby
-* gem should honour --noop
-* gem -> /opt/vagrant_ruby/bin/gem for vagrant?
-* elexis::server -> elexis::mysql_server und myElexis richtig installieren
-* elexis 2.1.7 automatisch installieren
-* os-user elexis einrichten (dito Arztx, MPAx,oc)
-* gollum/mediawiki/"pmwiki":http://www.pmwiki.org/
+* Fix gollum-servie not starting (squeeze installs gollum into /usr/bin, instead of /usr/local/bin) TODO: before 0.2
+* Support 32-bit and 64-bit Jubula GUI-tests in the Jenkins
+* Add support for Elexis client testing under MacOSX
+* Integrate changes/suggestion to make the project interesting for more developpers (let it fullfill theirs and my requirements)
+* Use templates for the Jenkins (polling) projects
+* Support PostgresSQL
+* Investigate, decide/document how different developpers/OC may refine/add files/requirements
+* Add proper support for a puppet master/dashboard
+* Adapt KDE to match some preferences (e.g. keyboard layout, tabs for the konsole application)
+* Support several javas (e.g. Sun-Java-6, OpenJDK-6, OpenJDK-7)
+* Support installation of several Eclipse versions in parallel (e.g 3.6, 3.7, 3.8, 4.2). Nice for developpers
+* backup and anonymiser scripts/setup for MySQL/PostgresSQL
+* Support at least one wiki installation, gollum,mediawiki, "pmwiki":http://www.pmwiki.org/
   Evtl. convert "pmwiki_mediawiki":http://sourceforge.net/projects/pm2media/
-* setup/create initial box (e.g. using "WeeVee":https://github.com/jedi4ever/veewee)
-* postgresql
-* add util for curl, adding source/opt for apt-get?
-* mysql: Should be able to modify user password of an existing user
-* and a lot more
+* install elexis versions correctly, via apt or Elexis-installer
+* os/db-user elexis (dito Arztx, MPAx,oc)
 * Deutsch als Vorgabesprache (veewee with elexisBaseBox passes validation, but cannot be used)
-* users elexis, et al should be able to log in
+* Merge project with elexis-admin
+* Setup mail-delivery/archiving
+* Have at least 2 additional developpers using at least a part of the puppet stuff
+* Have at least 5 beta installation in medical practices
 
-Niklaus TODO:
-* ?? sudo apt-get install ruby1.9.1-full make libxslt-dev libxml2-dev
-* ?? ruby-switch --set ruby1.9.1
+h3. Feature that might be in 1.0 or later
+
+* Add support for Elexis client testing under Windows (Puppet has only initial support for windows)
+
+h3. Ideas for cleanup
+
+* Most classes should be parametrable
+
+h1. History
+
+* Release 0.1: July 8, 2012. Runs Jubula integration tests with Elexis 2.1.6 on a Debian Squeeze 32-bit machine
+
+Ideas/comments are welcome. Use the "elexis-develop":http://sourceforge.net/mailarchive/forum.php?forum_name=elexis-develop mailing list or contact the author directly via niklaus.giger@member.fsf.org
