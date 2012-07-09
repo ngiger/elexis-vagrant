@@ -4,10 +4,16 @@ class elexis::common {
   $jubulaRoot = '/var/lib/jenkins'
   $downloadDir = "${jubulaRoot}/downloads"
   $destZip = "${downloadDir}/floatflt.zip"
+  $elexisFileServer = 'http://172.25.1.61/fileserver/elexis'
+  case $elexisFileServer {
+        /^http|^ftp/:  { $downloadURL = $elexisFileServer }
+        default: { $downloadURL = 'http://ftp.medelexis.ch/downloads_opensource'}
+    }
+  notify { "downloadURL is set to '$downloadURL'": }
   file { $downloadDir:
-  ensure => directory, # so make this a directory
+    ensure => directory, # so make this a directory
   }
-
+  
   include apt # to force an apt::update
   include java
   group { 'elexis':

@@ -20,9 +20,11 @@ define elexis::install_eclipse_version(
   $downloadDir = '/var/lib/jenkins/downloads'
  ) {
   $fullName = "$downloadDir/$filename"
-  $cmd = "wget --timestamping ${baseURL}"
-  notify {"version-cdm  ${cmd} title ${title}":}
-  notify {"unless-cdm ${downloadDir}/${title}":}
+  $cmd = "wget --timestamping "
+  notify {"version-cmd  ${cmd} title ${title}":}
+  notify {"unless-cmd ${downloadDir}/${title}":}
+
+  # default for the execs
   Exec {
     cwd => $downloadDir,
     path => '/usr/bin:/bin',
@@ -112,7 +114,12 @@ class elexis::jenkins_2_1_7 inherits elexis::common {
   }
 
 #  $eclipseBaseURL = "http://ftp.medelexis.ch/downloads_opensource/eclipse"
-  $eclipseBaseURL = "http://mirror.switch.ch/eclipse/technology/epp/downloads/release/indigo/SR2"
+  case $elexisFileServer {
+        /^http|^ftp/:  { $eclipseBaseURL = "${elexisFileServer}/eclipse" }
+#        default: { $eclipseBaseURL = 'http://mirror.switch.ch/eclipse/technology/epp/downloads/release/indigo/SR2'}
+        default: { $eclipseBaseURL = 'http://mirror.switch.ch/eclipse/technology/epp/downloads/release/indigo/SR2'}
+    }
+  notify { "eclipseBaseURL is set to '$eclipseBaseURL'": }
 
   install_eclipse_version{"eclipse-rcp-indigo-SR2":
     baseURL => $eclipseBaseURL,    

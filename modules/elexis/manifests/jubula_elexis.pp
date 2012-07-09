@@ -4,7 +4,7 @@
 class elexis::jubula_elexis  inherits elexis::common {
 
   class {"jubula":
-    jubulaURL => 'http://ftp.medelexis.ch/downloads_opensource/jubula/jubula_setup_5.2.00266.sh',
+    jubulaURL => "${downloadURL}/jubula/jubula_setup_5.2.00266.sh",
     destDir =>  '/opt/jubula_5.2.00266',
     setupSh => '/opt/downloads/jubula_5.2.00266.sh'
   }

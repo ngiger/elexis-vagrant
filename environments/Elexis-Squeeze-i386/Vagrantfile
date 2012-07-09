@@ -6,12 +6,6 @@
 Vagrant::Config.run do |config|
   # Setup the box
   config.vm.provision :puppet, :options => "--verbose --debug"
-  # Ruby gem buildr needs a JAVA_HOME=/usr/lib/jvm/default-java/
-  config.vm.provision :puppet, :facter => { "JAVA_HOME" => "/usr/lib/jvm/default-java/" }
-  # correct the next line to add the hostname/ip-address where we can find an apt-cache
-  # remove it or uncomment it, if you don't have an apt cache
-  # /etc/puppet/puppet.conf
-  config.vm.provision :puppet, :facter => { "APTPROXY" => "http://172.25.1.61:3142/" }
   config.vm.customize do |vm|
     vm.memory_size = 2048 # MB
   end
@@ -24,9 +18,7 @@ Vagrant::Config.run do |config|
     server.vm.network :hostonly, "10.11.12.43"
     server.vm.box     = "Elexis-Squeeze-i386"
     server.vm.host_name = "elexisDev32bit"
-    # my box has puppet 2.7.17 installed
-    server.vm.box_url = "/opt/fileserver/elexis/boxes/debian-6.0.5-amd64-netinst.iso"
-#    server.vm.box_url = "http://mathie-vagrant-boxes.s3.amazonaws.com/debian_squeeze_32.box" # had old puppet 2.6.
+    server.vm.box_url = "/opt/fileserver/elexis/boxes/Elexis-Squeeze-i386.box"
     config.vm.boot_mode = :gui # :gui or :headless (default)
     server.vm.forward_port   22, 40022		# ssh
     server.vm.forward_port   80, 40080		# Apache

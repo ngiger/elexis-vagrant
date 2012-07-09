@@ -1,51 +1,63 @@
 #!/usr/bin/env ruby
 # creates a fileserver
 
-FileServerRoot = '/opt/fileserver'
+DstRoot        = '/opt/fileserver/elexis'
+IndigoSR2      = 'eclipse-rcp-indigo-SR2' # Needed for Elexis 2.1.7
 EclipseBaseURL = 'http://mirror.switch.ch/eclipse/technology/epp/downloads/release/indigo/SR2'
-EclipseRelease = 'eclipse-rcp-indigo-SR2'
-LibURL         = 'http://ftp.medelexis.ch/downloads_opensource/develop/'
-
+MedelexisURL   = "http://ftp.medelexis.ch/downloads_opensource"
+LibURL         = "#{MedelexisURL}/develop"
+JubulaURL      = "#{MedelexisURL}/jubula"
+BoxesURL       = "#{MedelexisURL}/boxes"
+LatexURL       = 'http://mirror.switch.ch/ftp/mirror/tex/macros/latex/contrib'
 require 'fileutils'
 
-[ 'eclipse','jubula','latex', 'lib' ].each {
+[ 'eclipse','jubula','latex', 'lib', 'boxes' ].each {
   |subdir|
-    FileUtils.makedirs("#{FileServerRoot}/elexis/#{subdir}")
+    FileUtils.makedirs("#{DstRoot}/elexis/#{subdir}")
 }
 
-def getEclipse
-  [ "win32.zip", "linux-gtk.tar.gz", "linux-gtk-x86_64.tar.gz", "macosx-cocoa-x86_64.tar.gz"].each {
-    |variant|
-      fileName = "#{EclipseRelease}-#{variant}"
-      cmd = "wget --timestamping #{EclipseBaseURL}/#{fileName}"
-      Dir.chdir("#{FileServerRoot}/elexis/eclipse")
-      system(cmd)
-  }
-end
-
-def getFloatflt
-  cmd = "wget --timestamping http://mirror.switch.ch/ftp/mirror/tex/macros/latex/contrib/floatflt.zip"
-  Dir.chdir("#{FileServerRoot}/elexis/latex")
-  system(cmd)
-end
-
-def getJubula
-  ['.exe', '.sh','.dmg'].each {
-    |ext|
-    cmd = "wget --timestamping https://s3.amazonaws.com/jubula/setup#{ext}"
-    Dir.chdir("#{FileServerRoot}/elexis/jubula")
+def getFileFromBaseURL(target, url, files)
+  files.each {
+    |aFile|
+    cmd = "wget --timestamping #{url}/#{aFile}"
+    FileUtils.makedirs(target)
+    Dir.chdir(target)
+    puts "cd #{target} && #{cmd}"
     system(cmd)
   }
 end
 
-def getLib
-  puts "Don't know yet how to get
-  ant-contrib.jar            fop-1.0-bin.zip      jdom.jar                org.eclipse.mylyn.wikitext.core.jar          scala-compiler.jar
-  demoDB_elexis_2.1.5.4.zip  izpack-compiler.jar  medelexis-packager.jar  org.eclipse.mylyn.wikitext.textile.core.jar  scala-library.jar
-  "
+def getEclipse(target, url, release)
+  [ "win32.zip", "linux-gtk.tar.gz", "linux-gtk-x86_64.tar.gz", "macosx-cocoa-x86_64.tar.gz"].each {
+    |variant|
+      fileName = "#{release}-#{variant}"
+      getFileFromBaseURL(target, url, [fileName])
+  }
 end
 
-getEclipse
-getFloatflt
-getJubula
-getLib
+# Use MedelexisURL as I cannot find old releases of Jubula on the Eclipse Download site
+def getJubula(target, url, release, variants)
+  variants.each {
+    |ext|
+    getFileFromBaseURL(target, url, ["#{release}#{ext}"])
+  }
+end
+
+getFileFromBaseURL(DstRoot + '/latex', LatexURL, ['floatflt.zip'])
+getEclipse(DstRoot + '/eclipse', EclipseBaseURL, IndigoSR2)
+#getJubula('https://s3.amazonaws.com/jubula/','setup',  ['.exe', '.sh','.dmg'])
+getJubula(DstRoot + '/jubula', JubulaURL, 'jubula_setup_5.2.00266',  ['.sh'])
+getFileFromBaseURL(DstRoot + '/lib', LibURL,
+		[
+		'ant-contrib.jar',
+                'demoDB_elexis_2.1.5.4.zip',
+                'fop-1.0-bin.zip',
+                'izpack-compiler.jar',
+                'jdom.jar',
+                'medelexis-packager.jar',
+                'org.eclipse.mylyn.wikitext.core.jar',
+                'org.eclipse.mylyn.wikitext.textile.core.jar',
+                'scala-compiler.jar',
+                'scala-library.jar'
+               ])
+getFileFromBaseURL(DstRoot + '/boxes', BoxesURL, ['Elexis-Squeeze-i386.box'])

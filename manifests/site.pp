@@ -7,6 +7,11 @@
 # last:  Start services (e.g. apache, gollum, jenkins, x2go)
 notify { "site.pp for vagrant/elexis": }
 
+# adapt the next two lines to speed up drastically
+# getting the boxes up
+# Use gen_fileserver.rb to populate the fileserver
+# Comment it out if you have neither a fileserver nor an apt-proxy
+$elexisFileServer = 'http://172.25.1.61/fileserver/elexis'
 class { 'apt': proxy_host => "172.25.1.61", proxy_port => 3142, }
 
 # I am not sure, whether I still need them
