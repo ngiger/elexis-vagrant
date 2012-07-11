@@ -48,7 +48,7 @@ cp floatflt.sty ${floatStyName} && texhash
     creates => $floatStyName,
     cwd => $downloadDir,
     path => '/usr/bin:/bin',
-    require => [File[$cmdFile],
+    require => [File[$cmdFile, $destDir],
 		Exec[$destZip],
 		# Class['elexis::download_floatflt'],
 		Package['unzip', 'texlive', 'texinfo', 'texlive-lang-german', 'texlive-latex-extra']],
