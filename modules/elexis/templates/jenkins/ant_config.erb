@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>&lt;h2&gt;Branch <%= @branch %>&lt;/h2&gt;&#xd;
+von Elexis mit Hilfe von ant-Script BuildElexis/build.xml bauen.&#xd;
+&lt;br&gt;&#xd;
+&lt;h2&gt;Adapted for vagrant/Jenkins&lt;/h2&gt;</description>
+  <logRotator>
+    <daysToKeep>60</daysToKeep>
+    <numToKeep>5</numToKeep>
+    <artifactDaysToKeep>-1</artifactDaysToKeep>
+    <artifactNumToKeep>-1</artifactNumToKeep>
+  </logRotator>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>ChooseBranch</name>
+          <description>Branch/Tag zum Builden</description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string><%= @branch %></string>
+              <string><%= @branch %>.1</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="<%= @pollClass %>">
+    <source><%= @pollURL %></source>
+    <modules></modules>
+    <branch><%= @branch %></branch>
+    <clean>false</clean>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers class="vector">
+    <hudson.triggers.SCMTrigger>
+      <spec>10 * * * *
+</spec>
+    </hudson.triggers.SCMTrigger>
+  </triggers>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command># Create downloads dir one up, to minimizes fetch
+mkdir -p ../downloads
+mkdir -p ../lib 
+# First a step to bootstrap our main repository
+./gen_repo.rb --branch $ChooseBranch .
+echo &quot;,ch.marlovits.addressSearch,ch.marlovits.vornamen,ch.marlovits.plz,at.medevit.elexis.gdt.customed,medshare-licence-generator,de.ralfebert.rcputils,de.ralfebert.rcputils.feature&quot; &gt;skipPlugins.add
+./prepareJenkins.rb --branch $ChooseBranch
+cd elexis-base/BuildElexis
+# we generate both a 32 (for Jubula) and a 64 bit Elexis (for the developer)
+ant -Dos=linux.x86_64 clean linux.x86_64
+ant -Dos=linux linux
+ant -Dos=linux.x86_64 doc doc-plugins javadoc
+# ant -Dos=windows windows
+# ant -Dos=macosx macosx
+</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers>
+    <hudson.tasks.ArtifactArchiver>
+      <artifacts>deploy/**</artifacts>
+      <latestOnly>false</latestOnly>
+    </hudson.tasks.ArtifactArchiver>
+    <hudson.tasks.BuildTrigger>
+      <childProjects><%= @childProjects %></childProjects>
+      <threshold>
+        <name>SUCCESS</name>
+        <ordinal>0</ordinal>
+        <color>BLUE</color>
+      </threshold>
+    </hudson.tasks.BuildTrigger>
+    <com.michelin.cio.hudson.plugins.copytoslave.CopyToMasterNotifier>
+      <includes>deploy/*linux*.jar</includes>
+      <excludes></excludes>
+      <overrideDestinationFolder>false</overrideDestinationFolder>
+      <destinationFolder></destinationFolder>
+    </com.michelin.cio.hudson.plugins.copytoslave.CopyToMasterNotifier>
+    <hudson.tasks.Mailer>
+      <recipients></recipients>
+      <dontNotifyEveryUnstableBuild>true</dontNotifyEveryUnstableBuild>
+      <sendToIndividuals>false</sendToIndividuals>
+    </hudson.tasks.Mailer>
+  </publishers>
+  <buildWrappers>
+    <hudson.plugins.build__timeout.BuildTimeoutWrapper>
+      <timeoutMinutes>90</timeoutMinutes>
+      <failBuild>false</failBuild>
+      <writingDescription>false</writingDescription>
+      <timeoutPercentage>0</timeoutPercentage>
+      <timeoutType>absolute</timeoutType>
+      <timeoutMinutesElasticDefault>3</timeoutMinutesElasticDefault>
+    </hudson.plugins.build__timeout.BuildTimeoutWrapper>
+    <hudson.plugins.timestamper.TimestamperBuildWrapper/>
+  </buildWrappers>
+</project>

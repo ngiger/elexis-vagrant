@@ -5,7 +5,7 @@
 
 Vagrant::Config.run do |config|
   # Setup the box
-  config.vm.provision :puppet, :options => "--verbose --debug"
+  config.vm.provision :puppet, :options => "--verbose"
   config.vm.customize do |vm|
     vm.memory_size = 2048 # MB
   end

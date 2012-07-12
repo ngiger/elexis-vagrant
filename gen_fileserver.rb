@@ -3,8 +3,10 @@
 
 DstRoot        = '/opt/fileserver/elexis'
 IndigoSR2      = 'eclipse-rcp-indigo-SR2' # Needed for Elexis 2.1.7
-EclipseBaseURL = 'http://mirror.switch.ch/eclipse/technology/epp/downloads/release/indigo/SR2'
+IndigoBaseURL  = 'http://mirror.switch.ch/eclipse/technology/epp/downloads/release/indigo/SR2'
 MedelexisURL   = "http://ftp.medelexis.ch/downloads_opensource"
+JunoBaseURL    = 'http://mirror.switch.ch/eclipse/technology/epp/downloads/release/juno/R'
+Juno           = 'eclipse-rcp-juno'
 LibURL         = "#{MedelexisURL}/develop"
 JubulaURL      = "#{MedelexisURL}/jubula"
 BoxesURL       = "#{MedelexisURL}/boxes"
@@ -44,8 +46,9 @@ def getJubula(target, url, release, variants)
 end
 
 getFileFromBaseURL(DstRoot + '/latex', LatexURL, ['floatflt.zip'])
-getEclipse(DstRoot + '/eclipse', EclipseBaseURL, IndigoSR2)
-#getJubula('https://s3.amazonaws.com/jubula/','setup',  ['.exe', '.sh','.dmg'])
+getEclipse(DstRoot + '/eclipse', IndigoBaseURL, IndigoSR2)
+# getEclipse(DstRoot + '/eclipse', JunoBaseURL, Juno)
+# getJubula('https://s3.amazonaws.com/jubula/','setup',  ['.exe', '.sh','.dmg'])
 getJubula(DstRoot + '/jubula', JubulaURL, 'jubula_setup_5.2.00266',  ['.sh'])
 getFileFromBaseURL(DstRoot + '/lib', LibURL,
 		[

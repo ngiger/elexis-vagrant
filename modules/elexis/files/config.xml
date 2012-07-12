@@ -153,9 +153,10 @@ See &lt;a href=&quot;www.elexis.org&quot;&gt;Elexis-Home page&lt;/a&gt;.&#xd;
         <host>localhost</host>
         <port>22</port>
         <username>jenkins-slave</username>
-        <password>Lm58awJ98lU8xJiCpTuan8Oj+5VMmIcuTzTUIa10e+k=</password>
+        <password>dummy-as-we-log-in-using-id_rsa</password>
+        <privatekey>/var/lib/jenkins/.ssh/id_rsa</privatekey>
       </launcher>
-      <label></label>
+      <label>linux</label>
       <nodeProperties/>
     </slave>
   </slaves>

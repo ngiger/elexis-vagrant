@@ -54,3 +54,5 @@ cp floatflt.sty ${floatStyName} && texhash
 		Package['unzip', 'texlive', 'texinfo', 'texlive-lang-german', 'texlive-latex-extra']],
   }
 }
+
+class {['elexis::latex']: stage => last; } # I want the interesting things to load first!

@@ -14,6 +14,13 @@ notify { "site.pp for vagrant/elexis": }
 $elexisFileServer = 'http://172.25.1.61/fileserver/elexis'
 class { 'apt': proxy_host => "172.25.1.61", proxy_port => 3142, }
 
+# here is an example how you can override the location and user name for the jenkins
+# Uncomment the following 4 lines and adapt the location/user to your needs
+# class jenkins {
+#   $overrideJenkinsRoot = '/srv/jenkins/'
+#   $overrideJenkinsUser = 'tomcat6'
+# }
+
 # I am not sure, whether I still need them
 # I think, using puppetlabs-apt, make some lines obsolete (TODO: before 0.2)
 stage { 'first': before => Stage['second'] }
@@ -26,6 +33,13 @@ class apt_get_update {
       refreshonly => true,
     }
 }
+
+class {
+  ['ensureLibShadow']: stage => first;
+#  "main2":  stage => main;
+#  "last":  stage => last;
+}
+
 class {
       'apt_get_update': stage => second;
       'apache':   stage => last;
@@ -35,14 +49,17 @@ class {
 # Under Debian squeeze we must install rubygems as it was not yet part of the
 # basic ruby package
 include apt_get_update
-case $rubyversion {
-  '1.8.7' : {
-    notify { "ruby version $rubyversion needs rubygems": }
-    package { 'rubygems':
-      ensure => present,
+
+class ensureLibShadow{
+  case $rubyversion {
+    '1.8.7' : {
+      notify { "ruby version $rubyversion needs rubygems": }
+      package { ['rubygems','libshadow-ruby1.8']: # libshadow-ruby1.8 needed to manage user passwords!
+        ensure => present,
+      }
     }
+    default : { }
   }
-  default : { }
 }
 
 # etckeeper is a nice utility which will track (each day or for each apt-get run) the changes

@@ -120,9 +120,6 @@ Probably for Release 0.2
 
 * Fix gollum-servie not starting (squeeze installs gollum into /usr/bin, instead of /usr/local/bin) TODO: before 0.2
 * Support 32-bit and 64-bit Jubula GUI-tests in the Jenkins
-* Support various versions of Eclipse
-* Support installation of several Eclipse versions in parallel (e.g 3.6, 3.7, 3.8, 4.2). Nice for developpers
-* Use templates for the Jenkins (polling) projects
 
 Probably for Release 0.3
 * Add support for Elexis client testing under MacOSX
@@ -131,6 +128,7 @@ Probably for Release 0.3
 To be determined
 
 * Support PostgresSQL
+* Add LibreOffice to test elexis text plugins
 * Investigate, decide/document how different developpers/OC may refine/add files/requirements
 * Add proper support for a puppet master/dashboard
 * Adapt KDE to match some preferences (e.g. keyboard layout, tabs for the konsole application)
@@ -145,6 +143,7 @@ To be determined
 * Setup mail-delivery/archiving
 * Have at least 2 additional developpers using at least a part of the puppet stuff
 * Have at least 5 beta installation in medical practices
+* Specify specific version of jenkins and its plugins
 
 h3. Feature that might be in 1.0 or later
 

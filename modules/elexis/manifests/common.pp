@@ -1,8 +1,7 @@
 # Here we define a few packages which are common to all elexis instances
 # kate: replace-tabs on; indent-width 2; indent-mode cstyle; syntax ruby
 class elexis::common {
-  $jubulaRoot = '/var/lib/jenkins'
-  $downloadDir = "${jubulaRoot}/downloads"
+  $downloadDir = "/opt/downloads"
   $destZip = "${downloadDir}/floatflt.zip"
   $elexisFileServer = 'http://172.25.1.61/fileserver/elexis'
   case $elexisFileServer {
