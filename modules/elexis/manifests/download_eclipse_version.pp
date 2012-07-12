@@ -30,9 +30,11 @@ define elexis::download_eclipse_version(
 
   # default for the execs
   Exec {
-    cwd => $downloadDir,
-    path => '/usr/bin:/bin',
+    cwd     => $downloadDir,
+    path    => '/usr/bin:/bin',
     require => File[$downloadDir],
+    user    => $jenkins::jenkinsUser,
+    group   => $jenkins::jenkinsUser,
   }
 
   $win32 = "win32.zip"

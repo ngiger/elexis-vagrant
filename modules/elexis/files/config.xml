@@ -210,7 +210,7 @@ See &lt;a href=&quot;www.elexis.org&quot;&gt;Elexis-Home page&lt;/a&gt;.&#xd;
         <hudson.views.LastDurationColumn/>
         <hudson.views.BuildButtonColumn/>
       </columns>
-      <includeRegex>jubula.*</includeRegex>
+      <includeRegex>.*jubula.*</includeRegex>
     </listView>
     <listView>
       <owner class="hudson" reference="../../.."/>

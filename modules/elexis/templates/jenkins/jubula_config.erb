@@ -31,7 +31,7 @@
     <hudson.tasks.Shell>
       <command>rm -f *.jar
 env
-ln -s /opt/jenkins-slave/vagrant_runs_jenkins.rb .
+ln -s <%= @jobDir %>/vagrant_runs_jenkins.rb .
 ./vagrant_runs_jenkins.rb -i ${JENKINS_HOME}/jobs/<%= @install_jar_project %>/workspace/deploy/elexis-linux-install.jar
 </command>
     </hudson.tasks.Shell>

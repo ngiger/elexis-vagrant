@@ -12,7 +12,13 @@ define elexis::jenkins_elexis(
   include jenkins
   include elexis::common
   include elexis::jenkins_commons
+  include elexis::jenkins_slave
 
+  File{
+    owner   =>       $jenkins::jenkinsUser,
+    group   =>       $jenkins::jenkinsUser,
+  }
+  
   if (!defined(Elexis::Download_eclipse_version[$eclipseVersion])) {
     elexis::download_eclipse_version{$eclipseVersion:
       baseURL => "${elexis::common::elexisFileServer}/eclipse",
@@ -68,8 +74,9 @@ define elexis::jenkins_elexis(
   notify{ "schon Jubula jubulaJobName ist ${jubulaJobName} jobDir ${jobDir}": }
   file {"${jobDir}/vagrant_runs_jenkins.rb":
     ensure => present,
+    mode   => 0755,
     content => template("elexis/jenkins/vagrant_runs_jenkins.erb"),
-    require => Jenkins::Job[$jubulaJobName],
+    require => [User[$jenkins::jenkinsUser], Jenkins::Job[$jubulaJobName]],
   }
 
   # speed up building and save space linking to common for the ant task
@@ -81,6 +88,10 @@ define elexis::jenkins_elexis(
   file { "/var/lib/jenkins/jobs/${antJobName}/workspace/lib":
     ensure => link, # so make this a link
     target => "/var/lib/jenkins/jobs/${antJobName}/lib",
+    require => File["/var/lib/jenkins/jobs/${antJobName}/workspace"],
+  }
+  file { "/var/lib/jenkins/jobs/${antJobName}/workspace":
+    ensure => directory, # so make this a link
   }
 
 

@@ -11,7 +11,7 @@ class elexis::jenkins_slave  inherits elexis::common {
   $s_user = 'jenkins-slave' 
   $s_home = "/opt/$s_user"                # Home of jenkins-slave user
 
-  notify { "\nAdding jenkins_slave: user $s_user living at $s_home and $j_user / $j_home": }
+  # notify { "Adding jenkins_slave: user $s_user living at $s_home and $j_user / $j_home": }
   user {"${s_user}":
     ensure => present,
     groups => ['adm','dialout', 'cdrom', 'plugdev', 'netdev',],

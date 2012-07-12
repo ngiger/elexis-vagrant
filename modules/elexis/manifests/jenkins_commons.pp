@@ -11,7 +11,7 @@ class elexis::jenkins_commons inherits elexis::common {
   $neededUsers    = User[$jenkins::jenkinsUser,'elexis']
   $elexisBaseURL  = "http://http://hg.sourceforge.net/hgweb/elexis"
 
-  file { [$jobsDir, $downloadDir, "${jenkins::jenkinsRoot}/.ssh"]:
+  file { [$jobsDir, $downloadDir]:
     owner => 'jenkins',
     mode => '644',
     ensure => directory, # so make this a directory
@@ -24,6 +24,7 @@ class elexis::jenkins_commons inherits elexis::common {
   include jenkins::repo::debian
   include apt
   include jenkins::service
+  include elexis::jubula_elexis
   jenkins::plugin {
     [ "mercurial", "subversion", "git", "ant", "buckminster", "build-timeout", "cvs", "disk-usage", "javadoc",
       "jobConfigHistory", "copy-to-slave", "locks-and-latches", "ssh-slaves", "ruby", "timestamper","xvnc" ]:
