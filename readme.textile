@@ -8,7 +8,7 @@ Preparing the 0.1 release took me a few days of work and
 confronted me (again) with all the small, pesky details I had to overcome to run my Jenkins CI under
 http://ngiger.dyndns.org/jenkins/.
 
-http://www.jedi.be/blog/2011/03/28/using-vagrant-as-a-team/
+Some ideas/concept are inspired by reading http://www.jedi.be/blog/2011/03/28/using-vagrant-as-a-team/
 
 h2. Requirements
 * Sufficientyl powerfull HW (e.g needed for this task)
@@ -41,10 +41,11 @@ h2. Bring-up of a TestSystem
 * @vagrant up@
   Now you have to wait a long time (30 minutes with caches filled! May be one hour or more)
 ** If you want to debug use @VAGRANT_LOG=DEBUG vagrant up@
-* Point your browser at "http:://localhost:48080":http:://localhost:48080 and you should be able to see a running Jenkins
-  [[images/vagrant_1.png]](running Jenkins)! Security has been disabled, therefore you may change everything to you liking.
-* The jenkins will download the Elexis 2.1.7 branch, build it for several OS
-* Then it will launch the Jubula GUI-Tests (takes 7 minutes on my big AMD64 machine, more than 14 minutes as VM (1 CPU/256 MB RAM) on my notebook. If you are happy (and nobody pushed a breaking commit into the 2.1.7 branch) you should end up with 4 projects showing a blue sky under a bright sun. Like [[images/vagrant_3.png]]
+* Point your browser at "http://localhost:48080":http://localhost:48080 and you should be able to see a 
+  "running Jenkins":http:images/vagrant_1.png! Another hour or so later, your jenkins jobs should have completed and every project should hava 
+* Security has been disabled, therefore you may change everything to you liking.
+* The jenkins will download the Elexis "2.1.6":http:images/vagrant_2.png branch, build it for several OS
+* Then it will launch the Jubula GUI-Tests (takes 7 minutes on my big AMD64 machine, more than 14 minutes as VM (1 CPU/256 MB RAM) on my notebook. If you are happy (and nobody pushed a breaking commit into the 2.1.7 branch) you should end up with 4 projects showing a blue sky under a "bright sun":http:images/vagrant_3.png.
 
 
 h2. Troubleshooting. Instructions above didn't work. Why?
@@ -59,15 +60,11 @@ h2. What you can do with your fancy new virtual machine
   in the file @modules/apache/manifests/init.pp@
 * Log-in as vagrant (password vagrant) and use the Eclipse (with Mercurial, Jinto, copyright plugins) using the GUI
 * Login via ssh @ssh vagrant@10.11.12.43@ or even simpler with @vagrant ssh@. In the second case you don't even have to give the password
-* Play with the jenkins. You may login as user elexis with the password elexisTest. The changes you make will not be overriden.
+* Play with the jenkins. Security has been disabled. Don't use this setup on a public accessible server! The changes you make will not be overriden.
 * Use the mysql client/server, eg. on the command line @mysql -u elexis --password=elexisTest elexis@. You should have two databases:
 ** elexis
 ** jubula_vagrant
 * Login via x2goclient IP 10.11.12.43, user vagrant/vagrant
-
-on the command line execute: @vagrant up@
-this will take a few minutes. Afterwards point your browser at "http://localhost:8880/" and you should
-see something like @Hello from the vagrant VM running a MySQL-server for Elexis@¨
 
 h1. Howto improve/extend the existing puppet receipes
 
@@ -157,6 +154,6 @@ h3. Ideas for cleanup
 
 h1. History
 
-* Release 0.1: July 8, 2012. Runs Jubula integration tests with Elexis 2.1.6 on a Debian Squeeze 32-bit machine
+* Release 0.1: July 15, 2012. Runs Jubula integration tests with Elexis 2.1.6 on a Debian Squeeze 32-bit machine
 
 Ideas/comments are welcome. Use the "elexis-develop":http://sourceforge.net/mailarchive/forum.php?forum_name=elexis-develop mailing list or contact the author directly via niklaus.giger@member.fsf.org
