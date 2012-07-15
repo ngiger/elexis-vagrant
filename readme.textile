@@ -4,7 +4,7 @@ Bootstrapping and testing Elexis took me (Niklaus) many hours when I started wor
 Therefore I was always looking for clever shortcuts to create a simple, reproducible build environment.
 With this project I am coming much closer! 
 
-Preparing the 0.1 release took me about 7 days of work and
+Preparing the 0.1 release took me a few days of work and
 confronted me (again) with all the small, pesky details I had to overcome to run my Jenkins CI under
 http://ngiger.dyndns.org/jenkins/.
 
@@ -42,7 +42,7 @@ h2. Bring-up of a TestSystem
   Now you have to wait a long time (30 minutes with caches filled! May be one hour or more)
 ** If you want to debug use @VAGRANT_LOG=DEBUG vagrant up@
 * Point your browser at "http:://localhost:48080":http:://localhost:48080 and you should be able to see a running Jenkins
-  [[images/vagrant_1.png]](running Jenkins)!
+  [[images/vagrant_1.png]](running Jenkins)! Security has been disabled, therefore you may change everything to you liking.
 * The jenkins will download the Elexis 2.1.7 branch, build it for several OS
 * Then it will launch the Jubula GUI-Tests (takes 7 minutes on my big AMD64 machine, more than 14 minutes as VM (1 CPU/256 MB RAM) on my notebook. If you are happy (and nobody pushed a breaking commit into the 2.1.7 branch) you should end up with 4 projects showing a blue sky under a bright sun. Like [[images/vagrant_3.png]]
 
@@ -59,7 +59,7 @@ h2. What you can do with your fancy new virtual machine
   in the file @modules/apache/manifests/init.pp@
 * Log-in as vagrant (password vagrant) and use the Eclipse (with Mercurial, Jinto, copyright plugins) using the GUI
 * Login via ssh @ssh vagrant@10.11.12.43@ or even simpler with @vagrant ssh@. In the second case you don't even have to give the password
-* Play with the jenkins. You may login as user elexis with the password elexisTest
+* Play with the jenkins. You may login as user elexis with the password elexisTest. The changes you make will not be overriden.
 * Use the mysql client/server, eg. on the command line @mysql -u elexis --password=elexisTest elexis@. You should have two databases:
 ** elexis
 ** jubula_vagrant
@@ -133,7 +133,9 @@ To be determined
 * Add proper support for a puppet master/dashboard
 * Adapt KDE to match some preferences (e.g. keyboard layout, tabs for the konsole application)
 * Support several javas (e.g. Sun-Java-6, OpenJDK-6, OpenJDK-7)
-* backup and anonymiser scripts/setup for MySQL/PostgresSQL
+* backup and anonymiser scripts/setup for MySQL/PostgresSQL, e.g. http://www.slideshare.net/roidelapluie/postgresql-90-ha-at-rmll-2012
+  git://github.com/roidelapluie/postgres9-demo-vagrant.git
+  https://github.com/KrisBuytaert/puppet-postgres
 * Support at least one wiki installation, gollum,mediawiki, "pmwiki":http://www.pmwiki.org/
   Evtl. convert "pmwiki_mediawiki":http://sourceforge.net/projects/pm2media/
 * install elexis versions correctly, via apt or Elexis-installer

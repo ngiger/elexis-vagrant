@@ -9,7 +9,7 @@ class elexis::jenkins_commons inherits elexis::common {
   $downloadDir    =  "${jenkins::jenkinsRoot}/downloads"
   $jobsDir        =  "${jenkins::jenkinsRoot}/jobs"
   $neededUsers    = User[$jenkins::jenkinsUser,'elexis']
-  $elexisBaseURL  = "http://http://hg.sourceforge.net/hgweb/elexis"
+  $elexisBaseURL  = "http://hg.sourceforge.net/hgweb/elexis"
 
   file { [$jobsDir, $downloadDir]:
     owner => 'jenkins',
@@ -25,33 +25,40 @@ class elexis::jenkins_commons inherits elexis::common {
   include apt
   include jenkins::service
   include elexis::jubula_elexis
-  jenkins::plugin {
-    [ "mercurial", "subversion", "git", "ant", "buckminster", "build-timeout", "cvs", "disk-usage", "javadoc",
-      "jobConfigHistory", "copy-to-slave", "locks-and-latches", "ssh-slaves", "ruby", "timestamper","xvnc" ]:
-  }
+#  include elexis::postgresql_server # we want to be able to test with postgresql, too
 
+  $pluginsForElexis = ["mercurial", "subversion", "git", "ant", "buckminster", "build-timeout", "cvs", "disk-usage", "javadoc", "jobConfigHistory", "copy-to-slave", "locks-and-latches", "ssh-slaves", "ruby", "timestamper","xvnc" ] 
+
+  jenkins::plugin { $pluginsForElexis: }
+  
   # specify some default values for all files to be created,
   File {
     owner => 'jenkins',
     mode => '644',
     notify => Service['jenkins'],
-    require => [User['jenkins']]
+    require => [User['jenkins']],
   }
   
-  file { [ '/var/lib/jenkins/users', '/var/lib/jenkins/users/elexis']:
+  file { [ "${jenkins::jenkinsRoot}/users", "${jenkins::jenkinsRoot}/users/elexis"]:
     ensure => directory, # so make this a directory
   }
 
-  file { '/var/lib/jenkins/users/elexis/config.xml':
+  file { "${jenkins::jenkinsRoot}/users/elexis/config.xml":
     ensure => present,
     source => 'puppet:///modules/elexis/users/elexis.xml',
+    replace => false,  # If the user changes the setup, don't overwrite it
   }
 
-  file { '/var/lib/jenkins/config.xml':
+  file { "${jenkins::jenkinsRoot}/config.xml":
     ensure => present,
     source => 'puppet:///modules/elexis/config.xml',
+    replace => false,  # If the user changes the setup, don't overwrite it
   }
+  # Our config.xml must be written, before we install jenkins, as the jenkins package
+  # will install it's own version.
+  Package['jenkins'] <- File["${jenkins::jenkinsRoot}/config.xml"]
 
   include elexis::latex # needed to create Elexis documentation in the ant jobs
-  
+  Elexis::Latex { notify => Service['jenkins'] }
+
 }

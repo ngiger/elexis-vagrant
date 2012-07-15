@@ -4,110 +4,13 @@
   <version>1.471</version>
   <numExecutors>2</numExecutors>
   <mode>NORMAL</mode>
-  <useSecurity>true</useSecurity>
-  <authorizationStrategy class="hudson.security.GlobalMatrixAuthorizationStrategy">
-    <permission>hudson.model.Computer.Configure:elexis</permission>
-    <permission>hudson.model.Computer.Configure:medevit</permission>
-    <permission>hudson.model.Computer.Configure:niklaus</permission>
-    <permission>hudson.model.Computer.Configure:rgw-ch</permission>
-    <permission>hudson.model.Computer.Configure:thomas</permission>
-    <permission>hudson.model.Computer.Connect:elexis</permission>
-    <permission>hudson.model.Computer.Create:elexis</permission>
-    <permission>hudson.model.Computer.Create:medevit</permission>
-    <permission>hudson.model.Computer.Create:thomas</permission>
-    <permission>hudson.model.Computer.Delete:elexis</permission>
-    <permission>hudson.model.Computer.Delete:medevit</permission>
-    <permission>hudson.model.Computer.Delete:niklaus</permission>
-    <permission>hudson.model.Computer.Delete:rgw-ch</permission>
-    <permission>hudson.model.Computer.Delete:thomas</permission>
-    <permission>hudson.model.Computer.Disconnect:elexis</permission>
-    <permission>hudson.model.Hudson.Administer:elexis</permission>
-    <permission>hudson.model.Hudson.Administer:niklaus</permission>
-    <permission>hudson.model.Hudson.ConfigureUpdateCenter:elexis</permission>
-    <permission>hudson.model.Hudson.Read:anonymous</permission>
-    <permission>hudson.model.Hudson.Read:elexis</permission>
-    <permission>hudson.model.Hudson.Read:medevit</permission>
-    <permission>hudson.model.Hudson.Read:niklaus</permission>
-    <permission>hudson.model.Hudson.Read:rgw-ch</permission>
-    <permission>hudson.model.Hudson.Read:thomas</permission>
-    <permission>hudson.model.Hudson.RunScripts:elexis</permission>
-    <permission>hudson.model.Hudson.UploadPlugins:elexis</permission>
-    <permission>hudson.model.Item.Build:elexis</permission>
-    <permission>hudson.model.Item.Build:medevit</permission>
-    <permission>hudson.model.Item.Build:niklaus</permission>
-    <permission>hudson.model.Item.Build:rgw-ch</permission>
-    <permission>hudson.model.Item.Build:thomas</permission>
-    <permission>hudson.model.Item.Cancel:elexis</permission>
-    <permission>hudson.model.Item.Configure:elexis</permission>
-    <permission>hudson.model.Item.Configure:medevit</permission>
-    <permission>hudson.model.Item.Configure:niklaus</permission>
-    <permission>hudson.model.Item.Configure:rgw-ch</permission>
-    <permission>hudson.model.Item.Configure:thomas</permission>
-    <permission>hudson.model.Item.Create:elexis</permission>
-    <permission>hudson.model.Item.Create:medevit</permission>
-    <permission>hudson.model.Item.Create:niklaus</permission>
-    <permission>hudson.model.Item.Create:rgw-ch</permission>
-    <permission>hudson.model.Item.Create:thomas</permission>
-    <permission>hudson.model.Item.Delete:elexis</permission>
-    <permission>hudson.model.Item.Delete:medevit</permission>
-    <permission>hudson.model.Item.Delete:niklaus</permission>
-    <permission>hudson.model.Item.Delete:rgw-ch</permission>
-    <permission>hudson.model.Item.Delete:thomas</permission>
-    <permission>hudson.model.Item.Discover:elexis</permission>
-    <permission>hudson.model.Item.Read:anonymous</permission>
-    <permission>hudson.model.Item.Read:elexis</permission>
-    <permission>hudson.model.Item.Read:medevit</permission>
-    <permission>hudson.model.Item.Read:niklaus</permission>
-    <permission>hudson.model.Item.Read:rgw-ch</permission>
-    <permission>hudson.model.Item.Read:thomas</permission>
-    <permission>hudson.model.Item.Workspace:anonymous</permission>
-    <permission>hudson.model.Item.Workspace:elexis</permission>
-    <permission>hudson.model.Item.Workspace:medevit</permission>
-    <permission>hudson.model.Item.Workspace:niklaus</permission>
-    <permission>hudson.model.Item.Workspace:rgw-ch</permission>
-    <permission>hudson.model.Item.Workspace:thomas</permission>
-    <permission>hudson.model.Run.Delete:elexis</permission>
-    <permission>hudson.model.Run.Delete:medevit</permission>
-    <permission>hudson.model.Run.Delete:niklaus</permission>
-    <permission>hudson.model.Run.Delete:rgw-ch</permission>
-    <permission>hudson.model.Run.Delete:thomas</permission>
-    <permission>hudson.model.Run.Update:elexis</permission>
-    <permission>hudson.model.Run.Update:medevit</permission>
-    <permission>hudson.model.Run.Update:niklaus</permission>
-    <permission>hudson.model.Run.Update:rgw-ch</permission>
-    <permission>hudson.model.Run.Update:thomas</permission>
-    <permission>hudson.model.View.Configure:elexis</permission>
-    <permission>hudson.model.View.Configure:medevit</permission>
-    <permission>hudson.model.View.Configure:niklaus</permission>
-    <permission>hudson.model.View.Configure:rgw-ch</permission>
-    <permission>hudson.model.View.Configure:thomas</permission>
-    <permission>hudson.model.View.Create:elexis</permission>
-    <permission>hudson.model.View.Create:medevit</permission>
-    <permission>hudson.model.View.Create:niklaus</permission>
-    <permission>hudson.model.View.Create:rgw-ch</permission>
-    <permission>hudson.model.View.Create:thomas</permission>
-    <permission>hudson.model.View.Delete:elexis</permission>
-    <permission>hudson.model.View.Delete:medevit</permission>
-    <permission>hudson.model.View.Delete:niklaus</permission>
-    <permission>hudson.model.View.Delete:rgw-ch</permission>
-    <permission>hudson.model.View.Delete:thomas</permission>
-    <permission>hudson.model.View.Read:elexis</permission>
-    <permission>hudson.scm.SCM.Tag:elexis</permission>
-    <permission>hudson.scm.SCM.Tag:medevit</permission>
-    <permission>hudson.scm.SCM.Tag:niklaus</permission>
-    <permission>hudson.scm.SCM.Tag:rgw-ch</permission>
-    <permission>hudson.scm.SCM.Tag:thomas</permission>
-  </authorizationStrategy>
-  <securityRealm class="hudson.security.HudsonPrivateSecurityRealm">
-    <disableSignup>true</disableSignup>
-    <enableCaptcha>false</enableCaptcha>
-  </securityRealm>
+  <useSecurity>false</useSecurity>
   <projectNamingStrategy class="jenkins.model.ProjectNamingStrategy$DefaultProjectNamingStrategy"/>
   <workspaceDir>${ITEM_ROOTDIR}/workspace</workspaceDir>
   <buildsDir>${ITEM_ROOTDIR}/builds</buildsDir>
   <systemMessage>&lt;h2&gt;Continuos Integration of elexis&lt;/h2&gt;&#xd;
 &#xd;
-See &lt;a href=&quot;www.elexis.org&quot;&gt;Elexis-Home page&lt;/a&gt;.&#xd;
+See &lt;a href=&quot;http://www.elexis.ch&quot;&gt;Elexis-Home page&lt;/a&gt;.&#xd;
 &#xd;
 &lt;br&gt;Jenkins setup via Vagrant/Puppet.&#xd;
 &lt;br&gt;For details look at the &lt;a href=&quot;https://github.com/ngiger/elexis-vagrant&quot;&gt;elexis-vagrant&lt;/a&gt; github project.&#xd;

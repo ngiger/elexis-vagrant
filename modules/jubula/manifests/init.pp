@@ -18,7 +18,7 @@ class jubula($jubulaURL = 'http://s3.amazonaws.com/jubula/setup.sh',
   $jubulaEXE  = "${destDir}/jubula/jubula"
   
   if !defined(Package['wget']) { package{'wget': ensure => present, } }
-  notify{"downloads into err: $downloads for $setupSh": }
+#  notify{"jubula: download $downloads for $setupSh": }
   if !defined(File[$downloads]) {
     file{["$downloads"]:
       ensure => directory,

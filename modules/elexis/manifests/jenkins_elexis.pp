@@ -4,8 +4,8 @@
 # TODO: 32-bit java, eg. sudo apt-get install openjdk-6-jdk:i386 openjdk-6-jre-headless:i386
 
 define elexis::jenkins_elexis(
-  $branch,
-  $baseURL = $elexisBaseURL,
+  $branch  = $title,
+  $baseURL = $elexis::jenkins_commons::elexisBaseURL,
   $archieURL = "http://archie.googlecode.com/svn/archie/ch.unibe.iam.scg.archie/branches/elexis-2.1",
   $eclipseVersion = 'eclipse-rcp-indigo-SR2',
 ) {
@@ -25,8 +25,14 @@ define elexis::jenkins_elexis(
     }
     elexis::eclipse_plugins{$eclipseVersion:
     }
+    notify { "jenkins_elexis baseURL ist ${baseURL}": }
   }
-
+  
+  Jenkins::Job {                                   # Default values for Jenkins jobs here
+    notify  => Service['jenkins'],                 # Restart jenkins after adding jobs
+    require => Jenkins::Plugin[$elexis::jenkins_commons::pluginsForElexis], # The jobs need to have all plugins-installed
+  }
+  
   jenkins::job{"elexis-${branch}-poll-base":
       branch    	   => $branch,
       pollURL        => "${baseURL}/elexis-base",
@@ -52,6 +58,7 @@ define elexis::jenkins_elexis(
     }
 
   $antJobName = "elexis-${branch}-ant"
+  $antJobDir      = "${jenkins::jenkinsRoot}/jobs/${antJobName}"
   jenkins::job{$antJobName:
       branch         => $branch,
       pollURL        => 'https://bitbucket.org/ngiger/elexis-bootstrap',
@@ -60,8 +67,10 @@ define elexis::jenkins_elexis(
       childProjects  => "elexis-${branch}-jubula",
     }
 
-  $install_jar_project = "elexis-${branch}-ant"
-  $jubulaJobName = "elexis-${branch}-jubula"
+  $skipPlugins         = ',ch.marlovits.addressSearch,ch.marlovits.vornamen,ch.marlovits.plz,at.medevit.elexis.gdt.customed,medshare-licence-generator,de.ralfebert.rcputils,de.ralfebert.rcputils.feature'
+  $install_jar_project = $antJobName  # needed for jubula_config.erb
+  $jubulaJobName       = "elexis-${branch}-jubula"
+  $jubulaJobDir        = "${jenkins::jenkinsRoot}/jobs/${jubulaJobName}"
   jenkins::job{"$jubulaJobName":
       branch         => 'jubula-1.1',
       pollURL        => 'https://bitbucket.org/ngiger/jubula-elexis',
@@ -70,9 +79,8 @@ define elexis::jenkins_elexis(
     }
 
   # To be able to run jubula, we need the patched version of run_jenkins.rb
-  $jobDir      = "${jenkins::jenkinsRoot}/jobs/${jubulaJobName}"
-  notify{ "schon Jubula jubulaJobName ist ${jubulaJobName} jobDir ${jobDir}": }
-  file {"${jobDir}/vagrant_runs_jenkins.rb":
+  notify{ "schon Jubula jubulaJobName ist ${jubulaJobName} jubulaJobDir ${jubulaJobDir}": }
+  file {"${jubulaJobDir}/vagrant_runs_jenkins.rb":
     ensure => present,
     mode   => 0755,
     content => template("elexis/jenkins/vagrant_runs_jenkins.erb"),
@@ -80,19 +88,9 @@ define elexis::jenkins_elexis(
   }
 
   # speed up building and save space linking to common for the ant task
-  file { "/var/lib/jenkins/jobs/${antJobName}/downloads":
+  file { "${antJobDir}/downloads":
     ensure => link, # so make this a link
     target => "${jenkins::jenkinsRoot}/downloads",
   }
-
-  file { "/var/lib/jenkins/jobs/${antJobName}/workspace/lib":
-    ensure => link, # so make this a link
-    target => "/var/lib/jenkins/jobs/${antJobName}/lib",
-    require => File["/var/lib/jenkins/jobs/${antJobName}/workspace"],
-  }
-  file { "/var/lib/jenkins/jobs/${antJobName}/workspace":
-    ensure => directory, # so make this a link
-  }
-
 
 }

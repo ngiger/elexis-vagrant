@@ -4,7 +4,7 @@
   <description>&lt;h2&gt;Branch <%= @branch %>&lt;/h2&gt;&#xd;
 von Elexis mit Hilfe von ant-Script BuildElexis/build.xml bauen.&#xd;
 &lt;br&gt;&#xd;
-&lt;h2&gt;Adapted for vagrant/Jenkins&lt;/h2&gt;</description>
+&lt;h2&gt;Adapted for vagrant/Jenkins (Niklaus Neu)&lt;/h2&gt;</description>
   <logRotator>
     <daysToKeep>60</daysToKeep>
     <numToKeep>5</numToKeep>
@@ -31,8 +31,12 @@ von Elexis mit Hilfe von ant-Script BuildElexis/build.xml bauen.&#xd;
   <scm class="<%= @pollClass %>">
     <source><%= @pollURL %></source>
     <modules></modules>
-    <branch><%= @branch %></branch>
+    <branch>$ChooseBranch</branch>
     <clean>false</clean>
+    <forest>false</forest>
+    <browser class="hudson.plugins.mercurial.browser.HgWeb">
+      <url>https://bitbucket.org/ngiger/elexis-bootstrap/</url>
+    </browser>
   </scm>
   <canRoam>true</canRoam>
   <disabled>false</disabled>
@@ -52,7 +56,7 @@ mkdir -p ../downloads
 mkdir -p ../lib 
 # First a step to bootstrap our main repository
 ./gen_repo.rb --branch $ChooseBranch .
-echo &quot;,ch.marlovits.addressSearch,ch.marlovits.vornamen,ch.marlovits.plz,at.medevit.elexis.gdt.customed,medshare-licence-generator,de.ralfebert.rcputils,de.ralfebert.rcputils.feature&quot; &gt;skipPlugins.add
+  echo &quot;<%= @skipPlugins %>&quot; &gt;skipPlugins.add
 ./prepareJenkins.rb --branch $ChooseBranch
 cd elexis-base/BuildElexis
 # we generate both a 32 (for Jubula) and a 64 bit Elexis (for the developer)
