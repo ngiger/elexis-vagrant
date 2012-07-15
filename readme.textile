@@ -42,10 +42,10 @@ h2. Bring-up of a TestSystem
   Now you have to wait a long time (30 minutes with caches filled! May be one hour or more)
 ** If you want to debug use @VAGRANT_LOG=DEBUG vagrant up@
 * Point your browser at "http://localhost:48080":http://localhost:48080 and you should be able to see a 
-  "running Jenkins":http:images/vagrant_1.png! Another hour or so later, your jenkins jobs should have completed and every project should hava 
+  "running Jenkins":https://github.com/ngiger/elexis-vagrant/raw/master/images/vagrant_1.png! Another hour or so later, your jenkins jobs should have completed and every project should hava 
 * Security has been disabled, therefore you may change everything to you liking.
-* The jenkins will download the Elexis "2.1.6":http:images/vagrant_2.png branch, build it for several OS
-* Then it will launch the Jubula GUI-Tests (takes 7 minutes on my big AMD64 machine, more than 14 minutes as VM (1 CPU/256 MB RAM) on my notebook. If you are happy (and nobody pushed a breaking commit into the 2.1.7 branch) you should end up with 4 projects showing a blue sky under a "bright sun":http:images/vagrant_3.png.
+* The jenkins will download the Elexis "2.1.6":https://github.com/ngiger/elexis-vagrant/raw/master/images/vagrant_2.png branch, build it for several OS
+* Then it will launch the Jubula GUI-Tests (takes 7 minutes on my big AMD64 machine, more than 14 minutes as VM (1 CPU/256 MB RAM) on my notebook. If you are happy (and nobody pushed a breaking commit into the 2.1.7 branch) you should end up with 4 projects showing a blue sky under a "bright sun":https://github.com/ngiger/elexis-vagrant/raw/master/images/vagrant_3.png.
 
 
 h2. Troubleshooting. Instructions above didn't work. Why?
