@@ -3,7 +3,7 @@
 class elexis::common {
   $downloadDir = "/opt/downloads"
   $destZip = "${downloadDir}/floatflt.zip"
-  $elexisFileServer = 'http://172.25.1.61/fileserver/elexis'
+  $elexisFileServer = 'http://172.25.1.77/fileserver/elexis'
   case $elexisFileServer {
         /^http|^ftp/:  { $downloadURL = $elexisFileServer }
         default: { $downloadURL = 'http://ftp.medelexis.ch/downloads_opensource'}

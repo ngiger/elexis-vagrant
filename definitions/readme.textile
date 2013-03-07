@@ -35,6 +35,9 @@ Then call (in the top level directory of elexis-vagrant)
 bc..
 git clone https://github.com/jedi4ever/veewee
 cd vewee
+sudo apt-get install virtualbox-ose ruby
+gem install vagrant bundler
+bundle install
 ln -s ../definitions/Elexis-Squeeze-i386 definitions
 # Change the definitions to you liking
 vagrant basebox build 'Elexis-Squeeze-i386'

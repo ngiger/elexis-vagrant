@@ -5,28 +5,20 @@
 # second: Call apt-get update
 # main:  Install packages, gems, configure files, etc
 # last:  Start services (e.g. apache, gollum, jenkins, x2go)
-notify { "site.pp for vagrant/elexis": }
-
-# adapt the next two lines to speed up drastically
-# getting the boxes up
-# Use gen_fileserver.rb to populate the fileserver
-# Comment it out if you have neither a fileserver nor an apt-proxy
-$elexisFileServer = 'http://172.25.1.61/fileserver/elexis'
-class { 'apt': proxy_host => "172.25.1.61", proxy_port => 3142, }
-
-# here is an example how you can override the location and user name for the jenkins
-# Uncomment the following 4 lines and adapt the location/user to your needs
-# class jenkins {
-#   $overrideJenkinsRoot = '/srv/jenkins/'
-#   $overrideJenkinsUser = 'tomcat6'
-# }
 
 # I am not sure, whether I still need them
 # I think, using puppetlabs-apt, make some lines obsolete (TODO: before 0.2)
 stage { 'first': before => Stage['second'] }
 stage { 'second': before => Stage['main'] }
 stage { 'last': require => Stage['main'] }
+class { 'apt': proxy_host => "172.25.1.77", proxy_port => 3142}
+
+group { "puppet": ensure => "present", }
+
 class apt_get_update {
+    file{"/etc/apt/apt.conf":
+        content => 'Acquire::http::Proxy "http://172.25.1.77:3142"  ;;'
+    }
     exec{'apt_get_update':
       command => "apt-get update",
       path    => "/usr/bin:/usr/sbin:/bin:/sbin",
@@ -41,10 +33,9 @@ class {
 }
 
 class {
-      'apt_get_update': stage => second;
-      'apache':   stage => last;
+      'apt_get_update': stage => first;
+#      'apache':   stage => last;
 }
-# obsolete until here?
 
 # Under Debian squeeze we must install rubygems as it was not yet part of the
 # basic ruby package
@@ -65,21 +56,57 @@ class ensureLibShadow{
 # etckeeper is a nice utility which will track (each day or for each apt-get run) the changes
 # in the /etc directory. Handy to know why suddenly a package does not work anymore!
 include etckeeper # will define package git, too
-package{  ['vim', 'vim-nox', 'vim-puppet', 'dlocate', 'mlocate', 'htop', 'curl', 'bzr', 'unzip']:
+package{  ['dlocate', 'mlocate', 'htop', 'curl', 'bzr', 'unzip']:
   ensure => present,
 }
 
 # The author's personal choice
-exec {'set_vim_as_default_editor':
-  command => 'update-alternatives --set editor /usr/bin/vim.nox',
-  require => Package['vim-nox'],
-  path    => "/usr/bin:/usr/sbin:/bin:/sbin",
+if hiera('editor:default', false) {
+  $editor_default = hiera('editor:default')
+  notify { "The author's personal choice is ${editor_default}": }
+  
+  package{ [ hiera('editor:package') ]:
+    ensure => present,
+  }
+  
+  exec {'set_default_editor':
+    command => "update-alternatives --set editor ${editor_default}",
+    require => Package[hiera('editor:package')],
+    path    => "/usr/bin:/usr/sbin:/bin:/sbin",
+  }  
+}
+else {
+  notify { "no default editor specified": }
 }
 
+# Some common stuff for the admin
+if hiera('etckeeper:included', false) { include etckeeper }
 
-# this allows you to experiment with different combination/usages 
-import "nodes/*.pp"
+# User setup. Choose between KDE and (gnome, unity: both not yet supported)
+if hiera('kde:included', false)       { include kde }
+if hiera('sshd:included', false)      { include sshd }
+if hiera('x2go:included', false)      { include x2go }
 
-node default {
-    notify { "site.pp node default": }
-}
+# stuff for the server
+if hiera('elexis::praxis_wiki:included', false) { include elexis::praxis_wiki }
+
+# usually only on database is included
+if hiera('elexis:postgres:included', false)  { include elexis::postgresql_server }
+if hiera('elexis:mysql:included',    false)  { include elexis::mysql_server }
+# TODO: add backup postgres-server
+
+# development stuff
+if hiera('eclipse:included', false)   { include eclipse }
+if hiera('buildr:included', false)    { include buildr }
+if hiera('jubula:included', false)    { include jubula }
+# TODO: add a possibility to add some more private stuff
+include hiera('private_modules', [])  
+
+# elexis::server
+# elexis::jenkins_2_1_7
+# elexis::praxis_wiki
+# x2go::server and x2go::client
+# elexis::client
+# elexis::app via http://ngiger.dyndns.org/jenkins/job/elexis-2.1.7-Buildr/lastSuccessfulBuild/artifact/deploy/elexis-installer.jar 
+# medelexis::app via http://www.medelexis.ch/dl21.php?file=medelexis-linux
+
