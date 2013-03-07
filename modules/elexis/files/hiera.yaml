@@ -1,0 +1,11 @@
+---
+:backends: yaml
+:yaml:
+  :datadir: /opt/src/elexis-vagrant
+:hierarchy:
+  - %{::clientcert}
+  - %{::environment}
+  - my_private_hiera/config
+  - hiera/common
+:logger: console
+
