@@ -4,13 +4,16 @@ class elexis::praxis_wiki inherits elexis::common {
   $initFile =  '/etc/init.d/gollum'
   $vcsRoot = '/home/elexis/praxis_wiki'
 
-  package { ['make', 'libxslt-dev', 'libxml2-dev']:
+  package { ['make', 'libxslt*-dev', 'libxml2-dev']:
     ensure => installed,
   }
-  package{  ['gollum']:
+  package{  ['gollum', # markdowns is currently well supported, including live editing
+    'RedCloth',  # to support textile, but no live editing at the moment
+    'wikicloth'  # to support mediawiki, but no live editing at the moment
+    ]:
     ensure => present,
     provider => gem,
-    require => Package['make', 'libxslt-dev', 'libxml2-dev'],
+    require => Package['make', 'libxslt*-dev', 'libxml2-dev'],
   }
 
 # gollum TODO: set default to .textile, see DefaultOptions  in lib/gollum/frontend/public/javascript/editor/gollum.editor.js

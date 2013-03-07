@@ -2,7 +2,6 @@
 # Copyright (c) Niklaus Giger, <niklaus.giger@member.fsf.org>
 # License: GPLv2
 # Boxes are stored under ~/.vagrant.d/boxes/
-
 Vagrant::Config.run do |config|
   # Setup the box
   config.vm.provision :puppet, :options => "--verbose"
@@ -14,10 +13,24 @@ Vagrant::Config.run do |config|
     puppet.manifest_file = "site.pp"
     puppet.module_path = "modules"
   end
-  config.vm.define :elexisDev do |server|
-    server.vm.network :hostonly, "10.11.12.43"
+  
+  config.vm.define :server do |server|
+    server.vm.network :hostonly, "192.168.50.10"
+    server.vm.box     = "Elexis-wheezy-amd64"
+    server.vm.host_name = "server.#{`hostname -d`.chomp}"
+    server.vm.box_url = "/opt/fileserver/elexis/boxes/Elexis-wheezy-amd64.box"
+    config.vm.boot_mode = :gui # :gui or :headless (default)
+    server.vm.forward_port   22, 10022    # ssh
+    server.vm.forward_port   80, 10080    # Apache
+    server.vm.forward_port 3306, 13306    # MySQL
+    server.vm.forward_port 4567, 14567    # Gollum (elexis-admin Wiki)
+    server.vm.forward_port 8080, 18080    # Jenkins
+  end
+  
+  config.vm.define :devel do |server|
+    server.vm.network :hostonly, "192.168.50.40"
     server.vm.box     = "Elexis-Wheezy-amd64"
-    server.vm.host_name = "elexisDev64bit"
+    server.vm.host_name = "devel.#{`hostname -d`.chomp}"
     server.vm.box_url = "/opt/src/veewee/Elexis-wheezy-amd64.box"
     config.vm.boot_mode = :gui # :gui or :headless (default)
     server.vm.forward_port   22, 40022		# ssh
@@ -25,5 +38,5 @@ Vagrant::Config.run do |config|
     server.vm.forward_port 3306, 43306		# MySQL
     server.vm.forward_port 4567, 44567		# Gollum (elexis-admin Wiki)
     server.vm.forward_port 8080, 48080		# Jenkins
-  end
+  end if false
 end
