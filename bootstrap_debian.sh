@@ -62,7 +62,7 @@ then
 else
   echo "Adding default configuration into ${HIERA_PUPPET_YAML}"
 (
-cat <<'EOF'
+cat <<EOF
 ---
 :backends: yaml
 :yaml:

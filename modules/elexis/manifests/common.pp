@@ -37,9 +37,4 @@ class elexis::common {
     password_min_age => '0',
   }
 
-  file {['/home/vagrant/.bash_aliases', '/root/.bash_aliases', '/home/elexis/.bash_aliases']:
-    ensure => present,
-    content => "alias ll='ls -la'\n",
-    mode => 0444,
-  }
 }

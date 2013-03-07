@@ -11,14 +11,42 @@
 stage { 'first': before => Stage['second'] }
 stage { 'second': before => Stage['main'] }
 stage { 'last': require => Stage['main'] }
-class { 'apt': proxy_host => "172.25.1.77", proxy_port => 3142}
 
-group { "puppet": ensure => "present", }
+$debian_release = hiera('debian::release', 'wheezy')
 
-class apt_get_update {
-    file{"/etc/apt/apt.conf":
-        content => 'Acquire::http::Proxy "http://172.25.1.77:3142"  ;;'
-    }
+class { 'apt': 
+    proxy_host => hiera('apt::proxy_host', false),
+    proxy_port => hiera('apt::proxy_port', false),
+    purge_sources_list   => hiera('apt::purge_sources_list',   true),
+    purge_sources_list_d => hiera('apt::purge_sources_list_d', true),
+    purge_preferences_d  => hiera('apt::purge_sources_list_d', true),
+}
+
+apt::source { 'debian_wheezy':
+  location          => hiera('apt::source:location', 'http://mirror.switch.ch/ftp/mirror/debian/'),
+  release           => hiera('apt::source:release', $debian_release),
+  repos             => hiera('apt::source:repos', 'main contrib non-free'),
+#  required_packages => hiera('apt::source:required_packages', 'debian-keyring debian-archive-keyring'),
+#  key               => hiera('apt::source:key', '55BE302B'),
+#  key_server        => hiera('apt::source:key_server', 'subkeys.pgp.net'),
+#  pin               => hiera('apt::source:pin', '-10'),
+  include_src       => hiera('apt::source:include_src', true)
+}
+
+apt::source { 'debian_security':
+  location          => hiera('apt::source:security:location', 'http://security.debian.org/'),
+  release           => hiera('apt::source:security:release', "$debian_release/updates"),
+  repos             => hiera('apt::source:security:repos', 'main contrib non-free'),
+  include_src       => hiera('apt::source:security:include_src', true)
+}
+
+group { "puppet": ensure => "present", gid => 7777}
+
+class {'etc_hiera_yaml': stage => first; }
+
+class etc_hiera_yaml {file {"/etc/puppet/hiera.yaml": source => "puppet:///modules/elexis/hiera.yaml", } }
+
+class apt_get_update {    
     exec{'apt_get_update':
       command => "apt-get update",
       path    => "/usr/bin:/usr/sbin:/bin:/sbin",
@@ -26,16 +54,8 @@ class apt_get_update {
     }
 }
 
-class {
-  ['ensureLibShadow']: stage => first;
-#  "main2":  stage => main;
-#  "last":  stage => last;
-}
-
-class {
-      'apt_get_update': stage => first;
-#      'apache':   stage => last;
-}
+class { ['ensureLibShadow']: stage => first; }
+class {'apt_get_update': stage => first; }
 
 # Under Debian squeeze we must install rubygems as it was not yet part of the
 # basic ruby package
@@ -62,9 +82,7 @@ package{  ['dlocate', 'mlocate', 'htop', 'curl', 'bzr', 'unzip']:
 
 # The author's personal choice
 if hiera('editor:default', false) {
-  $editor_default = hiera('editor:default')
-  notify { "The author's personal choice is ${editor_default}": }
-  
+  $editor_default = hiera('editor:default')  
   package{ [ hiera('editor:package') ]:
     ensure => present,
   }
@@ -75,9 +93,12 @@ if hiera('editor:default', false) {
     path    => "/usr/bin:/usr/sbin:/bin:/sbin",
   }  
 }
-else {
-  notify { "no default editor specified": }
+node default {
+    notify { "\n\nsite.pp node default for hostname $hostname": }
 }
+
+import "nodes/*.pp"
+import "../private/nodes/*.pp"
 
 # Some common stuff for the admin
 if hiera('etckeeper:included', false) { include etckeeper }
@@ -89,6 +110,7 @@ if hiera('x2go:included', false)      { include x2go }
 
 # stuff for the server
 if hiera('elexis::praxis_wiki:included', false) { include elexis::praxis_wiki }
+if hiera('apache:included', false) { include apache }
 
 # usually only on database is included
 if hiera('elexis:postgres:included', false)  { include elexis::postgresql_server }

@@ -11,6 +11,7 @@ http://ngiger.dyndns.org/jenkins/.
 Some ideas/concept are inspired by reading http://www.jedi.be/blog/2011/03/28/using-vagrant-as-a-team/
 
 h2. Requirements
+
 * Sufficientyl powerfull HW (e.g needed for this task)
 ** disk space (about 30 GB, 20 GB reservev for the VM, 10 GB were not enough, with 256 MB RAM I did see Out of memory situations)
 ** 1 GB/1 CPU for the virtual machine (with 256

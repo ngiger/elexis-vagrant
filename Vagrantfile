@@ -1,1 +1,1 @@
-environments/Elexis-Squeeze-i386/Vagrantfile
+environments/Elexis-Wheezy-amd64/Vagrantfile

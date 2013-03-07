@@ -24,32 +24,32 @@ class elexis::server inherits elexis::common {
     ensure => present,
   }
     class { 'mysql::server':
-	config_hash => { 'root_password' => 'elexisTest' }
+    package_name  =>  hiera('mysql::server:package_name', 'mysql-server-5.5'),
+    config_hash => { 'root_password' => hiera('mysql::server:root_password', 'elexisTest') } ,
     }
 
     mysql::db { 'elexis':
-      user     => 'elexis',
-      password => 'elexisTest',
+      user     => hiera('mysql::db:elexis:user',     'elexis'),
+      password => hiera('mysql::db:elexis:password', 'elexisTest') ,
       host     => 'localhost',
-      grant    => ['all'],
+      grant    => ['all']
     }
-
 
   database_user{ 'vagrant@localhost':
     ensure        => present,
-    password_hash => mysql_password('vagrant'),
+    password_hash => mysql_password(hiera('mysql::db:user:vagrant:password', 'vagrant')),
     require       => Class['mysql::server'],
   }
 
   database_user{ 'niklaus@localhost':
     ensure        => present,
-    password_hash => mysql_password('giger'),
+    password_hash => mysql_password(hiera('mysql::db:user:giger:password', 'giger')),
     require       => Class['mysql::server'],
   }
 
   database_user{ 'arzt@localhost':
     ensure        => present,
-    password_hash => mysql_password('aeskulap'),
+    password_hash => mysql_password(hiera('mysql::db:user:arzt:password', 'aeskulap')),
     require       => Class['mysql::server'],
   }
 

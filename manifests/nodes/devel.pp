@@ -1,4 +1,3 @@
-
 class includeAllThingsForA_Developer {
     notify { "node/elexisDev.pp includeAllThingsForA_Developer": }
     include etckeeper
@@ -20,17 +19,6 @@ class includeAllThingsForA_Developer {
     class {['kde']: stage => last; } # I want the interesting things to load first!
 }
 
-class includeOnlyX2go {
-    include x2go::server
-    include x2go::client
-}
-
-node 'elexisDev' {
+node 'devel' {
   include includeAllThingsForA_Developer
-#  include includeOnlyX2go
-}
-
-node 'elexisDev32bit' {
-#  include includeAllThingsForA_Developer
-#  include includeOnlyX2go
 }
