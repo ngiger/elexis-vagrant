@@ -19,7 +19,7 @@ Vagrant::Config.run do |config|
     server.vm.network :hostonly, "10.11.12.43"
     server.vm.box     = "Elexis-Squeeze-i386"
     server.vm.host_name = "elexisDev32bit.ngiger.dyndns.org"
-    server.vm.box_url = "/opt/fileserver/elexis/boxes/Elexis-Squeeze-i386.box"
+    server.vm.box_url = "http://ftp.medelexis.ch/downloads_opensource/boxes/Elexis-Squeeze-i386.box"
     config.vm.boot_mode = :gui # :gui or :headless (default)
     server.vm.forward_port   22, 40022    # ssh
     server.vm.forward_port   80, 40080    # Apache
@@ -32,7 +32,7 @@ Vagrant::Config.run do |config|
     server.vm.network :hostonly, "10.11.12.44"
     server.vm.box     = "Elexis-wheezy-amd64"
     server.vm.host_name = "elexisServer.ngiger.dyndns.org"
-    server.vm.box_url = "/opt/fileserver/elexis/boxes/Elexis-wheezy-amd64.box"
+    server.vm.box_url = "http://ftp.medelexis.ch/downloads_opensource/boxes/Elexis-wheezy-amd64.box"
     config.vm.boot_mode = :gui # :gui or :headless (default)
     server.vm.forward_port   22, 10022    # ssh
     server.vm.forward_port   80, 10080    # Apache
