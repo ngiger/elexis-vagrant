@@ -50,6 +50,7 @@ getEclipse(DstRoot + '/eclipse', IndigoBaseURL, IndigoSR2)
 # getEclipse(DstRoot + '/eclipse', JunoBaseURL, Juno)
 # getJubula('https://s3.amazonaws.com/jubula/','setup',  ['.exe', '.sh','.dmg'])
 getJubula(DstRoot + '/jubula', JubulaURL, 'jubula_setup_5.2.00266',  ['.sh'])
+getJubula(DstRoot + '/jubula', JubulaURL, 'jubula_setup_6.0.01011',  ['.sh'])
 getFileFromBaseURL(DstRoot + '/lib', LibURL,
 		[
 		'ant-contrib.jar',

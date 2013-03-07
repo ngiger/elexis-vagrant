@@ -14,16 +14,31 @@ Vagrant::Config.run do |config|
     puppet.manifest_file = "site.pp"
     puppet.module_path = "modules"
   end
+
   config.vm.define :elexisDev do |server|
     server.vm.network :hostonly, "10.11.12.43"
     server.vm.box     = "Elexis-Squeeze-i386"
-    server.vm.host_name = "elexisDev32bit"
+    server.vm.host_name = "elexisDev32bit.ngiger.dyndns.org"
     server.vm.box_url = "/opt/fileserver/elexis/boxes/Elexis-Squeeze-i386.box"
     config.vm.boot_mode = :gui # :gui or :headless (default)
-    server.vm.forward_port   22, 40022		# ssh
-    server.vm.forward_port   80, 40080		# Apache
-    server.vm.forward_port 3306, 43306		# MySQL
-    server.vm.forward_port 4567, 44567		# Gollum (elexis-admin Wiki)
-    server.vm.forward_port 8080, 48080		# Jenkins
+    server.vm.forward_port   22, 40022    # ssh
+    server.vm.forward_port   80, 40080    # Apache
+    server.vm.forward_port 3306, 43306    # MySQL
+    server.vm.forward_port 4567, 44567    # Gollum (elexis-admin Wiki)
+    server.vm.forward_port 8080, 48080    # Jenkins
   end
+  
+  config.vm.define :elexisServer do |server|
+    server.vm.network :hostonly, "10.11.12.44"
+    server.vm.box     = "Elexis-wheezy-amd64"
+    server.vm.host_name = "elexisServer.ngiger.dyndns.org"
+    server.vm.box_url = "/opt/fileserver/elexis/boxes/Elexis-wheezy-amd64.box"
+    config.vm.boot_mode = :gui # :gui or :headless (default)
+    server.vm.forward_port   22, 10022    # ssh
+    server.vm.forward_port   80, 10080    # Apache
+    server.vm.forward_port 3306, 13306    # MySQL
+    server.vm.forward_port 4567, 14567    # Gollum (elexis-admin Wiki)
+    server.vm.forward_port 8080, 18080    # Jenkins
+  end
+
 end

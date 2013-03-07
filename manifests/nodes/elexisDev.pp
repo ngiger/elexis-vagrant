@@ -31,6 +31,6 @@ node 'elexisDev' {
 }
 
 node 'elexisDev32bit' {
-  include includeAllThingsForA_Developer
+#  include includeAllThingsForA_Developer
 #  include includeOnlyX2go
 }
