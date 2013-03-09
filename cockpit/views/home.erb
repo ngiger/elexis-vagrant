@@ -1,0 +1,15 @@
+    <h3>Auslastung der eingehängten Partitionen</h3>
+    
+       <!-- Ohne http://benogle.com/2009/06/16/simple-css-shiny-progress-bar-technique.html 
+            hätte Niklaus dies nicht geschafft!! -->
+    <% Filesystem.mounts.select{|m| not /tmp|devpts|proc|sysfs|rootfs|pipefs|binfmt_misc/.match(m.mount_type) }.each do |m|  %>
+      <% x =  Filesystem.stat(m.mount_point); percentage = 100-((x.blocks_free.to_f/x.blocks.to_f)*100).to_i %>
+      <div class="meter-wrap">
+          <div class="meter-value" style="background-color: #0a0; width: <%= percentage %>%;">
+              <div class="meter-text">
+              <%= sprintf('Belegt %2d%% FS-typ: %-15s', percentage, m.mount_type) + ' eingehängt in ' + m.mount_point %> 
+              </div>
+          </div>
+      </div>
+      <br>
+    <% end %>
