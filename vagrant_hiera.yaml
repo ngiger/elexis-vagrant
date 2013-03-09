@@ -1,0 +1,10 @@
+---
+:backends: yaml
+:yaml:
+  :datadir: /tmp/vagrant-hiera/data
+:hierarchy:
+  - %{::clientcert}
+  - %{::environment}
+  - private/config
+  - hiera/common
+:logger: console

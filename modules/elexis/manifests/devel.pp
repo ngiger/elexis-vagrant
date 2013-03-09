@@ -3,7 +3,7 @@
 class elexis::devel inherits elexis::common {
 
   include elexis::client
-  include elexis::server
+  include elexis::mysql_server
   package { ['ant', 'subversion', 'mercurial']:
     ensure => latest
   }

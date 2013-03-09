@@ -8,7 +8,7 @@ hash_demo: ""
 jubula:included: false
 apt::proxy_host: false
 apt::proxy_port: false
-apt::purge_sources_list: true
+apt::purge_sources_list: false
 apt::purge_sources_list_d: true
 apt::source:location: http://mirror.switch.ch/ftp/mirror/debian/
 apt::source:release: wheezy

@@ -2,7 +2,7 @@ class includeAllThingsForA_Developer {
     notify { "node/elexisDev.pp includeAllThingsForA_Developer": }
     include etckeeper
     include elexis::client
-    include elexis::server
+    include elexis::mysql_server
     include elexis::devel
 
 #   uncomment next line to add Jenkins & Jubula test for 2.1.7

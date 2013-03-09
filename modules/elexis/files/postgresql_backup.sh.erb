@@ -1,0 +1,20 @@
+#!/bin/sh
+
+BASE=/home/backup/postgresql
+
+echo -n "Dumping PostgreSQL databases..."
+
+# dump the whole database
+FILE=$BASE/all
+sudo -u postgres pg_dumpall > $FILE
+chmod 600 $FILE
+
+# dump selected databases
+for db in elexis; do
+  FILE=$BASE/$db
+  sudo -u postgres pg_dump -b --format=c $db > $FILE
+  chmod 600 $FILE
+done
+
+echo "done."
+                                                                                                                                                                                               
