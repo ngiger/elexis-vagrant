@@ -1,12 +1,12 @@
-notify { "test: elexis::server": }
+notify { "test: elexis::mysql_server": }
 
-# include elexis::server
+# include elexis::mysql_server
 include mysql
-class { 'mysql::server':
+class { 'mysql::mysql_server':
   config_hash => { 'root_password' => 'elexisTest' }
 }
 include elexis::common
-class elexis::server {
+class elexis::mysql_server {
   mysql::db { 'myElexis3':
     user     => 'elexis',
     password => mysql_password('elexisTest'),

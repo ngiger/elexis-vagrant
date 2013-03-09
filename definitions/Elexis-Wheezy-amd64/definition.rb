@@ -40,7 +40,7 @@ Veewee::Definition.declare({
     "virtualbox.sh",
     "ruby.sh",
     "puppet.sh",
-    "chef.sh",
+#    "chef.sh",
     "cleanup-virtualbox.sh",
     "cleanup.sh",
     "zerodisk.sh"

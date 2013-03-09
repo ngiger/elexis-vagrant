@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+#
+# Copyright (c) Niklaus Giger niklaus.giger@member.fsf.org
+#
+# Simple test script for the elexis-vagrant project to poll a dummy table
+# Used to verify that the backup server gets results from the main server
+# and updates its copy correctly
+require File.join(File.dirname(__FILE__), 'pg_util.rb')
+
+<%= scope.function_include(['elexis::postgresql_server']) %>
+pg_main_db_name      = '<%=  scope.function_hiera(['elexis::postgresql_server::pg_main_db_name',     'elexis']) %>'
+pg_main_db_user      = '<%=  scope.function_hiera(['elexis::postgresql_server::pg_main_db_user',     'elexis']) %>'
+pg_main_db_password  = '<%=  scope.function_hiera(['elexis::postgresql_server::pg_main_db_password', 'elexisTest']) %>'
+pg_tst_db_name       = '<%=  scope.function_hiera(['elexis::postgresql_server::pg_tst_db_name',      'tst_db']) %>'
+pg_dump_dir          = '<%=  scope.function_hiera(['elexis::postgresql_server::pg_dump_dir',         '/home/backup-pg']) %>'
+
+ENV['PGPASSWORD'] = pg_main_db_password
+dump   = "/opt/backup/#{pg_main_db_name}.dump.gz"
+cmd =   "pg_dump --user #{pg_main_db_user} --host localhost "
+cmd +=  "--encoding=UTF-8 --file=#{dump} " 
+cmd +=  "--compress=9 --clean " # zip output and insert drop statement
+cmd += pg_main_db_name
+
+system(cmd)
+logAction("dump of #{pg_main_db_name} into #{dump} finished")

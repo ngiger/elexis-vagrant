@@ -44,7 +44,11 @@ group { "puppet": ensure => "present", gid => 7777}
 
 class {'etc_hiera_yaml': stage => first; }
 
-class etc_hiera_yaml {file {"/etc/puppet/hiera.yaml": source => "puppet:///modules/elexis/hiera.yaml", } }
+
+class etc_hiera_yaml {
+  file {"/etc/puppet/hiera.yaml": source => "puppet:///modules/elexis/hiera.yaml", } 
+  
+}
 
 class apt_get_update {    
     exec{'apt_get_update':
@@ -97,9 +101,6 @@ node default {
     notify { "\n\nsite.pp node default for hostname $hostname": }
 }
 
-import "nodes/*.pp"
-import "../private/nodes/*.pp"
-
 # Some common stuff for the admin
 if hiera('etckeeper:included', false) { include etckeeper }
 
@@ -131,4 +132,12 @@ include hiera('private_modules', [])
 # elexis::client
 # elexis::app via http://ngiger.dyndns.org/jenkins/job/elexis-2.1.7-Buildr/lastSuccessfulBuild/artifact/deploy/elexis-installer.jar 
 # medelexis::app via http://www.medelexis.ch/dl21.php?file=medelexis-linux
+
+import "nodes/*.pp"
+
+$res = hiera('import:xxxxprivate:nodes', false)
+if $res {
+    notify { "\nimporting private nodes res ist $res": }
+#    import "../private/nodes/*.pp";
+}
 

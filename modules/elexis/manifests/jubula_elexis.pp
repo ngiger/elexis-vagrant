@@ -9,7 +9,7 @@ class elexis::jubula_elexis  inherits elexis::common {
     setupSh => '/opt/downloads/jubula_5.2.00266.sh'
   }
     
-  include elexis::server # we need also the elexis-db
+  include elexis::mysql_server # we need also a MySQL-database
   
   mysql::db { 'jubula_vagrant':
     user     => 'elexis',
