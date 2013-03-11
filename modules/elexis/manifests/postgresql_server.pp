@@ -5,23 +5,26 @@
 
 # with the default values you can afterward connect as follows to the DB
 # psql elexis -U elexis -h localhost --password  # pw is elexisTest
+
 class { 'postgresql':
   charset => 'UTF8',
   locale  => 'en_US',
 }
+
 class elexis::postgresql_server(
-  $pg_dump_dir          = '/home/backup/pg',
-  $pg_main_db_name      = 'elexis',
-  $pg_main_db_user      = 'elexis',
-  $pg_main_db_password  = 'elexisTest',
-  $pg_tst_db_name       = 'tst_db',
-  $pg_dump_script       = '/usr/local/bin/pg_dump_elexis.rb',
+  $db_backup_dir      = '/home/backup/postgresql',
+  $db_main_name      = 'elexis',
+  $db_main_user      = 'elexis',
+  $db_main_password  = 'elexisTest',
+  $db_test_name      = 'tst_db',
+  $db_pg_dump_script = '/usr/local/bin/pg_dump_elexis.rb',
 ){
 
 }
 
 class elexis::postgresql_server inherits elexis::common {
-  file  { "${pg_dump_dir}/wal/":
+
+  file  { "${db_backup_dir}/wal/":
     ensure => directory,
     owner  => 'postgres',
     mode   => 0755,
@@ -68,37 +71,37 @@ class elexis::postgresql_server inherits elexis::common {
   # puppet apply --execute 'notify { "test": message => postgresql_password("username", "password") }'
   # md5e0925320617bda379cf9db294f07caf2 is for elexis/elexisTest
                                       
-  if $pg_main_db_name {
-    postgresql::db { "$pg_main_db_name":
+  if $db_main_name {
+    postgresql::db { "$db_main_name":
       charset => 'utf8',      
-      user     => $pg_main_db_user,
-      password => $pg_main_db_password,
+      user     => $db_main_user,
+      password => $db_main_password,
       grant    => hiera('postgresql::db:elexis:grant', 'all') 
     }
 
-    postgresql::database_grant{"$pg_main_db_name":
+    postgresql::database_grant{"$db_main_name":
       privilege   => 'ALL',
-      db          => "$pg_main_db_name",
-      role        => "$pg_main_db_user",
+      db          => "$db_main_name",
+      role        => "$db_main_user",
     }
   }
 
-  if $pg_tst_db_name {
-    postgresql::db { "$pg_tst_db_name":
+  if $db_test_name {
+    postgresql::db { "$db_test_name":
       charset => 'utf8',      
-      user     => $pg_main_db_user,
-      password => $pg_main_db_password,
+      user     => $db_main_user,
+      password => $db_main_password,
       grant    => hiera('postgresql::db:elexis:grant', 'all')
     }
 
-    postgresql::database_grant{"$pg_tst_db_name":
+    postgresql::database_grant{"$db_test_name":
       privilege   => 'ALL',
-      db          => "$pg_tst_db_name",
-      role        => "$pg_main_db_user",
+      db          => "$db_test_name",
+      role        => "$db_main_user",
     }        
   }
 
-  file {"$pg_dump_script":
+  file {"$db_pg_dump_script":
     ensure => present,
     mode   => 0755,
     content => template("elexis/pg_dump_elexis.rb.erb"),
@@ -132,28 +135,28 @@ class elexis::postgresql_server inherits elexis::common {
     content => template("elexis/pg_util.rb.erb"),
   }
   
-  exec { "create_pg_dump_dir_path":
-    command => "mkdir -p `dirname ${pg_dump_dir}`",
+  exec { "create_db_backup_dir_path":
+    command => "mkdir -p `dirname ${db_backup_dir}`",
     path => '/usr/bin:/bin',
-    unless => "[ -d `dirname ${pg_dump_dir}` ]"
+    unless => "[ -d `dirname ${db_backup_dir}` ]"
   }
 
 
-  file { $pg_dump_dir :
+  file { $db_backup_dir :
     ensure => directory,
     mode   => 0755,
     recurse => true,
     owner  =>  $::postgresql::params::user, group => $::postgresql::params::group,
-    require     => Exec["create_pg_dump_dir_path"],
+    require     => Exec["create_db_backup_dir_path"],
   }
     
   cron { 'pg-backup':
       ensure  => $ensure,
-      command => "$pg_dump_script",
+      command => "$db_pg_dump_script",
       user    => 'root',
       hour    => 23,
       minute  => 15,
-      require => File["$pg_dump_script", "$pg_dump_dir"],
+      require => File["$db_pg_dump_script", "$db_backup_dir"],
   }
 }
 
