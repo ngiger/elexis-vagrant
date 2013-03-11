@@ -2,6 +2,9 @@ GEM
   remote: http://rubygems.org/
   specs:
     RedCloth (4.2.9)
+    actionpack (2.3.2)
+      activesupport (= 2.3.2)
+    activesupport (2.3.2)
     addressable (2.2.8)
     bcrypt-ruby (3.0.1)
     builder (3.2.0)
@@ -54,8 +57,11 @@ GEM
       dm-core (~> 1.2.0)
     do_sqlite3 (0.10.12)
       data_objects (= 0.10.12)
+    erubis (2.7.0)
     fastercsv (1.5.5)
     ffi (1.4.0)
+    hiera (1.1.2)
+      json_pure
     json (1.7.7)
     json_pure (1.7.7)
     multi_json (1.6.1)
@@ -90,9 +96,12 @@ PLATFORMS
 
 DEPENDENCIES
   RedCloth
+  actionpack
   builder
   datamapper
   dm-sqlite-adapter
+  erubis
+  hiera
   rack-test
   rspec
   shotgun

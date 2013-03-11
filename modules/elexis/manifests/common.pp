@@ -12,14 +12,7 @@ class elexis::common {
   file { $downloadDir:
     ensure => directory, # so make this a directory
   }
-  
-  file { "/home/vagrant/.bash_aliases":
-      source => 'puppet:///modules/elexis/.bash_aliases',
-      owner  => 'vagrant',
-      mode   => '0640',
-  }
 
-    # TODO: Warum dürfen die hier nicht mehr angezogen werden???
   include apt # to force an apt::update
   include java
 #  include jubula

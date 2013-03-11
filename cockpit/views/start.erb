@@ -1,0 +1,31 @@
+<h2>Hier können jede gewünschte Kombination der Elexis-Version, Datenbank und Benutzer starten.</h2>
+<br>
+<h3>Bitte Version, Datenbank und Benutzer auswählen.</h3>
+<section id="start">  
+  <form action="/start" method="post">  
+    <br>
+    <select name='version' size=1>
+               <% @elexis_versions.each do |version, path| %>
+                  <option value=<%= path %>><%= version %></option>
+               <% end %>
+            </select>
+    db <select name='database' >
+    <br>
+               <% ['mysql', 'demoDB', 'postgreSQL'].each do |database| %>
+                  <option value=<%= database %>><%= database %></option>
+               <% end %>  
+            </select>
+    als <select name='user'>
+    <br>
+               <% ['admin', 'Mandant', 'MPA'].each do |user| %>
+                  <option value=<%= user %>><%= user %></option>
+               <% end %>
+            </select>
+    <br>
+    <br>
+    <h3>Passwort: <input type="text" name="Passwort" value='elexisTest'></h3>
+    <br>
+     <input type="submit" value="ausführen"> 
+  </form>  
+</section>  
+  

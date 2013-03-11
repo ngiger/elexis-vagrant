@@ -1,11 +1,28 @@
-    <h3>Auslastung der eingehängten Partitionen</h3>
+Übersicht für Knoten <%= @hostname %>.
+       <% if @server %>
+       DB-Server ist  <%= @server %> 
+       <% else %>
+       Kein DB-Server definiert.
+       <% end %>
+       <% if @backup %>
+       DB-BackupServer ist <%= @backup %> </h3></LH>
+       <% else %>
+       Kein DB-BackupServer definiert.
+       <% end %>
+<UL>
+       <br>
+       <LH><h2>Überwachungen. </h2>
+       <br>
+    <li><h3>Auslastung der eingehängten Partitionen</h3>
     
        <!-- Ohne http://benogle.com/2009/06/16/simple-css-shiny-progress-bar-technique.html 
             hätte Niklaus dies nicht geschafft!! -->
-    <% Filesystem.mounts.select{|m| not /tmp|devpts|proc|sysfs|rootfs|pipefs|binfmt_misc/.match(m.mount_type) }.each do |m|  %>
-      <% x =  Filesystem.stat(m.mount_point); percentage = 100-((x.blocks_free.to_f/x.blocks.to_f)*100).to_i %>
+    <% @mount_points.each do |m|  %>
+      <% x =  Filesystem.stat(m.mount_point); percentage = 100-((x.blocks_free.to_f/x.blocks.to_f)*100).to_i 
+         background = percentage < @part_max_fill ? '#0a0' : '#FF0000' 
+      %>
       <div class="meter-wrap">
-          <div class="meter-value" style="background-color: #0a0; width: <%= percentage %>%;">
+          <div class="meter-value" style="background-color: <%= background %>; width: <%= percentage %>%;">
               <div class="meter-text">
               <%= sprintf('Belegt %2d%% FS-typ: %-15s', percentage, m.mount_type) + ' eingehängt in ' + m.mount_point %> 
               </div>
@@ -13,3 +30,36 @@
       </div>
       <br>
     <% end %>
+       <% if @backup_setup_error %>
+        <LI> <div style="background-color: #FF0000" TITLE="<%= @backup_tooltip %>" >Fehler: <%= @backup_okay %></div></LH>
+       <% else %>
+        <LI> <div TITLE="<%= @backup_tooltip %>" ><%= @backup_okay %></div></LH>
+       <% end %>
+    
+      <li>Todo: Letztes Backup auf externen Datenträger<br></li>
+      <li>Todo: Auslastung Datenträger Server</li>
+      <li>Todo: Auslastung Datenträger Backup</li>
+      <li>Todo: Status Backup Datenbank</li>
+    </ul>
+    <br>
+    <ul>
+      <LH><h2>Wartungsarbeiten</h2></LH>
+       <br>
+       
+    <li><h3><a href="start">starte beliebige Elexis/Datenbank-Kombination</a></h3></li>
+    
+    <li><section id="startDbBackup">  
+        <form action="/startDbBackup" method="post">  
+          <input type="submit" value="Datenbank-Backup jetzt starten"> 
+        </form>  
+      </section>        
+    </li>
+    
+    <li>Todo: Datenbank-Backup einlesen (externen Datenträger, Backup-Verzeichnis)</li>
+    
+    <li>Todo: Umschalten auf Backup-Server</li>
+    
+    <li>Todo: Neueste (Med)-Elexis Version installieren</li>
+    
+    </ul>
+    
