@@ -9,23 +9,33 @@
                   <option value=<%= path %>><%= version %></option>
                <% end %>
             </select>
-    db <select name='database' >
+    dbTyp
+    <select name='dbFlavor' >
     <br>
-               <% ['mysql', 'demoDB', 'postgreSQL'].each do |database| %>
-                  <option value=<%= database %>><%= database %></option>
+               <% settings.info[:dbFlavors].each do |dbFlavor| %>
+                  <option value=<%= dbFlavor %>><%= dbFlavor %></option>
                <% end %>  
             </select>
-    als <select name='user'>
+    dbName <select name='dbName'>
     <br>
-               <% ['admin', 'Mandant', 'MPA'].each do |user| %>
-                  <option value=<%= user %>><%= user %></option>
+               <% settings.info[:dbNames].each do |dbName| %>
+                  <option value=<%= dbName %>><%= dbName %></option>
+               <% end %>
+            </select>
+    <br>
+    dbUser <select name='dbUser'>
+    <br>
+               <% settings.info[:dbUsers].each do |dbUser| %>
+                  <option value=<%= dbUser %>><%= dbUser %></option>
                <% end %>
             </select>
     <br>
     <br>
-    <h3>Passwort: <input type="text" name="Passwort" value='elexisTest'></h3>
+    <h3>Passwort: <input type="text" name="dbPw" value='elexisTest'></h3>
     <br>
      <input type="submit" value="ausführen"> 
   </form>  
 </section>  
+  <br>
+  <%= settings.info %>
   
