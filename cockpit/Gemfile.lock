@@ -65,6 +65,7 @@ GEM
     json (1.7.7)
     json_pure (1.7.7)
     multi_json (1.6.1)
+    nokogiri (1.5.6)
     rack (1.5.2)
     rack-protection (1.4.0)
       rack
@@ -102,6 +103,7 @@ DEPENDENCIES
   dm-sqlite-adapter
   erubis
   hiera
+  nokogiri
   rack-test
   rspec
   shotgun

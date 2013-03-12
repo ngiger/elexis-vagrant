@@ -1,11 +1,11 @@
-Übersicht für Knoten <%= @hostname %>.
-       <% if @server %>
-       DB-Server ist  <%= @server %> 
+Übersicht für Knoten <%= @info[:hostname] %>.
+       <% if @info[:dbServer] %>
+       DB-Server ist  <%= @info[:dbServer] %> 
        <% else %>
        Kein DB-Server definiert.
        <% end %>
-       <% if @backup %>
-       DB-BackupServer ist <%= @backup %> </h3></LH>
+       <% if @info[:dbBackup] %>
+       DB-BackupServer ist <%= @info[:dbBackup] %> </h3></LH>
        <% else %>
        Kein DB-BackupServer definiert.
        <% end %>
@@ -17,23 +17,20 @@
     
        <!-- Ohne http://benogle.com/2009/06/16/simple-css-shiny-progress-bar-technique.html 
             hätte Niklaus dies nicht geschafft!! -->
-    <% @mount_points.each do |m|  %>
-      <% x =  Filesystem.stat(m.mount_point); percentage = 100-((x.blocks_free.to_f/x.blocks.to_f)*100).to_i 
-         background = percentage < @part_max_fill ? '#0a0' : '#FF0000' 
-      %>
+    <%  @info[:mounts].each do |id, m|  %>
       <div class="meter-wrap">
-          <div class="meter-value" style="background-color: <%= background %>; width: <%= percentage %>%;">
+          <div class="meter-value" style="background-color: <%= m[:background] %>; width: <%= m[:percentage] %>%;">
               <div class="meter-text">
-              <%= sprintf('Belegt %2d%% FS-typ: %-15s', percentage, m.mount_type) + ' eingehängt in ' + m.mount_point %> 
+              <%= sprintf('Belegt %2d%% FS-typ: %-15s', m[:percentage],m[:mount_type]) + ' eingehängt in ' + m[:mount_point] %> 
               </div>
           </div>
       </div>
       <br>
     <% end %>
-       <% if @backup_setup_error %>
-        <LI> <div style="background-color: #FF0000" TITLE="<%= @backup_tooltip %>" >Fehler: <%= @backup_okay %></div></LH>
+       <% if @info[:backup][:setup_error] %>
+        <LI> <div style="background-color: #FF0000" TITLE="<%= @info[:backup][:tooltip] %>" >Fehler: <%= @info[:backup][:okay] %></div></LH>
        <% else %>
-        <LI> <div TITLE="<%= @backup_tooltip %>" ><%= @backup_okay %></div></LH>
+        <LI> <div TITLE="<%= @info[:backup][:tooltip] %>" ><%= @info[:backup][:okay] %></div></LH>
        <% end %>
     
       <li>Todo: Letztes Backup auf externen Datenträger<br></li>

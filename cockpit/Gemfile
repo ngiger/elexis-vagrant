@@ -14,3 +14,4 @@ gem "sys-filesystem"
 gem "hiera"
 gem "erubis"
 gem "actionpack"
+gem 'nokogiri'
