@@ -1,0 +1,8 @@
+# Vorgabewerte für das Elexis-Cockpit
+---
+"::db::backup::dir": /home/backup
+"::db::server": localhost
+"::db::backup": tr-ng
+"::db::port": 3306
+"::db::user": elexis
+"::db::main": elexis

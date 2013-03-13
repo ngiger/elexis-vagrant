@@ -1,0 +1,7 @@
+---
+:backends: yaml
+:yaml:
+  :datadir: .
+:hierarchy:
+  - /opt/src/elexis-vagrant/cockpit/local_config.yaml
+:logger: console
