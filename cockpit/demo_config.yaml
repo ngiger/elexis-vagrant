@@ -1,8 +1,19 @@
 # Vorgabewerte für das Elexis-Cockpit
 ---
+# If you have MySQL backups named like
+# /home/backup/mysql/mysql_backup_20130310-230501.sql.bz2
+# set the next two lines like
 "::db::backup::dir": /home/backup
+"::db::backup::name": mysql
+# Name of first DB-server
 "::db::server": localhost
+# Name of second DB-server
 "::db::backup": tr-ng
+# Tell who is the backup DB server (or false) if there is no online backup
+"::db::server::backup_server_is": tr-ng
 "::db::port": 3306
 "::db::user": elexis
 "::db::main": elexis
+# Scripts to format and encrypt external HD disk
+"::hd::external::format_and_encrypt": /opt/src/elexis-admin/examples/backup_encrypted.rb
+elexis:mysql:included: true
