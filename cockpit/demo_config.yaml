@@ -5,6 +5,9 @@
 # set the next two lines like
 "::db::backup::dir": /home/backup
 "::db::backup::name": mysql
+elexis:mysql:included: true
+"::db::backup::mysql::script":      /usr/local/sbin/mysqlbackup.sh
+"::db::backup::postgresql::script": /usr/local/bin/pg_dump_elexis.rb
 # Name of first DB-server
 "::db::server": localhost
 # Name of second DB-server
@@ -15,5 +18,6 @@
 "::db::user": elexis
 "::db::main": elexis
 # Scripts to format and encrypt external HD disk
-"::hd::external::format_and_encrypt": /opt/src/elexis-admin/examples/backup_encrypted.rb
+"::hd::external::format_and_encrypt": /opt/src/elexis-vagrant/modules/elexis/files/backup_encrypted.rb.erb
+
 elexis:mysql:included: true

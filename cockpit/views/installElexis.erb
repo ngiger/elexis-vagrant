@@ -1,0 +1,22 @@
+<h2>Neue Elexis-Version installieren</h2>
+<p>Sie können entweder die Version von Medelexis, die OpenSource installieren</p>
+<ul>
+  <li>Falls die Version schon installiert ist, wird die Installation fehlschlagen</li>
+  <li>Sie können wählen, ob auch unter /hom/samba eine Version für Windows-Benutzer installiert werden soll</li>
+</ul>
+<br>
+
+<h2>Bitte gewünschte Elexis-Variante auswählen:</h2> 
+<ul>
+  <% eInfo = getElexisVersionen; %>
+  <% if eInfo %>
+    <section id="runInstallElexis">
+      <% eInfo.each do | x|  name = x[:name]; path = x[:path] %>
+          <li><form action="/runInstallElexis" method="post">  
+            Um Version <%= name %> zu installieren, folgende Auswahl drücken<br>
+            <input type="submit" title='<%= path %>' name='url' value='<%= path %>'> 
+        </li>
+      <% end %>
+    </section>
+  <% end %>    
+</ul>

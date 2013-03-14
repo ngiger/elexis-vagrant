@@ -1,0 +1,33 @@
+<h2>Datenbank ab Sicherungsdatei wiederherstellen</h2>
+<p>Achtung! Damit werden alle Daten in ihrer jetzigen Datenbank gelöscht. Vergewissern Sie sich, dass</p>
+<ul>
+  <li>Niemand ausser Ihnen auf der Datenbank arbeitet</li>
+  <li>Nirgends ein Elexis-Programm am laufen ist.</li>
+  <li>Die unten eingegebenen Werte korrekt sind.
+  <li>Falls sie eine anderes, als die unten aufgeführten Sicherungskopien laden wollen,
+      müssen Sie dies das Script von Hand auswählen</li>
+</ul>
+<br>
+</ul> 
+  <h2>Bitte gewünschte Sicherungskopie auswählen:</h2> 
+    <% bkpInfo = getBackupInfo; %>
+    <% if bkpInfo and bkpInfo[:backups] %>
+    <% bkpInfo[:backups].sort.reverse.each do | f| 
+              mTime = File.mtime(f)
+              human = distance_of_time_in_words_to_now(mTime)
+      %>
+      <li>
+        <section id="runLoadDatabase">  
+          <form action="/runLoadDatabase" method="post">  
+            Backup von <%= "vor #{human} einlesen" %> einlesen.
+            <input type="submit" name='dumpFile' value='<%= f %>'> 
+          </form>  
+        </section>
+        <%= "#{f}<br>vom #{mTime}. Länge #{File.size(f)} bytes" %>
+    </li>
+  <% end %>
+  <br>
+<% else %>
+  <h3>Keine Backups gefunden. Irgendwas lief schief</h3>
+  <%= bkpInfo.inspect %>
+<% end %>
