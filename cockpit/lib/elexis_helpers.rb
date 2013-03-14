@@ -1,28 +1,45 @@
 #!/usr/bin/env ruby
 # encoding: utf-8
+require 'sys/filesystem'
+include Sys
 
 module Sinatra
   module ElexisHelpers
+    
   def get_hiera(key)
-    local_yaml_db     = File.join(File.dirname(__FILE__), 'local_config.yaml')
-    local_hiera_conf  = File.join(File.dirname(__FILE__), 'local_hiera.yaml')
-    if File.exists?(local_yaml_db) and false
-      scope = YAML.load_file(local_yaml_db)
-      puts "#{local_hiera_conf}: loaded values from #{local_yaml_db} looking for #{key}"
-      hiera = Hiera.new(:config =>local_hiera_conf)
+    local_yaml_db     = File.join(File.dirname(File.dirname(__FILE__)), 'local_config.yaml')
+    local_hiera_conf  = File.join(File.dirname(File.dirname(__FILE__)), 'local_hiera.yaml')
+    if File.exists?(local_yaml_db)
+      config_values = YAML.load_file(local_yaml_db)
+      value = config_values[key]
+      puts "local config config for #{key} got #{value}" if $VERBOSE
     else
+      hiera_yaml = '/etc/puppet/hiera.yaml'
       scope = 'path_to_no_file'
-      hiera = Hiera.new(:config => "/etc/puppet/hiera.yaml")
-      puts "/etc/puppet/hiera.yam: hiera for #{scope}" 
+      value = Hiera.new(:config => hiera_yaml).lookup(key, 'unbekannt', scope)
+      puts "#{hiera_yaml}: hiera key #{key} returns #{value}" 
     end
-    value = hiera.lookup(key, 'unbekannt', scope)
-    puts "hiera for #{key} got #{value}" # if $VERBOSE
     value
   end
+  
+  # next function courtesy of 
+  # http://stackoverflow.com/questions/10420352/converting-file-size-in-bytes-to-human-readable
+  def getReadableFileSizeString(fileSizeInBytes)
+      i = -1;
+      byteUnits = [' kB', ' MB', ' GB', ' TB', 'PB', 'EB', 'ZB', 'YB']
+      while true do
+          fileSizeInBytes = fileSizeInBytes / 1024
+          i += 1
+          break if (fileSizeInBytes <= 1024)
+        end
 
+#      return Math.max(fileSizeInBytes, 0.1).toFixed(1) + byteUnits[i]
+      return (fileSizeInBytes > 0.1 ? fileSizeInBytes.to_s : 1.to_s)+ byteUnits[i]
+  end
+  
   def get_db_backup_info(which_one)
     key_dir   = "::db::backup::dir"
-    key_name  = "::db::backup::name"
+    key_name  = "::db::backup::name"    
     backup_dir = get_hiera(key_dir)
     db_main   =  get_hiera(key_name)
     
@@ -70,24 +87,31 @@ module Sinatra
     versions.sort.reverse
   end
 
+  def getSizeOfMountPoint(mount_point)
+    mp =  Filesystem.stat(mount_point)
+    getReadableFileSizeString(mp.blocks * mp.block_size)
+  end
+  
   def getMountInfo(mounts = Hash.new)
     part_max_fill = 85  
     mount_points = Filesystem.mounts.select{|m| not /tmp|devpts|proc|sysfs|rootfs|pipefs|binfmt_misc/.match(m.mount_type) }
     mount_points.each do |m|
       mount_info = Hash.new
-      mp =  Filesystem.stat(m.mount_point); 
+      mp =  Filesystem.stat(m.mount_point);
       percentage = 100-((mp.blocks_free.to_f/mp.blocks.to_f)*100).to_i 
       mount_info[:mount_point] = m.mount_point
-      mount_info[:type] = m.mount_type
+      mount_info[:mount_type]  = m.mount_type
       mount_info[:percentage]  = percentage
       mount_info[:background]  = percentage < part_max_fill ? '#0a0' : '#FF0000'
-      mounts[m.mount_point] = mount_info
+      mount_info[:human_size]  = getSizeOfMountPoint(m.mount_point)
+      mounts[m.mount_point]    = mount_info
     end
     mounts
   end
 
   def getDbConfiguration
     info = Hash.new
+    info[:backup_server_is]  = get_hiera('::db::server::backup_server_is')
     info[:dbServer] = get_hiera('::db::server')
     info[:dbBackup] = get_hiera('::db::backup')
     info[:dbFlavors] = ['h2', 'mysql', 'postgresql' ]
@@ -123,6 +147,25 @@ module Sinatra
     info[:backup] = getBackupInfo
     info
   end
+  
+  AvoidBasicPoints = [ '/', '/home', '/usr', '/var', '/tmp', '/opt' ]
+  def getPossibleExternalDiskDrives
+    avoid = []
+    Filesystem.mounts.each{ |x| 
+                            if AvoidBasicPoints.index(x.mount_point)
+                              next if /rootfs/.match(x.name)
+                              File.symlink?(x.name) ? avoid << File.realpath(x.name).chop : avoid << x.name.chop 
+                          end
+                          }
+    externals = Hash.new
+    ((Dir.glob("/dev/sd??").collect{ |x| x.chop }.sort.uniq) - avoid).each {
+      |mtPoint|
+          mp =  Filesystem.stat(mtPoint);
+          externals[mtPoint]  = getReadableFileSizeString(mp.blocks * mp.block_size * mp.fragment_size)
+    }
+    externals
+  end
+  
   end
   # this will only affect Sinatra::Application
   register ElexisHelpers
