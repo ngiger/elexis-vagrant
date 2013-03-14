@@ -29,7 +29,7 @@
     <% end %>
        <% if @info[:backup][:setup_error] %>
         <LI> <div class="meter-text" style="background-color: #FF0000" TITLE="<%= @info[:backup][:tooltip] %>" >Fehler: <%= @info[:backup][:okay] %></div>
-             <div width="500px" TITLE="<%= @info[:backup][:tooltip] %>" style="background-color: #FF0000"  >Fehler: <%= @info[:backup][:okay] %></div></LH>
+             <div width="500px" TITLE="<%= @info[:backup][:tooltip] %>" style="background-color: #FF0000"  >Fehler: <%= @info[:backup][:okay] %></div></LI>
        <% else %>
         <LI> <div <div TITLE="<%= @info[:backup][:tooltip] %>" ><%= @info[:backup][:okay] %></div></LH>
        <% end %>
@@ -50,22 +50,34 @@
        
     <li><h3><a href="start">starte beliebige Elexis/Datenbank-Kombination</a></h3></li>
     
-    <li><section id="runDbBackup">  
-        <form action="/runDbBackup" method="post">  
-          <input type="submit" value="Datenbank-Backup jetzt starten"> 
-        </form>  
-      </section>        
-    </li>
+    <% if @info[:backup][:script] %>
+      <li><section id="runDbBackup">  
+          <form action="/runDbBackup" method="post">  
+            <input type="submit" value="Datenbank-Backup jetzt starten"> 
+          </form>  
+        </section>        
+      </li>
+    <% else %>
+        <li> <div class="meter-text" style="background-color: #FF0000" TITLE="<%= @info[:backup][:tooltip] %>" >Fehler: Kein Backup-Script konfiguriert</div>
+             <div width="500px" TITLE="<%= @info[:backup][:tooltip] %>" style="background-color: #FF0000"  >Fehler: Kein Backup-Script konfiguriert</div>
+        </li>
+    <% end %>       
     
     <li>
       <h3><a href="formatEncrypted">Verschlüsselte Partition auf externer Festplatte erstellen</a></h3>
     </li>
     
-    <li>Todo: Datenbank-Backup einlesen (externen Datenträger, Backup-Verzeichnis)</li>
+    <li>
+      <h3><a href="loadDatabase"> Datenbank aus Backup-Verzeichnis wieder herstellen</a></h3>
+    </li>
     
     <li>Todo: Umschalten auf Backup-Server</li>
     
-    <li>Todo: Neueste (Med)-Elexis Version installieren</li>
+    <li>
+      <h3><a href="installElexis">Neueste (Med)-Elexis Version installieren</a></h3>
+    </li>
+    
+    runLoadDatabase
      <%= "@info für debug <br> "+@info.inspect %></li>
     </ul>
     

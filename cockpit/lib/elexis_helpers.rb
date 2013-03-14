@@ -6,7 +6,7 @@ include Sys
 module Sinatra
   module ElexisHelpers
     
-  def get_hiera(key)
+  def get_hiera(key, default_value = nil)
     local_yaml_db     = File.join(File.dirname(File.dirname(__FILE__)), 'local_config.yaml')
     local_hiera_conf  = File.join(File.dirname(File.dirname(__FILE__)), 'local_hiera.yaml')
     if File.exists?(local_yaml_db)
@@ -19,6 +19,7 @@ module Sinatra
       value = Hiera.new(:config => hiera_yaml).lookup(key, 'unbekannt', scope)
       puts "#{hiera_yaml}: hiera key #{key} returns #{value}" 
     end
+    value = default_value if default_value and not value
     value
   end
   
@@ -57,16 +58,17 @@ module Sinatra
         neueste = backups[0]
         modificationTime = File.mtime(neueste)
         human = distance_of_time_in_words(Time.now, modificationTime)
+#        human = (Time.now - modificationTime).to_i
         if (Time.now - modificationTime < maxHours*60*60)        
           backup_okay  = "#{which_one.capitalize}-Backup okay"
           backup_hover = "#{backups.size} Backups vorhanden. Neueste #{neueste}  #{File.size(neueste)} Bytes erstellt vor #{human}"
         else
-          backup_okay = "Neueste Backup-Datei '#{neueste}' von vor #{human} ist älter als #{maxHours} Stunden!"
+          backup_okay = "Neueste Backup-Datei '#{neueste}' erstellt vor #{human} ist älter als #{maxHours} Stunden!"
           backup_hover = "Fehlschlag. Fand #{backups.size} Backup-Dateien via '#{search_path}'"
         end
       end
     end
-    return backup_okay, backup_hover
+    return backup_okay, backup_hover, backups
   end
 
   def getInstalledElexisVersions(elexisBasePaths = [ '/srv/elexis', '/usr/share/elexis', "#{ENV['HOME']}/elexis/bin" ])
@@ -123,20 +125,34 @@ module Sinatra
     info[:dbNames]  = [ get_hiera('::db::main')]
     info
   end
+  
+  def getElexisVersionen
+    elexisVarianten = Array.new
+    elexisVariante = Hash.new
+    elexisVariante[:name] = 'Medelexis 2.1.7'
+    elexisVariante[:path] = 'http://www.medelexis.ch/dl21.php?file=medelexis-linux'
+    elexisVarianten << elexisVariante
+    elexisVariante = Hash.new
+    elexisVariante[:name] = 'Elexis 2.1.6.1'   
+    elexisVariante[:path] = 'http://ftp.medelexis.ch/downloads_opensource/elexis/2.1.6.1/elexis-linux-2.1.6.1.20111211-install.jar'
+    elexisVarianten << elexisVariante
+    elexisVarianten
+  end
 
   def getBackupInfo
     backup = Hash.new    
     if get_hiera("elexis:mysql:included")
-      backup[:okay], backup[:backup_tooltip] = get_db_backup_info('mysql')
-      backup[:script] = '/usr/local/sbin/mysqlbackup.sh'
+      backup[:okay], backup[:backup_tooltip], backup[:backups] = get_db_backup_info('mysql')
+      backup[:script] = get_hiera("::db::backup::myql::script", '/usr/local/sbin/mysqlbackup.sh')
     elsif get_hiera("elexis:postgresql:included")
-      backup[:okay], backup[:tooltip] = get_db_backup_info('postgresql')
-      backup[:script] = '/usr/local/bin/pg_dump_elexis.rb'
+      backup[:okay], backup[:tooltip], backup[:backups] = get_db_backup_info('postgresql')
+      backup[:script] = get_hiera("::db::backup::postgresql::script", '/usr/local/bin/pg_dump_elexis.rb')
     else
       backup[:okay]        = "Weder MySQL noch PostgreSQL definiert. Probleme mit dem Setup!!  "
       backup[:tooltip]     = nil
-      backup[:setup_error] = true
+      backup[:setup_error] = tru  e
     end
+
     backup
   end
 
