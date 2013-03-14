@@ -10,6 +10,7 @@
 <br>
 </ul> 
   <h2>Bitte gewünschte Sicherungskopie auswählen:</h2> 
+  <br>
     <% bkpInfo = getBackupInfo; %>
     <% if bkpInfo and bkpInfo[:backups] %>
     <% bkpInfo[:backups].sort.reverse.each do | f| 
@@ -19,11 +20,13 @@
       <li>
         <section id="runLoadDatabase">  
           <form action="/runLoadDatabase" method="post">  
-            Backup von <%= "vor #{human} einlesen" %> einlesen.
-            <input type="submit" name='dumpFile' value='<%= f %>'> 
+            <h3>Backup von <%= "vor #{human} einlesen" %> einlesen.</h3>
+            <input type="submit" name='dumpFile' value='<%= f %>'>
           </form>  
         </section>
         <%= "#{f}<br>vom #{mTime}. Länge #{File.size(f)} bytes" %>
+            <br>
+            <br>
     </li>
   <% end %>
   <br>
