@@ -21,22 +21,27 @@
       <div class="meter-wrap">
           <div class="meter-value" style="background-color: <%= m[:background] %>; width: <%= m[:percentage] %>%;">
               <div class="meter-text">
-              <%= sprintf('Belegt %2d%% FS-typ: %-15s', m[:percentage],m[:mount_type]) + ' eingehängt in ' + m[:mount_point] %> 
+              <%= sprintf('Belegt %2d%% von %s FS-typ: %-15s', m[:percentage], m[:human_size], m[:mount_type]) + ' eingehängt in ' + m[:mount_point] %> 
               </div>
           </div>
       </div>
       <br>
     <% end %>
        <% if @info[:backup][:setup_error] %>
-        <LI> <div style="background-color: #FF0000" TITLE="<%= @info[:backup][:tooltip] %>" >Fehler: <%= @info[:backup][:okay] %></div></LH>
+        <LI> <div class="meter-text" style="background-color: #FF0000" TITLE="<%= @info[:backup][:tooltip] %>" >Fehler: <%= @info[:backup][:okay] %></div>
+             <div width="500px" TITLE="<%= @info[:backup][:tooltip] %>" style="background-color: #FF0000"  >Fehler: <%= @info[:backup][:okay] %></div></LH>
        <% else %>
-        <LI> <div TITLE="<%= @info[:backup][:tooltip] %>" ><%= @info[:backup][:okay] %></div></LH>
+        <LI> <div <div TITLE="<%= @info[:backup][:tooltip] %>" ><%= @info[:backup][:okay] %></div></LH>
        <% end %>
-    
+       
+       <% if @info[:backup_server_is] %>
+        <LI><h3>Backup-Server für die Datenbank ist <%= @info[:backup_server_is].inspect %></h3> </LH>
+       <% else %>
+        <LI>Kein Backup-Server für die Datenbank definiert</LH>
+       <% end %>       
       <li>Todo: Letztes Backup auf externen Datenträger<br></li>
       <li>Todo: Auslastung Datenträger Server</li>
       <li>Todo: Auslastung Datenträger Backup</li>
-      <li>Todo: Status Backup Datenbank</li>
     </ul>
     <br>
     <ul>
@@ -45,11 +50,15 @@
        
     <li><h3><a href="start">starte beliebige Elexis/Datenbank-Kombination</a></h3></li>
     
-    <li><section id="startDbBackup">  
-        <form action="/startDbBackup" method="post">  
+    <li><section id="runDbBackup">  
+        <form action="/runDbBackup" method="post">  
           <input type="submit" value="Datenbank-Backup jetzt starten"> 
         </form>  
       </section>        
+    </li>
+    
+    <li>
+      <h3><a href="formatEncrypted">Verschlüsselte Partition auf externer Festplatte erstellen</a></h3>
     </li>
     
     <li>Todo: Datenbank-Backup einlesen (externen Datenträger, Backup-Verzeichnis)</li>
@@ -57,6 +66,6 @@
     <li>Todo: Umschalten auf Backup-Server</li>
     
     <li>Todo: Neueste (Med)-Elexis Version installieren</li>
-    
+     <%= "@info für debug <br> "+@info.inspect %></li>
     </ul>
     

@@ -1,0 +1,27 @@
+<h2>Externer Festplatte löschen und verschlüsselte Partition erstellen</h2>
+<p>Dies müssen Sie nur dann ausführen, wenn Sie eine neue Festplatte gekauft haben.</p>
+<p>Mit diesem Script werden alle Daten auf der Festplatte gelöscht und eine neue, verschlüsselte Partition erstellt.</p>
+<p>Falls die Schlüssel-Datei /etc/backup.key nicht existiert, wird diese erstellt.<p>
+<br>
+<h3>Bitte gewünschte externe Festplatte auswählen:</h3>
+<br>
+<section id="runFormatting">  
+  <form action="/runFormatting" method="post">  
+      Gerätenamen <select name='device'>
+        <br>
+               <% @candidates.each do |deviceName, info|  %>
+                  <option value=<%= deviceName %>><%= deviceName %></option>
+               <% end %>
+            </select>
+  <br>
+  <br>
+  <p>Falls keine oder nicht die Kennung der gewünschten externen Festplatte auftaucht, bitte Festplatte trennen,
+  nochmals anschliessen und diese Seite neu laden.</p>
+  <input  style="background-color: #FF0000" type="submit" value="externe Festplatte komplett löschen und verschlüsselt formattieren.
+  Achtung! Diese Aktion kann nicht rückgängig gemacht werden!!"> 
+      <br>
+  </form> 
+</section>  
+
+  <br>
+  

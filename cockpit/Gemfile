@@ -15,3 +15,5 @@ gem "hiera"
 gem "erubis"
 gem "actionpack"
 gem 'nokogiri'
+gem 'action_view'
+gem 'activerecord-import'

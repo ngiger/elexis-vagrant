@@ -14,12 +14,15 @@
 # -percentage = (Time.now.to_i.modulo(500))/5
 #  %div.progress.progress-striped.active
 #   %div.bar{:style => "width: #{percentage}%;"}
-
+# http://samuelstern.wordpress.com/2012/11/28/making-a-simple-database-driven-website-with-sinatra-and-heroku/
+# http://guides.rubyonrails.org/migrations.html
 # http://ididitmyway.herokuapp.com/past/2010/4/18/using_active_record_in_the_console/
 # https://github.com/janko-m/sinatra-activerecord
 # Nächster Artikel ist sehr gut!
 # http://danneu.com/posts/15-a-simple-blog-with-sinatra-and-active-record-some-useful-tools/
-
+# https://github.com/zdennis/activerecord-import/wiki
+# http://stackoverflow.com/questions/3704065/how-to-import-data-into-rails
+# http://stackoverflow.com/questions/8476769/import-from-csv-into-ruby-array-with-1st-field-as-hash-key-then-lookup-a-field  
 # Features: 
 #   Freier Platz auf Festplatte auf lokalem Rechner
 #  Backup anstossen, 
@@ -43,33 +46,28 @@
 require 'sinatra'  
 require 'data_mapper'
 require 'builder'
-require 'sys/filesystem'
 require 'redcloth'
 require 'hiera'
-require 'action_view'
 require 'socket'
-include Sys
+# to display human readable time difference
+require 'action_view'
 include ActionView::Helpers::DateHelper
-require 'erubis'
-# set :erb, :escape_html => true   # dann wird alles home.erb escaped!
 
 require 'sinatra/base'
 require File.join(File.dirname(__FILE__), 'lib', 'elexis_helpers')
 
 class ElexisCockpit < Sinatra::Base
   register Sinatra::ElexisHelpers
+  @batch = nil
   
-  DataMapper::setup(:default, "sqlite3://#{Dir.pwd}/recall.db")  
-    
   helpers do  
     include Rack::Utils  
     alias_method :h, :escape_html  
   end  
 
   configure do
-    set :port,  7777
+    set :port,  9393 # same as shotgun
     set :info,  getSystemInfo
-    set :batch, [2]
   end
 
   # Some helper links. Should allow use to easily get values from server/backup
@@ -124,12 +122,9 @@ class ElexisCockpit < Sinatra::Base
 
   get '/' do
     @info = getSystemInfo
-    settings.info = @info
+    settings.set(:info, @info)
     @title = 'Übersicht'
-    settings.batch = BatchRunner.new(settings.info[:backup][:script], 
-                                      'Datenbank-Sicherung gestartet',
-                                      'Datenbank-Sicherung erfolgreich beendet',
-                                      'Datenbank-Sicherung fehlgeschlagen!!!')
+    settings.set(:batch, nil)
     erb :home
   end  
 
@@ -140,62 +135,92 @@ class ElexisCockpit < Sinatra::Base
   end
 
   post '/start' do
-    cmd = "nice #{params[:version]}/elexis " # +
-        # "-Dch.elexis.dbUser=#{params[:dbUser]} -Dch.elexis.dbPw=#{params[:dbPw]} " +
-        # "-Dch.elexis.dbFlavor=#{params[:dbFlavor]}  -Dch.elexis.dbSpec=jdbc:#{params[:dbFlavor]}://#{params[:dbHost]}:#{params[:dbPort]}/#{params[:dbName]}"
-    # Could also query for -Dch.elexis.username=test -Dch.elexis.password=test 
-    file = Tempfile.new('foo')
-    file.puts("#!/bin/bash -v")
-    file.puts(cmd + " &") # run in the background
-    file.close
-    File.chmod(0755, file.path)
-    settings.batch = BatchRunner.new(file.path, 
-                                      'Elexis starten',
-                                      'Elexis erfolgreich gestartet',
-                                      'Elexis konnte nicht gestartet werde')
-
-    redirect '/elexisStarted'    
+    puts "params = #{params.inspect}"
+    version = params[:version]
+    redirect "/runElexis?version=#{version}"
   end 
 
-  get '/elexisStarted' do
+  get '/runElexis' do
     # cannot be run using shotgun! Please call it using ruby elexis-cockpit.rub
-    @title = settings.batch.title
-    settings.batch.runBatch  
-  end
-
-  def didNotWork
-    puts cmd
-    settings.batch.runBatch
-
-    Thread.new do
-      puts "Starting thread"; s
-      system(cmd); 
-      puts "#{cmd} finished" 
+    puts "#{request.path_info}: version #{params[:version]}"
+    unless settings.batch
+      cmd = "nice #{params[:version]}/elexis " # +
+          # "-Dch.elexis.dbUser=#{params[:dbUser]} -Dch.elexis.dbPw=#{params[:dbPw]} " +
+          # "-Dch.elexis.dbFlavor=#{params[:dbFlavor]}  -Dch.elexis.dbSpec=jdbc:#{params[:dbFlavor]}://#{params[:dbHost]}:#{params[:dbPort]}/#{params[:dbName]}"
+      # Could also query for -Dch.elexis.username=test -Dch.elexis.password=test 
+      file = Tempfile.new('foo')
+      file.puts("#!/bin/bash -v")
+      file.puts(cmd + " &") # run in the background
+      file.close
+      File.chmod(0755, file.path)
+      settings.batch = BatchRunner.new(file.path, 
+                                        'Elexis starten',
+                                        'Elexis erfolgreich gestartet',
+                                        'Elexis konnte nicht gestartet werde')
     end
-    sleep 0.1
-    puts "After creating thread"  
-    redirect '/'    
-  end
-
-  get '/startDbBackup' do
-    # cannot be run using shotgun! Please call it using ruby elexis-cockpit.rub
     @title = settings.batch.title
     settings.batch.runBatch
   end
 
-  post '/startDbBackup' do
-    redirect '/startDbBackup'    
+  get '/runDbBackup' do
+    # cannot be run using shotgun! Please call it using ruby elexis-cockpit.rub
+    puts "#{request.path_info}: #{settings.batch.inspect}"
+    unless settings.batch
+      settings.batch = BatchRunner.new(settings.info[:backup][:script], 
+                                        'Datenbank-Sicherung gestartet',
+                                        'Datenbank-Sicherung erfolgreich beendet',
+                                        'Datenbank-Sicherung fehlgeschlagen!!!')
+    end
+    @title = settings.batch.title
+    settings.batch.runBatch
+  end
+
+  post '/runDbBackup' do
+    redirect '/runDbBackup'    
   end 
 
+  get '/formatEncrypted' do
+    puts "#{request.path_info}"
+    @title = 'Verschlüsselte Partition erstellen'
+    @candidates = Hash.new
+    @candidates = getPossibleExternalDiskDrives
+    puts @candidates.inspect
+    erb :formatEncrypted
+  end  
+  
   post '/formatEncrypted' do
-    "Hello World"
-    # finde Kandidaten auf gemounteten Drives /, /opt, /home, /usr /var, /tmp, /boot, /media, /dev, /lib
-    # finde Kandidaten auf nicht gemounteten Drives /dev/sd* solange nicht gemountet
-    # Liste präsentieren
+    @title = 'Verschlüsselte Partition erstellen'
+    @candidates = Hash.new
+    @candidates = getPossibleExternalDiskDrives
+    erb :formatEncrypted
     # call /usr/local/bin/backup_encrypted.rb --device-name ausgewählt --init
     # Batch laufen lassen
   end
+  
+  post '/runFormatting' do
+    puts "#{request.path_info}: params #{params}"
+    device = params[:device]
+    settings.set(:batch, nil)
+    redirect "/runFormatting?device=#{device}"
+  end  # start the server if ruby file executed directly
 
-  # start the server if ruby file executed directly
+  get '/runFormatting' do
+    # cannot be run using shotgun! Please call it using ruby elexis-cockpit.rub
+    unless settings.batch
+      cmd = "echo #{get_hiera('::hd::external::format_and_encrypt')} -init --device #{params[:device]}; echo done "  
+      file = Tempfile.new('foo')
+      file.puts("#!/bin/bash -v")
+      file.puts(cmd) # Wait til finished
+      file.close
+      File.chmod(0755, file.path)
+      settings.batch = BatchRunner.new(file.path, 
+                                        'Externe Festplatte formattieren und verschlüsseln',
+                                        'Externe Festplatte erfolgreich verschlüsselt',
+                                        'Externe Festplatte konnte nicht formattieren werden')
+    end
+    @title = settings.batch.title
+    settings.batch.runBatch
+  end  # start the server if ruby file executed directly
+  
   run! if app_file == $0
 end
