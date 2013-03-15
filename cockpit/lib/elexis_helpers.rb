@@ -5,7 +5,10 @@ include Sys
 
 module Sinatra
   module ElexisHelpers
-    
+  Green  = '#66FF66'
+  Red    = '#FF3300'
+  Orange = '#FFA500'
+  
   def get_hiera(key, default_value = nil)
     local_yaml_db     = File.join(File.dirname(File.dirname(__FILE__)), 'local_config.yaml')
     local_hiera_conf  = File.join(File.dirname(File.dirname(__FILE__)), 'local_hiera.yaml')
@@ -39,36 +42,37 @@ module Sinatra
   end
   
   def get_db_backup_info(which_one)
-    key_dir   = "::db::backup::dir"
-    key_name  = "::db::backup::name"    
-    backup_dir = get_hiera(key_dir)
-    db_main   =  get_hiera(key_name)
-    
-    maxHours  = 25
-    unless (backup_dir and db_main)
-      backup_okay = "Kein #{which_one.capitalize}-Datenbank-Backup definiert"
-      backup_hover = "Hiera #{key_dir} oder #{key_name} schlug fehlt"
+    bkpInfo = Hash.new
+    maxHours = 24
+    maxDays  =  7
+    search_path = get_hiera("::db::#{get_hiera('::db::type')}::backup::files")
+    backups =  Dir.glob(search_path)
+    bkpInfo[:backups] = backups
+    if  bkpInfo[:backups].size == 0
+      bkpInfo[:okay] = "Keine Backup_Dateien via '#{search_path}' gefunden"
+      bkpInfo[:backup_tooltip] = "Fehlschlag. Bitte beheben Sie das Problem"
     else
-      search_path ="#{backup_dir}/#{which_one}/*"
-      backups = Dir.glob(search_path)
-      if  backups.size == 0
-        backup_okay = "Keine Backup_Dateien via '#{search_path}' gefunden"
-        backup_hover = "Fehlschlag. Bitte beheben Sie das Problem"
-      else
-        neueste = backups[0]
-        modificationTime = File.mtime(neueste)
-        human = distance_of_time_in_words(Time.now, modificationTime)
+      neueste = backups[0]
+      modificationTime = File.mtime(neueste)
+      human = distance_of_time_in_words(Time.now, modificationTime)
 #        human = (Time.now - modificationTime).to_i
-        if (Time.now - modificationTime < maxHours*60*60)        
-          backup_okay  = "#{which_one.capitalize}-Backup okay"
-          backup_hover = "#{backups.size} Backups vorhanden. Neueste #{neueste}  #{File.size(neueste)} Bytes erstellt vor #{human}"
-        else
-          backup_okay = "Neueste Backup-Datei '#{neueste}' erstellt vor #{human} ist älter als #{maxHours} Stunden!"
-          backup_hover = "Fehlschlag. Fand #{backups.size} Backup-Dateien via '#{search_path}'"
-        end
+      if ((Time.now - modificationTime) > maxDays*24*60*60)      
+        bkpInfo[:okay] = "Neueste Backup-Datei '#{neueste}' erstellt vor #{human} ist älter als #{maxDays} Tage"
+        bkpInfo[:backup_tooltip] = "Fehlschlag. Fand #{backups.size} Backup-Dateien via '#{search_path}'"
+      elsif ((Time.now - modificationTime) > maxHours*60*60)      
+        bkpInfo[:colour] = Orange
+        bkpInfo[:okay] = "Neueste Backup-Datei '#{neueste}' erstellt vor #{human} ist älter als #{maxHours} Stunden!"
+        bkpInfo[:backup_tooltip] = "Fehlschlag. Fand #{backups.size} Backup-Dateien via '#{search_path}'"
+      else
+        bkpInfo[:colour] = Green
+        bkpInfo[:okay]  = "#{which_one.capitalize}-Backup okay"
+        bkpInfo[:backup_tooltip] = "#{backups.size} Backups vorhanden. Neueste #{neueste}  #{File.size(neueste)} Bytes erstellt vor #{human}"
       end
     end
-    return backup_okay, backup_hover, backups
+    bkpInfo[:dump_script] = get_hiera("::db::#{get_hiera('::db::type')}::dump::script")
+    bkpInfo[:load_script] = get_hiera("::db::#{get_hiera('::db::type')}::load::script")
+    bkpInfo[:bkp_files]   = get_hiera("::db::#{get_hiera('::db::type')}::backup::files")
+    return bkpInfo
   end
 
   def getInstalledElexisVersions(elexisBasePaths = [ '/srv/elexis', '/usr/share/elexis', "#{ENV['HOME']}/elexis/bin" ])
@@ -140,20 +144,9 @@ module Sinatra
   end
 
   def getBackupInfo
-    backup = Hash.new    
-    if get_hiera("elexis:mysql:included")
-      backup[:okay], backup[:backup_tooltip], backup[:backups] = get_db_backup_info('mysql')
-      backup[:script] = get_hiera("::db::backup::myql::script", '/usr/local/sbin/mysqlbackup.sh')
-    elsif get_hiera("elexis:postgresql:included")
-      backup[:okay], backup[:tooltip], backup[:backups] = get_db_backup_info('postgresql')
-      backup[:script] = get_hiera("::db::backup::postgresql::script", '/usr/local/bin/pg_dump_elexis.rb')
-    else
-      backup[:okay]        = "Weder MySQL noch PostgreSQL definiert. Probleme mit dem Setup!!  "
-      backup[:tooltip]     = nil
-      backup[:setup_error] = tru  e
-    end
-
-    backup
+    backup = Hash.new 
+    dbType = get_hiera("::db::type")
+    return get_db_backup_info(dbType)
   end
 
   def getSystemInfo

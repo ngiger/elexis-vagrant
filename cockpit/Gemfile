@@ -7,12 +7,8 @@ gem "datamapper"
 gem "dm-sqlite-adapter"
 gem "builder"
 gem "RedCloth"
-
-# gem "rack-test"
-# gem "rspec"
 gem "sys-filesystem"
 gem "hiera"
-# gem "erubis"
 gem "actionpack" , ">=4.0.0.beta1" 
 gem 'nokogiri'
 gem 'activesupport'
