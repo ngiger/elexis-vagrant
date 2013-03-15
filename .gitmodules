@@ -22,3 +22,6 @@
 [submodule "veewee"]
 	path = veewee
 	url = git@github.com:ngiger/veewee.git
+[submodule "cockpit"]
+	path = cockpit
+	url = git@github.com:elexis/elexis-cockpit.git
