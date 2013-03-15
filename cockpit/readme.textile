@@ -1,9 +1,0 @@
-h2. Anpassen an nicht elexis-vagrant konforme Layouts
-
-* demo_hiera.yaml nach local_hiera.yaml und demo_config.yaml local_config.yaml umbennen
-* In demo_hiera.yaml "/opt/src/elexis-vagrant/cockpit/local_config.yaml" anpassen
-* In local_config.yaml Optionen anpassen
-
-
-Bei Fragen "Niklaus Giger":mailto:niklaus.giger@member.fsf.org konsultieren
-
