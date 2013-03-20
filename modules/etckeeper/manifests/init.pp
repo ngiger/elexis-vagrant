@@ -26,29 +26,38 @@
 class etckeeper {
   # HIGHLEVEL_PACKAGE_MANAGER config setting.
   $etckeeper_high_pkg_mgr = $operatingsystem ? {
-    /(?i-mx:ubuntu|debian)/        => 'apt',
-    /(?i-mx:centos|fedora|redhat)/ => 'yum',
+    /(?i-mx:ubuntu|debian)/                           => 'apt',
+    /(?i-mx:centos|fedora|redhat|oraclelinux|amazon)/ => 'yum',
   }
 
   # LOWLEVEL_PACKAGE_MANAGER config setting.
   $etckeeper_low_pkg_mgr = $operatingsystem ? {
-    /(?i-mx:ubuntu|debian)/        => 'dpkg',
-    /(?i-mx:centos|fedora|redhat)/ => 'rpm',
+    /(?i-mx:ubuntu|debian)/                           => 'dpkg',
+    /(?i-mx:centos|fedora|redhat|oraclelinux|amazon)/ => 'rpm',
+  }
+
+  $gitpackage = $operatingsystem ? {
+    /(?i-mx:ubuntu|debian)/                           => 'git-core',
+    /(?i-mx:centos|fedora|redhat|oraclelinux|amazon)/ => 'git',
   }
 
   Package {
     ensure => present,
   }
-  package { 'git': }
-  package { 'mercurial': }
-  package { 'etckeeper':
-    require => [ Package['git'],
-                 File['etckeeper.conf'],
-                 ],
+
+  if !defined(Package[$gitpackage]) {
+    package { $gitpackage: }
   }
+
+  package { 'etckeeper':
+    require => [ Package[$gitpackage], File['etckeeper.conf'], ],
+  }
+
   file { '/etc/etckeeper':
     ensure => directory,
+    mode   => '0755',
   }
+
   file { 'etckeeper.conf':
     ensure  => present,
     path    => '/etc/etckeeper/etckeeper.conf',
@@ -57,10 +66,12 @@ class etckeeper {
     mode    => '0644',
     content => template('etckeeper/etckeeper.conf.erb'),
   }
+
   exec { 'etckeeper-init':
-    command => '/usr/bin/etckeeper init',
+    command => 'etckeeper init',
+    path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
     cwd     => '/etc',
     creates => '/etc/.git',
-    require => [ Package['git'], Package['etckeeper'], ],
+    require => [ Package[$gitpackage], Package['etckeeper'], ],
   }
 }
