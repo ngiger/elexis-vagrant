@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>Branch 2.1.7 von Elexis mit Hilfe von buildr.apache.org erstellen</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>ChooseBranch</name>
+          <description>Select branch/tag go be built</description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>2.1.7</string>
+              <string>2.1.7.1.rc0</string>
+              <string>2.1.7.1.rc1</string>
+              <string>2.1.7.1</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.plugins.mercurial.MercurialSCM" plugin="mercurial@1.44">
+    <installation>(Default)</installation>
+    <source>https://bitbucket.org/ngiger/elexis-bootstrap</source>
+    <modules></modules>
+    <branch>2.1.7</branch>
+    <clean>false</clean>
+    <browser class="hudson.plugins.mercurial.browser.HgWeb">
+      <url>https://bitbucket.org/ngiger/elexis-bootstrap/</url>
+    </browser>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers class="vector">
+    <hudson.triggers.SCMTrigger>
+      <spec>3 * * * *
+</spec>
+      <ignorePostCommitHooks>false</ignorePostCommitHooks>
+    </hudson.triggers.SCMTrigger>
+  </triggers>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>export P2_EXE=/var/lib/jenkins/juno/eclipse/
+export PATH=${HOME}/.rvm/bin:${PATH}
+rvm alias create default jruby-1.6.7.2
+rvm list 
+# JAVA_OPTS wie bei medelexis.
+export JAVA_OPTS=&quot;-Xmx1024m -XX:MaxPermSize=312m&quot;
+export JRUBY_OPT=&quot;-J-Xmn512m -J-Xms2048m -J-Xmx2048m -J-server&quot;
+./gen_repo.rb --branch $ChooseBranch .
+./rebuild_all.rb
+</command>
+    </hudson.tasks.Shell>
+    <hudson.tasks.Shell>
+      <command></command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers>
+    <hudson.tasks.ArtifactArchiver>
+      <artifacts>deploy/p2repository/**,deploy/*elexis-*.jar,deploy/dox/**,deploy/elexis_plugins/**</artifacts>
+      <latestOnly>false</latestOnly>
+    </hudson.tasks.ArtifactArchiver>
+    <hudson.tasks.Mailer plugin="mailer@1.4">
+      <recipients>niklaus.giger@member.fsf.org   </recipients>
+      <dontNotifyEveryUnstableBuild>true</dontNotifyEveryUnstableBuild>
+      <sendToIndividuals>false</sendToIndividuals>
+    </hudson.tasks.Mailer>
+    <hudson.tasks.BuildTrigger>
+      <childProjects>elexis-2.1.7-buildr-test, jubula-elexis-2.1.7-windows-7, jubula-elexis-2.1.7, jubula-elexis-2.1.7-macosx, elexis-2.1.7-windows, elexis-2.1.7-macosx, jubula-elexis-2.1.7-windows-8, elexis-2.1.7-windows-8</childProjects>
+      <threshold>
+        <name>SUCCESS</name>
+        <ordinal>0</ordinal>
+        <color>BLUE</color>
+      </threshold>
+    </hudson.tasks.BuildTrigger>
+  </publishers>
+  <buildWrappers>
+    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@1.5.2"/>
+  </buildWrappers>
+</project>

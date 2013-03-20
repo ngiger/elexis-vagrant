@@ -4,16 +4,17 @@
 # Boxes are stored under ~/.vagrant.d/boxes/
 require 'vagrant-hiera'
 
-private = '/opt/fileserver/elexis/boxes/Elexis-wheezy-amd64.box'
-private = '/opt/src/veewee/Elexis-wheezy-amd64.box'
-boxUrl = File.exists?(private) ? private : 'http://ngiger.dyndns.org/downloads/Elexis-wheezy-amd64.box'
+private = '/opt/fileserver/elexis/boxes/Elexis-Wheezy-amd64.box'
+private = '/opt/src/veewee/Elexis-Wheezy-amd64.box'
+boxUrl = File.exists?(private) ? private : 'http://ngiger.dyndns.org/downloads/Elexis-Wheezy-amd64.box'
 puts "Using boxUrl #{boxUrl}"
 
 Vagrant::Config.run do |config|
   # Setup the box
   config.vm.provision :puppet, :options => "--verbose"
+  config.vm.customize ["modifyvm", :id, "--memory", 3036]    
   config.vm.customize do |vm|
-    vm.memory_size = 2048 # MB
+    vm.memory_size  = 2048 # MB
   end
   config.vm.provision :puppet do |puppet|
     puppet.manifests_path = "manifests"
@@ -29,25 +30,26 @@ Vagrant::Config.run do |config|
   config.vm.define :server do |thisbox|  
     thisbox.vm.host_name = "server.#{`hostname -d`.chomp}"
     thisbox.vm.network :hostonly, "192.168.50.10"
-    thisbox.vm.box     = "Elexis-wheezy-amd64"
+    thisbox.vm.box     = "Elexis-Wheezy-amd64"
     thisbox.vm.box_url = boxUrl
     thisbox.vm.forward_port   22, 10022    # ssh
     thisbox.vm.forward_port   80, 10080    # Apache
     thisbox.vm.forward_port 3306, 13306    # MySQL
     thisbox.vm.forward_port 4567, 14567    # Gollum (elexis-admin Wiki)
     thisbox.vm.forward_port 8080, 18080    # Jenkins
+    thisbox.vm.forward_port 9393, 19393    # elexis-cockpit
   end
   
   config.vm.define :backup do |thisbox|  
     thisbox.vm.host_name = "backup.#{`hostname -d`.chomp}"
     thisbox.vm.network :hostonly, "192.168.50.20"
-    thisbox.vm.box     = "Elexis-wheezy-amd64"
+    thisbox.vm.box     = "Elexis-Wheezy-amd64"
     thisbox.vm.box_url = boxUrl
     thisbox.vm.forward_port   22, 20022    # ssh
     thisbox.vm.forward_port   80, 20080    # Apache
     thisbox.vm.forward_port 3306, 23306    # MySQL
     thisbox.vm.forward_port 4567, 24567    # Gollum (elexis-admin Wiki)
-    thisbox.vm.forward_port 8080, 28080    # Jenkins
+    thisbox.vm.forward_port 9393, 29393    # elexis-cockpit
   end
   
   config.vm.define :devel do |thisbox|
@@ -60,6 +62,6 @@ Vagrant::Config.run do |config|
     thisbox.vm.forward_port   80, 40080		# Apache
     thisbox.vm.forward_port 3306, 43306		# MySQL
     thisbox.vm.forward_port 4567, 44567		# Gollum (elexis-admin Wiki)
-    thisbox.vm.forward_port 8080, 48080		# Jenkins
+    thisbox.vm.forward_port 9393, 49393    # elexis-cockpit
   end if false
 end

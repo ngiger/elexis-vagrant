@@ -21,7 +21,7 @@ define elexis::jenkins_elexis(
   
   if (!defined(Elexis::Download_eclipse_version[$eclipseVersion])) {
     elexis::download_eclipse_version{$eclipseVersion:
-      baseURL => "${elexis::common::elexisFileServer}/eclipse",
+      baseURL => "${elexis::downloadURL}/eclipse",
     }
     elexis::eclipse_plugins{$eclipseVersion:
     }

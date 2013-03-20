@@ -6,33 +6,25 @@ require elexis::common
 define elexis::download_eclipse_version(
   $baseURL,
   $file_base = $title,
-  $downloadDir = "${jenkins::jenkinsRoot}/downloads"
+  $downloadDir = "/opt/jenkins/downloads"
  ) {
   $fullName = "$downloadDir/$filename"
   $cmd = "wget --timestamping "
   notify {"version-cmd  ${cmd} title ${title} from ${baseURL}":}
   include jenkins
-  if defined($jenkins::jenkinsRoot) {
-    notify{"defined jenkins::jenkinsRoot":}
-    file{$jenkins::jenkinsRoot:
-      ensure => directory,
-      require => User[$jenkins::jenkinsUser],
+  if !defined(Exec["create_$downloadDir"]) {
+    exec { "create_$downloadDir":
+      command => "mkdir -p ${downloadDir}",
+      path => '/usr/bin:/bin',
+      unless => "test -d ${downloadDir}"
     }
-  } else {
-    notify{"no definition for jenkins::jenkinsRoot":}
   }
 
-  if !defined(File[$downloadDir]) {
-    file{$downloadDir:
-      ensure => directory
-    }
-  }
 
   # default for the execs
   Exec {
     cwd     => $downloadDir,
     path    => '/usr/bin:/bin',
-    require => File[$downloadDir],
     user    => $jenkins::jenkinsUser,
     group   => $jenkins::jenkinsUser,
   }

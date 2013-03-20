@@ -9,9 +9,11 @@
 # * Jubula installation setup.sh is a 32-bit application. http://www.eclipse.org/forums/index.php/m/893607/#msg_893607
 # * therefore we need the ia32-libs on amd64
 
-class jubula($jubulaURL = 'http://s3.amazonaws.com/jubula/setup.sh',
-  $destDir = '/usr/local/jubula_6_2',
-  $setupSh = '/opt/downloads/jubula_setup_6_2.sh') {
+# http://ftp.medelexis.ch/downloads_opensource/jubula/jubula_setup_5.2.00266.sh
+# 'http://s3.amazonaws.com/jubula/setup.sh'
+class jubula($jubulaURL = 'http://ftp.medelexis.ch/downloads_opensource/jubula/jubula_setup_5.2.00266.sh',
+  $destDir = '/usr/local/jubula_5_2',
+  $setupSh = '/opt/downloads/jubula_setup_5_2.sh') {
   include apt # to force an apt::update
   $downloads  = dirname($setupSh)
   $scriptName = "${downloads}/script.exp"
@@ -69,9 +71,16 @@ class jubula($jubulaURL = 'http://s3.amazonaws.com/jubula/setup.sh',
     require => Exec[$scriptName],
   }
 
+  exec { 'debian_multiarch_i386':
+    command => "dpkg --add-architecture i386 && apt-get update | tee /var/log/debian_multiarch_i386.log",
+    creates => "/var/log/debian_multiarch_i386.log",
+    cwd => "/usr/bin",
+    path => '/usr/bin:/bin',
+  }
+
   case $architecture {
       /amd64/:  {
-        package { ['ia32-libs']: ensure => present, }
+        package { ['ia32-libs']: ensure => present, require => [ Exec['debian_multiarch_i386']] }
         Exec[$scriptName] <- Package['ia32-libs']
         case $operatingsystem {
               'Debian':  { }

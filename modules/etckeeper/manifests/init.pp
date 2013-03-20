@@ -40,6 +40,7 @@ class etckeeper {
     ensure => present,
   }
   package { 'git': }
+  package { 'mercurial': }
   package { 'etckeeper':
     require => [ Package['git'],
                  File['etckeeper.conf'],

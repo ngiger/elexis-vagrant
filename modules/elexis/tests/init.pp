@@ -1,1 +1,1 @@
-include elexis::common
+include elexis

@@ -34,7 +34,7 @@ h2. Bring-up of a TestSystem
 * Set up a local fileserver on you net. This speeds things greatly up, if you use this project more than once.
 ** Execute @./gen_fileserver.rb@. It will download about 2 GB into /var/opt/fileserver. If you want to change this location edit the scripts
 ** Let your HTTP server serve this page under "http://<ipaddress of your pc>/fileserver". In my case I only did a @ln -s /var/opt/fileserver /var/www/@ and my Apache server was happy.
-** Change the line @$elexisFileServer = 'http://172.25.1.61/fileserver/elexis'@ in @manifests/site.pp@ to match you IP-address.
+** Uncomment the line @$elexis::downloadURL: 'http://172.25.1.61/fileserver/elexis'@ in @hiera/config.yaml@ and set it to match you IP-address.
 * APT-Proy
 ** Adapt the lines in @manifests/site.pp@ which define a proxy_host for apt to match your host/port number.
 ** If you do not have such proxy (and don't want to install one, e.g. @sudo apt-get install apt-cacher-ng@) then simply remove the line

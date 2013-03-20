@@ -1,0 +1,19 @@
+h1. A word about variables
+
+Puppet can resolve variable in a lot of ways. Here we describe the approach we use for managing the Elexis-admin project.
+
+Its component are
+
+* Hiera allows a hierarchical search to get variables from. The search strategy is defined in the file
+** hiera.yaml. It uses YAML and GPG (to encrypt passwords) as dackends to store the content
+** it defines also the root folder where it searches for files. We use the default /etc/puppet
+** The hierarchy is quite small, but allows you to get your variables (search ends at first match)
+*** in a host specific yaml file (you may specify one with "hostname=myHostToTest"
+*** in environment specific yaml file. The environment can be specified when calling puppet or hiera adding "env=test"
+*** in private/config.yaml. This allows you to override most setting
+*** in hiera/common.yaml. There you find a commented -but not actived - list of all settings
+* puppet classes can have default values. It is good practice to define possibly varying thins as class variables
+(e.g. specific version of a package, a path to database).
+** Some generally useful values can be found under modules/elexis/init.pp
+* Use puppetforge modules whereever possible. 
+

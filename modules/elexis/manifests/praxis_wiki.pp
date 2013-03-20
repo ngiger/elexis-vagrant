@@ -1,10 +1,11 @@
 # Here we define all needed stuff to bring up a Wiki for an Elexis practice
+include git
 
 class elexis::praxis_wiki inherits elexis::common {
   $initFile =  '/etc/init.d/gollum'
   $vcsRoot = '/home/elexis/praxis_wiki'
 
-  package { ['make', 'libxslt*-dev', 'libxml2-dev']:
+  package { ['make', 'libxslt1-dev', 'libxml2-dev']:
     ensure => installed,
   }
   package{  ['gollum', # markdowns is currently well supported, including live editing
@@ -13,14 +14,14 @@ class elexis::praxis_wiki inherits elexis::common {
     ]:
     ensure => present,
     provider => gem,
-    require => Package['make', 'libxslt*-dev', 'libxml2-dev'],
+    require => Package['make', 'libxslt1-dev', 'libxml2-dev'],
   }
 
 # gollum TODO: set default to .textile, see DefaultOptions  in lib/gollum/frontend/public/javascript/editor/gollum.editor.js
 # Maybe done using a config.ru file inside the wiki!
 
   file  { $initFile:
-    source => 'puppet:///modules/elexis/gollum.init',
+    content => template('elexis/gollum.init.erb'),
     owner => 'root',
     group => 'root',
     mode  => 0754,
@@ -32,7 +33,7 @@ class elexis::praxis_wiki inherits elexis::common {
       owner => 'elexis',
       group => 'elexis',
       source => "https://github.com/ngiger/elexis-admin.wiki.git",
-      require => [User['elexis'], Package['git'], ],
+      require => [User['elexis'], ], # Package['git'],
   }
 }
 
@@ -46,4 +47,4 @@ class elexis::praxis_wiki_service inherits elexis::praxis_wiki {
   }
 }
 
-class {'elexis::praxis_wiki_service':stage => last; }
+class {'elexis::praxis_wiki_service':stage => deploy_app; }

@@ -2,7 +2,7 @@
 # mysql-server environment for Elexis
 
 class elexis::mysql_server(
-  $db_backup_dir      = hiera('::db::backup::dir', '/home/backup')
+  $db_backup_dir      = hiera('::db::backup::dir', '/home/backup'),
   $db_backup_user     = hiera('::db::backup::user', 'elexis'),
   $db_backup_password = hiera('::db::backup::name', 'elexisTest'),
   $db_main_name       = hiera('::db::main::password', 'elexis'),
@@ -23,7 +23,7 @@ class elexis::mysql_server inherits elexis::common {
     source => 'puppet:///modules/elexis/debian.cnf',
   }
 
-  notify { "Granting for Elexis MySQL database": }
+  # notify { "Granting for Elexis MySQL database": }
   package{  ['cups', 'cups-bsd']:
     ensure => present,
   }

@@ -16,6 +16,10 @@ case "$1" in
   *) echo "Usage: $0 {start|stop|restart|force-reload}" >&2; exit 1 ;;
 esac
 
-[ -x /usr/local/bin/gollum ] \
-    && cd /home/elexis/praxis_wiki && exec /usr/bin/sudo -u elexis -b /usr/local/bin/gollum
+<% inst_dir = scope.function_hiera(['elexis::praxis_wik::vcsRoot', '/home/elexis/praxis_wiki']) %>
+if [ -d <%=  inst_dir %> ]
+then 
+  # redirect stdout and stderr into a log file
+   sudo -iHu elexis gollum <%=  inst_dir %> &> /var/log/gollum.log &
+fi
                                                                                                                                                  

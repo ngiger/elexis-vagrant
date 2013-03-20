@@ -4,9 +4,7 @@ class elexis::devel inherits elexis::common {
 
   include elexis::client
   include elexis::mysql_server
-  package { ['ant', 'subversion', 'mercurial']:
-    ensure => latest
-  }
+  include elexis::vcs_apps
   include eclipse
   include jenkins
   include elexis::jenkins_commons

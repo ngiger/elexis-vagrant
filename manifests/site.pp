@@ -8,41 +8,42 @@
 
 # I am not sure, whether I still need them
 # I think, using puppetlabs-apt, make some lines obsolete (TODO: before 0.2)
+stage { 'initial': before => Stage['first'] }
 stage { 'first': before => Stage['second'] }
 stage { 'second': before => Stage['main'] }
 stage { 'last': require => Stage['main'] }
 
-$debian_release = hiera('debian::release', 'wheezy')
-
 class { 'apt': 
     proxy_host => hiera('apt::proxy_host', false),
     proxy_port => hiera('apt::proxy_port', false),
-    purge_sources_list   => hiera('apt::purge_sources_list',   true),
-    purge_sources_list_d => hiera('apt::purge_sources_list_d', true),
-    purge_preferences_d  => hiera('apt::purge_sources_list_d', true),
+    purge_sources_list   => hiera('apt::purge_sources_list',   false),
+    purge_sources_list_d => hiera('apt::purge_sources_list_d', false),
+    purge_preferences_d  => hiera('apt::purge_sources_list_d', false),
 }
 
 apt::source { 'debian_wheezy':
   location          => hiera('apt::source:location', 'http://mirror.switch.ch/ftp/mirror/debian/'),
-  release           => hiera('apt::source:release', $debian_release),
+  release           => hiera('apt::source:release', 'wheezy'),
   repos             => hiera('apt::source:repos', 'main contrib non-free'),
 #  required_packages => hiera('apt::source:required_packages', 'debian-keyring debian-archive-keyring'),
 #  key               => hiera('apt::source:key', '55BE302B'),
 #  key_server        => hiera('apt::source:key_server', 'subkeys.pgp.net'),
 #  pin               => hiera('apt::source:pin', '-10'),
-  include_src       => hiera('apt::source:include_src', true)
+  include_src       => hiera('apt::source:include_src', true),
 }
 
 apt::source { 'debian_security':
   location          => hiera('apt::source:security:location', 'http://security.debian.org/'),
-  release           => hiera('apt::source:security:release', "$debian_release/updates"),
+  release           => hiera('apt::source:security:release', 'wheezy/updates'),
   repos             => hiera('apt::source:security:repos', 'main contrib non-free'),
-  include_src       => hiera('apt::source:security:include_src', true)
+  include_src       => hiera('apt::source:security:include_src', true),
 }
 
 group { "puppet": ensure => "present", gid => 7777}
 
-class {'etc_hiera_yaml': stage => first; }
+class {'etc_hiera_yaml': 
+  stage => initial;  
+}
 
 
 class etc_hiera_yaml {
@@ -50,25 +51,25 @@ class etc_hiera_yaml {
   
 }
 
-class apt_get_update {    
-    exec{'apt_get_update':
-      command => "apt-get update",
-      path    => "/usr/bin:/usr/sbin:/bin:/sbin",
-      refreshonly => true,
-    }
-}
+# class apt_get_update {    
+#     exec{'apt_get_update':
+#       command => "apt-get update",
+#       path    => "/usr/bin:/usr/sbin:/bin:/sbin",
+#       refreshonly => true,
+#     }
+# }
 
 class { ['ensureLibShadow']: stage => first; }
-class {'apt_get_update': stage => first; }
+# class {'apt_get_update': stage => initial; }
 
 # Under Debian squeeze we must install rubygems as it was not yet part of the
 # basic ruby package
-include apt_get_update
+# include apt_get_update
 
 class ensureLibShadow{
   case $rubyversion {
     '1.8.7' : {
-      notify { "ruby version $rubyversion needs rubygems": }
+#      notify { "ruby version $rubyversion needs rubygems": }
       package { ['rubygems','libshadow-ruby1.8']: # libshadow-ruby1.8 needed to manage user passwords!
         ensure => present,
       }
@@ -98,7 +99,7 @@ if hiera('editor:default', false) {
   }  
 }
 node default {
-    notify { "\n\nsite.pp node default for hostname $hostname": }
+    # notify { "\n\nsite.pp node default for hostname $hostname": }
 }
 
 # Some common stuff for the admin
@@ -137,7 +138,7 @@ import "nodes/*.pp"
 
 $res = hiera('import:xxxxprivate:nodes', false)
 if $res {
-    notify { "\nimporting private nodes res ist $res": }
+    #notify { "\nimporting private nodes res ist $res": }
 #    import "../private/nodes/*.pp";
 }
 
