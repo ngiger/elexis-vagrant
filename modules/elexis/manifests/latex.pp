@@ -1,15 +1,11 @@
 # Here we define all the LaTeX packages, which we need to create Elexis documentation
 
-class elexis::latex inherits elexis::common {
-
-  $destDir  = '/usr/share/texmf/tex/latex/misc'
-  $floatStyName = "$destDir/floatflt.sty"
-
-  case $elexisFileServer {
-        /^http|^ftp/:  { $floatfltURL = "${elexisFileServer}/latex/floatflt.zip" }
-        default: { $floatfltURL = 'http://mirror.ctan.org/macros/latex/contrib/floatflt.zip'}
-    }
-
+class elexis::latex ( 
+  $destDir  = '/usr/share/texmf/tex/latex/misc',
+  $floatStyName = "$destDir/floatflt.sty",
+  $floatfltURL = 'http://mirror.ctan.org/macros/latex/contrib/floatflt.zip',
+)
+inherits elexis::common {
   if !defined(Package['unzip']) { package {'unzip': ensure => present, } } 
   package {['texlive', 'texinfo', 'texlive-lang-german', 'texlive-latex-extra']:
     ensure => present,

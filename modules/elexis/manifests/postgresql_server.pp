@@ -12,13 +12,14 @@ class { 'postgresql':
 }
 
 class elexis::postgresql_server(
-  $db_backup_dir      = '/home/backup/postgresql',
-  $db_main_name      = 'elexis',
-  $db_main_user      = 'elexis',
-  $db_main_password  = 'elexisTest',
-  $db_test_name      = 'tst_db',
-  $db_pg_dump_script = '/usr/local/bin/pg_dump_elexis.rb',
+  $db_backup_dir     = hiera('::db::postgresql::backup::dir', '/home/backup/postgresql/'),
+  $db_main_name      = hiera('::db::main',      'elexis'),
+  $db_main_user      = hiera('::db::user',      'elexis'),
+  $db_main_password  = hiera('::db::password',  'elexisTest'),
+  $db_test_name      = hiera('::db::test',      'test'),
+  $db_pg_dump_script = hiera('::db::postgresql::backup::files', '/usr/local/bin/pg_dump_elexis.rb'),
 ){
+  include concat::setup
 
 }
 
@@ -33,36 +34,32 @@ class elexis::postgresql_server inherits elexis::common {
     ensure => present,
     }
   class {'postgresql::server':
-    config_hash => {
-        'ip_mask_deny_postgres_user' => hiera('postgres::ip_mask_deny_postgres_user', '0.0.0.0/32'),
-        'ip_mask_allow_all_users'    => hiera('postgres::ip_mask_allow_all_users', '0.0.0.0/0'),
-        'listen_addresses' => '*',
-        'manage_redhat_firewall' => hiera('postgres::manage_redhat_firewall', false),
-        'postgres_password' => hiera('postgres::password', 'postgres'),
-
+#    config_hash => {
+#        'ip_mask_deny_postgres_user' => hiera('postgres::ip_mask_deny_postgres_user', '0.0.0.0/32'),
+#        'ip_mask_allow_all_users'    => hiera('postgres::ip_mask_allow_all_users', '0.0.0.0/0'),
+#        'listen_addresses' => '*',
+#        'manage_redhat_firewall' => hiera('postgres::manage_redhat_firewall', false),
+#        'postgres_password' => hiera('postgres::password', 'postgres'),
         # archive_command: command to use to archive a logfile segment
         
-    },
+#    },
     require => Package['postgresql-contrib'],
   }
-  $postgresql_conf_path = $::postgresql::params::datadir
-#  $pg_user =              $::postgresql::params::user, group => owner  =>  $::postgresql::params::group,
   
-  notify { "Is this correct ${postgresql_conf_path}/postgresql_puppet_extras.conf":}
   file {"${postgresql_conf_path}/postgresql_puppet_extras.conf":
     content => template("elexis/postgresql_puppet_extras.conf.erb"),
-    owner  =>  $::postgresql::params::user, group => $::postgresql::params::group,
+    owner  =>  'postgres', group => 'postgres',
     mode   => 0644, 
     }
     
-  postgresql::pg_hba_rule { 'allow application network to access app database':
-    description => "Open up postgresql for access from 200.1.2.0/24",
-    type => 'host',
-    database => 'app',
-    user => 'app',
-    address => '200.1.2.0/24',
-    auth_method => 'md5',
-  }  
+#  postgresql::pg_hba_rule { 'allow application network to access app database':
+#    description => "Open up postgresql for access from 200.1.2.0/24",
+#    type => 'host',
+#    database => 'app',
+#    user => 'app',
+#    address => '200.1.2.0/24',
+#    auth_method => 'md5',
+#  }  
   # host       database  user  CIDR-address  auth-method  [auth-option]
   # host    elexis-test elexis      192.168.1.0/24        md5
   
@@ -70,37 +67,28 @@ class elexis::postgresql_server inherits elexis::common {
   # create postgresql_password using 
   # puppet apply --execute 'notify { "test": message => postgresql_password("username", "password") }'
   # md5e0925320617bda379cf9db294f07caf2 is for elexis/elexisTest
-                                      
+        
+        notify{"pg db_main_user '$db_main_user' xxx marmot $db_test_name pw $db_main_password": }
   if $db_main_name {
-    postgresql::db { "$db_main_name":
-      charset => 'utf8',      
-      user     => $db_main_user,
-      password => $db_main_password,
-      grant    => hiera('postgresql::db:elexis:grant', 'all') 
-    }
+#    postgresql::db { "$db_main_name":
+#      locale => 'de_CH',      
+#      owner    => $db_main_user,
+#      password => $db_main_password,
+##      grant    => hiera('postgresql::db:elexis:grant', 'all') 
+#    }
 
-    postgresql::database_grant{"$db_main_name":
-      privilege   => 'ALL',
-      db          => "$db_main_name",
-      role        => "$db_main_user",
-    }
+#    postgresql::database_grant{"$db_main_name":
+#      privilege   => 'ALL',
+#      db          => "$db_main_name",
+#      role        => "$db_main_user",
+#    }
   }
 
-  if $db_test_name {
-    postgresql::db { "$db_test_name":
-      charset => 'utf8',      
-      user     => $db_main_user,
-      password => $db_main_password,
-      grant    => hiera('postgresql::db:elexis:grant', 'all')
-    }
-
-    postgresql::database_grant{"$db_test_name":
-      privilege   => 'ALL',
-      db          => "$db_test_name",
-      role        => "$db_main_user",
-    }        
-  }
-
+postgresql::db { 'mynextdb':
+    owner    => 'anotheruser',
+    password => 'anotherpass',
+    template => 'template_postgis',
+}
   file {"$db_pg_dump_script":
     ensure => present,
     mode   => 0755,
@@ -136,9 +124,9 @@ class elexis::postgresql_server inherits elexis::common {
   }
   
   exec { "create_db_backup_dir_path":
-    command => "mkdir -p `dirname ${db_backup_dir}`",
+    command => "mkdir -p ${db_backup_dir}",
     path => '/usr/bin:/bin',
-    unless => "[ -d `dirname ${db_backup_dir}` ]"
+    unless => "test -d ${db_backup_dir}"
   }
 
 

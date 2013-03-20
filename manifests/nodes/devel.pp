@@ -9,9 +9,7 @@ class includeAllThingsForA_Developer {
 #    elexis::jenkins_elexis{'2.1.7': } 
 
 #   uncomment next three lines to add Juno
-#    elexis::download_eclipse_version{'eclipse-rcp-juno':
-#      baseURL => "${elexis::common::elexisFileServer}/eclipse",
-#    }
+#    elexis::download_eclipse_version{'eclipse-rcp-juno': }
 
     include x2go::client
     include x2go::server

@@ -22,3 +22,6 @@
 [submodule "elexis-cockpit"]
 	path = elexis-cockpit
 	url = git://github.com/elexis/elexis-cockpit.git
+[submodule "modules/rvm"]
+	path = modules/rvm
+	url = https://github.com/maestrodev/puppet-rvm

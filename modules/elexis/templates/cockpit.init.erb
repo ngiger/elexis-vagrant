@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/bash -e
 ### BEGIN INIT INFO
 # Provides:          cockpit
 # Required-Start:    $local_fs  $remote_fs $network
@@ -16,6 +16,9 @@ case "$1" in
   *) echo "Usage: $0 {start|stop|restart|force-reload}" >&2; exit 1 ;;
 esac
 
-[ -d /etc/puppet/cockpit ] \
-    && cd /etc/puppet/cockpit && bundle install && shotgun elexis-cockpit.rb
-                                                                                                                                                 
+<% inst_dir = scope.function_hiera(['elexis::cockit::vcsRoot', '/home/elexis/elexis-cockpit']) %>
+if [ -d <%=  inst_dir %> ]
+then 
+  # redirect stdout and stderr into a log file
+   sudo -iHu elexis <%=  inst_dir %>/elexis-cockpit.rb &> /var/log/elexis-cockpit.log &
+fi
