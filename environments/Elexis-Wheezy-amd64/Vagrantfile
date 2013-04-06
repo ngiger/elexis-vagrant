@@ -11,21 +11,35 @@ puts "Using boxUrl #{boxUrl}"
 
 Vagrant::Config.run do |config|
   # Setup the box
-  config.vm.provision :puppet, :options => "--verbose"
-  config.vm.customize ["modifyvm", :id, "--memory", 3036]    
+  # Boot with a GUI so you can see the screen. (Default is headless)
+  config.vm.boot_mode = :gui
+  config.vm.provision :puppet, :options => "--debug"
+
+  config.vm.customize ["modifyvm", :id, "--memory", 3136]    
   config.vm.customize do |vm|
-    vm.memory_size  = 2048 # MB
+    vm.memory_size  = 2148 # MB
   end
+  
   config.vm.provision :puppet do |puppet|
+    # This shell provisioner installs librarian-puppet and runs it to install
+    # puppet modules. This has to be done before the puppet provisioning so that
+    # the modules are available when puppet tries to parse its manifests.
+    # config.vm.provision :shell, :path => "shell/main.sh"
+    # or inline
+    config.vm.provision :shell, :inline => "sudo apt-get update && sudo apt-get install puppet -y"
+    
+    # Now run the puppet provisioner. Note that the modules directory is entirely
+    # managed by librarian-puppet
     puppet.manifests_path = "manifests"
-#    puppet.manifest_file = "minimal.pp"
     puppet.manifest_file = "site.pp"
     puppet.module_path = "modules"
   end
 
-  config.hiera.config_path = '.'
-  config.hiera.config_file = 'vagrant_hiera.yaml'
-  config.hiera.data_path   = '.'    
+  if defined?(config.hiera)
+    config.hiera.config_path = '.'
+    config.hiera.config_file = 'vagrant_hiera.yaml'
+    config.hiera.data_path   = '.'    
+  end if false
   
   config.vm.define :server do |thisbox|  
     thisbox.vm.host_name = "server.#{`hostname -d`.chomp}"

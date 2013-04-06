@@ -35,7 +35,7 @@ class elexis (
   $java                = 'openjdk-6-jdk',
   $eclipse             = 'eclipse-rcp-juno-linux-gtk-x86_64',
   $db_type             =  'mysql', # mysql or pg for postgresql
-  $db_main             =  "$::db::main", # Name of DB to use for production
+  $db_main             =  hiera('::db::main', 'elexis'), # Name of DB to use for production
   $db_test             =  'elexis', # DB to use for tests
   $db_user             =  'elexis', # DB-User to access both DB
   $db_password         =  'elexisTest', # a convention, which should be overridden somewhere!!!

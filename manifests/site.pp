@@ -13,13 +13,7 @@ stage { 'first': before => Stage['second'] }
 stage { 'second': before => Stage['main'] }
 stage { 'last': require => Stage['main'] }
 
-class { 'apt': 
-    proxy_host => hiera('apt::proxy_host', false),
-    proxy_port => hiera('apt::proxy_port', false),
-    purge_sources_list   => hiera('apt::purge_sources_list',   false),
-    purge_sources_list_d => hiera('apt::purge_sources_list_d', false),
-    purge_preferences_d  => hiera('apt::purge_sources_list_d', false),
-}
+class { 'apt': }
 
 apt::source { 'debian_wheezy':
   location          => hiera('apt::source:location', 'http://mirror.switch.ch/ftp/mirror/debian/'),
@@ -38,7 +32,7 @@ apt::source { 'debian_security':
   repos             => hiera('apt::source:security:repos', 'main contrib non-free'),
   include_src       => hiera('apt::source:security:include_src', true),
 }
-
+    
 group { "puppet": ensure => "present", gid => 7777}
 
 class {'etc_hiera_yaml': 
