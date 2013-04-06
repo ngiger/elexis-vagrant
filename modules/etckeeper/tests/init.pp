@@ -1,4 +1,0 @@
-#
-# Smoke test.
-#
-include etckeeper

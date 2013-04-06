@@ -24,6 +24,5 @@ mod "rtyler/jenkins"
 mod "thomasvandoren/etckeeper"
 mod "ngiger/x2go"
 mod "jenkins",    :git => "git://github.com/ngiger/puppet-jenkins.git"
-mod "cockpit",    :git => "git://github.com/elexis/elexis-cockpit.git"
 mod "veewee",     :git => "git://github.com/elexis/veewee.git"
 mod 'elexis',     :path => './static-modules/elexis'
