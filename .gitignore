@@ -4,3 +4,5 @@
 *kate-swp
 *.log
 *.orig
+.tmp/
+modules/
