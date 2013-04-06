@@ -1,20 +1,20 @@
 node 'arzt' {
-    # Default values can be overridden by setting value in your private/config.yaml
-
-    # This medical doctor uses KDE as his/her GUI
-    if hiera('kde:included', true)               { include kde }
-    
-    # She/he uses the OpenSource Elexis client
-    if hiera('elexis::client:included', true)    { include elexis::client }
-    
-    # She/he has a local copy of the Elexis database on his system, which serves
-    # as fallback if the main server is down
-    if hiera('elexis::mysql_server:included', true)    { include elexis::mysql_server }
-    
-    # When at home She/he uses x2go to connect to the practice server
-    if hiera('x2go::client:included', true)      { include x2go::client }
-
+	# Default values can be overridden by setting value in your private/config.yaml
+	
+	# This medical doctor uses KDE as his/her GUI
+	# kde { "kde-env": ensure => hiera('kde::ensure', true) }
+	
+	# She/he uses the OpenSource Elexis client
+	# elexis::client {"elexis-client": ensure => hiera('elexis::client::ensure', true) }
+	
+	# She/he has a local copy of the Elexis database on his system, which serves
+	# as fallback if the main server is down
+	# elexis::mysql_server{ "mysql-server:": ensure => hiera('elexis::mysql_server::ensure', true) }
+	
+	# When at home She/he uses x2go to connect to the practice server
+	x2go::client {"x2go-client": ensure => hiera('x2go::client::ensure', true) }
+	  
     # She/he wants to write letters and browse the internet
-    if hiera('elexis::libreoffice:included', true)    { include elexis::libreoffice }
-    if hiera('elexis::firefox:included', true)    { include elexis::firefox }
+    # elexis::libreoffice {'loffice': ensure => hiera('elexis::libreoffice::ensure', true) }
+	# elexis::firefox {'firefox': ensure => hiera('elexis::firefox::ensure', true) }
 }

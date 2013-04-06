@@ -10,9 +10,10 @@ class includeAllThingsForA_Developer {
 
 #   uncomment next three lines to add Juno
 #    elexis::download_eclipse_version{'eclipse-rcp-juno': }
-
-    include x2go::client
-    include x2go::server
+    
+    x2go::client {"x2go-client": } 
+    x2go::server {"x2go-server": }
+    
     include elexis::praxis_wiki
     class {['kde']: stage => last; } # I want the interesting things to load first!
 }

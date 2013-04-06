@@ -17,3 +17,6 @@ Its component are
 ** Some generally useful values can be found under modules/elexis/init.pp
 * Use puppetforge modules whereever possible. 
 
+Most features of the Elexis-Admin are opt-in/opt-out. E.g if you have in your private/config.yaml a line @x2go::client:ensure: absent@ no x2go-client will be installed. If there was installed before, it will be removed.
+
+http://rspec-puppet.com/tutorial/
