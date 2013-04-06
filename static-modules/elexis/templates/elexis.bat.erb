@@ -1,0 +1,4 @@
+rem Batch-Datei um Elexis zu starten
+set PFAD=<%= scope.function_include(['elexis-share'])+'\\'+scope.function_include(['windir']) %>
+cd -d %PFAD%
+elexis.exe -data @user.home/elexis/workspace -configuration @user.home/elexis/configuration  -Dlogback.configurationFile=configuration/logback.xml
