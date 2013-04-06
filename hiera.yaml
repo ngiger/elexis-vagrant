@@ -18,6 +18,7 @@
   - %{::environment}
 # we use here hostname as we don't have a valid clientcert  
   - %{::hostname}
+  - private/%{::hostname}
   - private/config
   - hiera/common
 :logger: console

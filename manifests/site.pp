@@ -103,26 +103,26 @@ node default {
 }
 
 # Some common stuff for the admin
-if hiera('etckeeper:included', false) { include etckeeper }
+if hiera('etckeeper::ensure', false) { include etckeeper }
 
 # User setup. Choose between KDE and (gnome, unity: both not yet supported)
-if hiera('kde:included', false)       { include kde }
-if hiera('sshd:included', false)      { include sshd }
-if hiera('x2go:included', false)      { include x2go }
+if hiera('kde::ensure', false)       { include kde }
+if hiera('sshd::ensure', false)      { include sshd }
+if hiera('x2go::ensure', false)      { include x2go }
 
 # stuff for the server
-if hiera('elexis::praxis_wiki:included', false) { include elexis::praxis_wiki }
-if hiera('apache:included', false) { include apache }
+if hiera('elexis::praxis_wiki::ensure', false) { include elexis::praxis_wiki }
+if hiera('apache::ensure', false) { include apache }
 
-# usually only on database is included
-if hiera('elexis:postgres:included', false)  { include elexis::postgresql_server }
-if hiera('elexis:mysql:included',    false)  { include elexis::mysql_server }
+# usually only on database is ensure
+if hiera('elexis:postgres::ensure', false)  { include elexis::postgresql_server }
+if hiera('elexis:mysql::ensure',    false)  { include elexis::mysql_server }
 # TODO: add backup postgres-server
 
 # development stuff
-if hiera('eclipse:included', false)   { include eclipse }
-if hiera('buildr:included', false)    { include buildr }
-if hiera('jubula:included', false)    { include jubula }
+if hiera('eclipse::ensure', false)   { include eclipse }
+if hiera('buildr::ensure', false)    { include buildr }
+if hiera('jubula::ensure', false)    { include jubula }
 # TODO: add a possibility to add some more private stuff
 include hiera('private_modules', [])  
 
