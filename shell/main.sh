@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # from https://github.com/purple52/librarian-puppet-vagrant
 
 # Directory in which librarian-puppet should manage its modules directory
@@ -25,6 +25,15 @@ if [ ! -d /vagrant ] ; then cp /vagrant/Puppetfile $PUPPET_DIR ; fi
 
 cd $PUPPET_DIR
 
+# we want to use rvm and puppet installed via gem as the
+# puppet installed via apt has hiera 1.1 and therefore chokes
+# when seening %{::environment} in its configuration
+export PATH=/usr/local/bin:$PATH
+source /usr/local/rvm/scripts/rvm
+rvm use system --default 
+# we must have puppet install or we cannot call vagrant up
+# aptitude remove --assume-yes puppet hiera
+aptitude install ruby-dev
 if [ "$(gem search -i puppet)" = "false" ]; then
   gem install --no-ri --no-rdoc puppet
   cd $PUPPET_DIR && puppet install --clean
@@ -33,12 +42,17 @@ fi
 if [ "$(gem search -i librarian-puppet)" = "false" ]; then
   gem install --no-ri --no-rdoc librarian-puppet
   cd $PUPPET_DIR && librarian-puppet install --clean
-else
-  cd $PUPPET_DIR && librarian-puppet update
+
+#else
+#  cd $PUPPET_DIR && librarian-puppet update
 fi
 
 # Next is only necessary as librarian-puppet (0.9.8) cannot handle puppetlabs/postgresql
 if [ -d modules/postgresql ] ; then
   puppet module install --modulepath modules puppetlabs/postgresql 
 fi
+which hiera
+hiera --version
+which puppet
+puppet --version
 

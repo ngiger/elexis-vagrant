@@ -32,21 +32,89 @@ GIT
     ngiger/x2go (0.1.0)
       puppetlabs/apt (>= 1.0)
 
+GIT
+  remote: git@github.com:ngiger/puppet-samba.git
+  ref: master
+  sha: 280e37acab86c479484a07ad41912a311385eb5b
+  specs:
+    ajjahn/samba (0.1.2)
+
+PATH
+  remote: ./static-modules/apache
+  specs:
+    apache (0.0.1)
+
+PATH
+  remote: ./static-modules/buildr
+  specs:
+    buildr (0.0.1)
+
+PATH
+  remote: ./static-modules/cockpit
+  specs:
+    cockpit (0.0.1)
+
+PATH
+  remote: ./static-modules/eclipse
+  specs:
+    eclipse (0.0.1)
+
 PATH
   remote: ./static-modules/elexis
   specs:
     elexis (0.0.1)
 
+PATH
+  remote: ./static-modules/java
+  specs:
+    java (0.0.1)
+
+PATH
+  remote: ./static-modules/jubula
+  specs:
+    jubula (0.0.1)
+
+PATH
+  remote: ./static-modules/kde
+  specs:
+    kde (0.0.1)
+
+PATH
+  remote: ./static-modules/ntp_demo
+  specs:
+    ntp_demo (0.0.1)
+
+PATH
+  remote: ./static-modules/sshd
+  specs:
+    sshd (0.0.1)
+
+PATH
+  remote: ./static-modules/util
+  specs:
+    util (0.0.1)
+
 DEPENDENCIES
+  ajjahn/samba (>= 0)
+  apache (>= 0)
+  buildr (>= 0)
+  cockpit (>= 0)
+  eclipse (>= 0)
   elexis (>= 0)
+  java (>= 0)
   jenkins (>= 0)
+  jubula (>= 0)
+  kde (>= 0)
   maestrodev/rvm (>= 0)
   ngiger/x2go (>= 0)
+  ntp_demo (>= 0)
   puppetlabs/apt (>= 0)
   puppetlabs/firewall (>= 0)
   puppetlabs/mysql (>= 0)
   puppetlabs/vcsrepo (>= 0)
   ripienaar/concat (>= 0)
   rtyler/jenkins (>= 0)
+  sshd (>= 0)
   thomasvandoren/etckeeper (>= 0)
+  util (>= 0)
 

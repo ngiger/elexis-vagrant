@@ -14,10 +14,10 @@
 :yaml:
   :datadir: /tmp/vagrant-hiera/data
 :hierarchy:
-  - %{env}
+#  - %{env}
 # we use here hostname as we don't have a valid clientcert  
-  - %{::hostname}
-  - %{::environment}
+#  - %{::hostname}
+#  - %{::environment}
   - private/config
   - hiera/common
 :logger: console
