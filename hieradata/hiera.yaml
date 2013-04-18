@@ -10,20 +10,19 @@
 ---
 :backends: 
   - yaml
-  - gpg
+#  - gpg
 :yaml:
-  :datadir: /tmp/vagrant-hiera/data
+  :datadir: /etc/puppet/hieradata
 :hierarchy:
-  - %{env}
+  - private/%{::environment}
 # we use here hostname as we don't have a valid clientcert  
-  - %{::hostname}
-  - %{::environment}
+  - private/%{::hostname}
   - private/config
-  - hiera/common
+  - common
 :logger: console
 :gpg:
-   :datadir: /tmp/vagrant-hiera/data
+   :datadir: /etc/puppet/hieradata
    # Optional, defaults to ~/.gnupg
-   :key_dir: /tmp/vagrant-hiera/gpg
+   :key_dir: /etc/puppet/hieradata/gpg
 
 

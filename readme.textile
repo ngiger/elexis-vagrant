@@ -27,7 +27,8 @@ h2. Bring-up of a TestSystem
 
 * Ubuntu-Server 12.04 LTS (servername ubuntu) via USB-Stick, e.g. @sudo dd if=ubuntu-12.04-server-amd64.iso of=/dev/sdb@
 * Choose server, but only activated OpenSSH
-* @sudo apt-get install etckeeper git vagrant virtualbox@ # this installs a lot of packages
+* @sudo apt-get install etckeeper git virtualbox@ # this installs a lot of packages
+* Install vagrant (I used version 1.1.5) from "vagrantup":http://downloads.vagrantup.com/tags/v1.1.5
 * @git clone https://github.com/ngiger/elexis-vagrant /opt/vagrant-elexis@
 * @cd /opt/vagrant-elexis@
 * @git checkout last_known_good_tag@ , eg. v0.1

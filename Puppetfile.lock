@@ -25,14 +25,6 @@ GIT
       puppetlabs/stdlib (>= 2.0.0)
 
 GIT
-  remote: git://github.com/ngiger/puppet-x2go.git
-  ref: master
-  sha: 079c40e19702335e471743122dc8c02bb71f22fa
-  specs:
-    ngiger/x2go (0.1.0)
-      puppetlabs/apt (>= 1.0)
-
-GIT
   remote: git@github.com:ngiger/puppet-samba.git
   ref: master
   sha: 280e37acab86c479484a07ad41912a311385eb5b
@@ -83,6 +75,11 @@ PATH
   remote: ./static-modules/ntp_demo
   specs:
     ntp_demo (0.0.1)
+
+PATH
+  remote: ./static-modules/puppet-x2go
+  specs:
+    ngiger/x2go (0.0.1)
 
 PATH
   remote: ./static-modules/sshd
