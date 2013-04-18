@@ -2,17 +2,16 @@
 # Copyright (c) Niklaus Giger, <niklaus.giger@member.fsf.org>
 # License: GPLv2
 # Boxes are stored under ~/.vagrant.d/boxes/
-require 'vagrant-hiera'
 
 private = '/opt/fileserver/elexis/boxes/Elexis-Wheezy-amd64.box'
 private = '/opt/src/veewee/Elexis-Wheezy-amd64.box'
 boxUrl = File.exists?(private) ? private : 'http://ngiger.dyndns.org/downloads/Elexis-Wheezy-amd64.box'
 puts "Using boxUrl #{boxUrl}"
 
-Vagrant::Config.run do |config|
+Vagrant::configure('2') do |config|
   # Setup the box
   # Boot with a GUI so you can see the screen. (Default is headless)
-  config.vm.boot_mode = :gui
+#  config.vm.boot_mode = :gui
   config.vm.provision :puppet, :options => "--debug"
 
   config.vm.customize ["modifyvm", :id, "--memory", 3136]    
@@ -35,15 +34,21 @@ Vagrant::Config.run do |config|
     puppet.module_path = "modules"
   end
 
-  if defined?(config.hiera)
-    config.hiera.config_path = '.'
-    config.hiera.config_file = 'vagrant_hiera.yaml'
-    config.hiera.data_path   = '.'    
-  end if false
+  if false
+    # I cannot use the following three lines as specified by https://github.com/gposton/vagrant-hieradata
+    # because this lead to trying to install apt usinge puppetlabs repository  
+    #  config.hiera.config_path = File.join(Dir.pwd, 'hieradata')
+    #  config.hiera.config_file = 'hiera.yaml'
+    #  config.hiera.data_path   = File.join(Dir.pwd, 'hieradata')
+  else # use my workaround
+    config.vm.share_folder "hieradata", "/etc/puppet/hieradata", File.join(Dir.pwd, 'hieradata')
+  end
   
   config.vm.define :server do |thisbox|  
     thisbox.vm.host_name = "server.#{`hostname -d`.chomp}"
-    thisbox.vm.network :hostonly, "192.168.50.10"
+    thisbox.vm.network :bridged
+    thisbox.vm.network :private_network, ip: "172.25.1.184"
+    #    thisbox.vm.network :hostonly, "192.168.50.10"
     thisbox.vm.box     = "Elexis-Wheezy-amd64"
     thisbox.vm.box_url = boxUrl
     thisbox.vm.forward_port   22, 10022    # ssh
@@ -64,7 +69,7 @@ Vagrant::Config.run do |config|
     thisbox.vm.forward_port 3306, 23306    # MySQL
     thisbox.vm.forward_port 4567, 24567    # Gollum (elexis-admin Wiki)
     thisbox.vm.forward_port 9393, 29393    # elexis-cockpit
-  end
+  end if false
   
   config.vm.define :devel do |thisbox|
     thisbox.vm.host_name = "devel.#{`hostname -d`.chomp}"

@@ -13,7 +13,7 @@ stage { 'second': before => Stage['main'] }
 stage { 'last': require => Stage['main'] }
 
 class etc_hiera_yaml {
-  file {"/etc/puppet/hiera.yaml": source => "puppet:///modules/elexis/hiera.yaml", } 
+#  file {"/etc/puppet/hiera.yaml": source => "puppet:///modules/elexis/hiera.yaml", } 
   
 }
 
