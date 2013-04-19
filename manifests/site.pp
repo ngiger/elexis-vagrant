@@ -35,16 +35,6 @@ apt::source { 'debian_security':
     
 group { "puppet": ensure => "present", gid => 7777}
 
-class {'etc_hiera_yaml': 
-  stage => initial;  
-}
-
-
-class etc_hiera_yaml {
-  file {"/etc/puppet/hiera.yaml": source => "puppet:///modules/elexis/hiera.yaml", } 
-  
-}
-
 # class apt_get_update {    
 #     exec{'apt_get_update':
 #       command => "apt-get update",

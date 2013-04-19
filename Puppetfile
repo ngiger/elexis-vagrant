@@ -12,13 +12,11 @@
 #   :git => "git://github.com/puppetlabs/puppetlabs-stdlib.git"
 
 forge "http://forge.puppetlabs.com"
-# puppetlabs/postgresql provokes rubygems/requirement.rb:81:in `parse': Illformed requirement [">=1.1.0 <2.0.0"] (ArgumentError)
-# mod "puppetlabs/postgresql" #, :git => 'git://github.com/puppetlabs/puppet-postgresql.git'
-# instead use manually
-# puppet module install --modulepath modules puppetlabs/postgresql 
+
 mod "puppetlabs/apt"
 mod "puppetlabs/mysql"
 mod 'puppetlabs/firewall'
+mod 'puppetlabs/postgresql'
 mod 'ripienaar/concat'
 mod "puppetlabs/vcsrepo"
 mod "maestrodev/rvm"

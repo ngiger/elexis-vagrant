@@ -1,0 +1,47 @@
+---
+'::db::users':  
+  - arzt
+  - mpa
+puppet apply --execute 'notify { "test": message => postgresql_password("mpa", "") }' --modulepath /vagrant/modules/  
+mpa::db_pw_hash: md55b4c600517d35939b9922164e8efd1c8
+mpa::os_pw_hash: zz
+dbs:
+  -
+    db_name: elexis
+    db_user: niklaus
+    # specify either db_password or db_pw_hash
+    db_password: notSecretHere
+    db_privileges: ALL
+  -
+    db_name: test
+    db_user: niklaus
+    # specify either db_password or db_pw_hash
+    db_password: notSecretHere
+    db_privileges: ALL
+users:
+  - 
+    id: arzt
+    name: "Dr. Max Müller"
+    mandant:  true
+    db_access:
+      -
+        db_name: elexis
+        # specify either db_password or db_pw_hash
+        db_password: notSecretHere
+        db_privileges: ALL
+      -
+        db_name: test
+        # specify either db_password or db_pw_hash
+        db_password: notSecretHere
+        db_privileges: ALL
+  - 
+    id: mpa
+    name: "Maria Bernasconi"
+    db_access:
+      -
+        db_name: elexis
+        # specify either db_password or db_pw_hash
+        db_password: open
+        db_privileges: SELECT
+  
+  

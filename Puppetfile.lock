@@ -7,6 +7,11 @@ FORGE
     puppetlabs/firewall (0.2.1)
     puppetlabs/mysql (0.6.1)
       puppetlabs/stdlib (>= 2.2.1)
+    puppetlabs/postgresql (2.1.1)
+      puppetlabs/apt (< 2.0.0, >= 1.1.0)
+      puppetlabs/firewall (>= 0.0.4)
+      puppetlabs/stdlib (< 4.0.0, >= 3.2.0)
+      ripienaar/concat (>= 0.2.0)
     puppetlabs/stdlib (3.2.0)
     puppetlabs/vcsrepo (0.1.1)
     ripienaar/concat (0.2.0)
@@ -23,6 +28,14 @@ GIT
     jenkins (0.2.2)
       puppetlabs/apt (>= 0.0.1)
       puppetlabs/stdlib (>= 2.0.0)
+
+GIT
+  remote: git://github.com/ngiger/puppet-x2go.git
+  ref: master
+  sha: 1b707300a5e9e10e526c0dbd67ea4e1a59d4162e
+  specs:
+    ngiger/x2go (0.1.0)
+      puppetlabs/apt (>= 1.0)
 
 GIT
   remote: git@github.com:ngiger/puppet-samba.git
@@ -77,11 +90,6 @@ PATH
     ntp_demo (0.0.1)
 
 PATH
-  remote: ./static-modules/puppet-x2go
-  specs:
-    ngiger/x2go (0.0.1)
-
-PATH
   remote: ./static-modules/sshd
   specs:
     sshd (0.0.1)
@@ -108,6 +116,7 @@ DEPENDENCIES
   puppetlabs/apt (>= 0)
   puppetlabs/firewall (>= 0)
   puppetlabs/mysql (>= 0)
+  puppetlabs/postgresql (>= 0)
   puppetlabs/vcsrepo (>= 0)
   ripienaar/concat (>= 0)
   rtyler/jenkins (>= 0)
