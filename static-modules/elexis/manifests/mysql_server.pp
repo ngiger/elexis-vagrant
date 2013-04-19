@@ -131,6 +131,7 @@ class elexis::mysql_server inherits elexis::common {
     daily
     missingok
     notifempty
+    dateext
     create 0640 root root
     nocompress
 }

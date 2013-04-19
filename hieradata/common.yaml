@@ -60,6 +60,19 @@ elexis::mysql_server::mysql_main_db_password: elexisTest
 elexis::mysql_server::mysql_dump_dir:         /home/mysql/dumps/
 elexis::mysql_server::mysql_backup_dir:       /home/mysql/backups/
 
+# Install Elexis and/or Medelexis current versions
+elexis::install::OpenSource::ensure:     true
+elexis::install::OpenSource::programURL: http://ftp.medelexis.ch/downloads_opensource/elexis/2.1.7.rc2/elexis-2.1.7.20121007-installer.jar
+elexis::install::OpenSource::version:    2.1.7.rc2
+
+elexis::install::Medelexis::ensure:      true
+elexis::install::Medelexis::programURL:  http://www.medelexis.ch/dl21.php?file=medelexis-linux
+elexis::install::Medelexis::version:     2.1.7.0
+
+# What you prefer for your client
+X::display_manager: slim
+X::window_manager:  awesome
+
 users:
   - 
     id: arzt

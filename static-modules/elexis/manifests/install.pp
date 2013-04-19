@@ -11,6 +11,7 @@ define elexis::install (
   $auto_install_template  = 'elexis/auto_install.xml.erb'
 ) {
   include elexis::common 
+  include java
   $installDir         =   "$installBase/$version"
   # notify{"install Elexis $version from $programURL into $installDir": }
   
@@ -50,16 +51,25 @@ define elexis::install (
     creates => "$installer",
   }
   
+  $fullExecPath = "$installDir/elexis"
 
-  exec { "install_using_$installer":
+  exec { "$fullExecPath":
     cwd     => "/tmp",
     command => "echo pwd
     echo $installDir &&
     java -jar $installer $autoInstallXml
     ls -l $installDir/elexis",
-    creates => "$installDir/elexis",
+    creates => "$fullExecPath",
     require => [ File[ "$installBase", "$autoInstallXml"], Exec["wget_$installer"], ],
     path    => '/usr/bin:/bin',
   }
 
+  $logicalLink = "/usr/local/bin/$title"
+  notify{"elexis install $logicalLink": }
+  file { $logicalLink:
+    ensure => link,
+    target => "$fullExecPath",
+    mode   => 0755,
+    require => Exec["$fullExecPath"],
+  }
 }
