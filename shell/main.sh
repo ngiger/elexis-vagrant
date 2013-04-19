@@ -24,15 +24,11 @@ if [ "$(gem search -i puppet)" = "false" ]; then
 fi
 
 # Initialize /etc/puppet/hiera.yaml
+df -h | grep hieradata
 if [ $? -eq 0  ] ; then
   export HIERA_DATA=/`df -h | grep hieradata | cut -d / -f 2-`
   if [ ! -L /etc/puppet/hiera.yaml ] ; then ln -s $HIERA_DATA/hiera.yaml /etc/puppet/hiera.yaml; fi
   if [ ! -L /etc/hiera.yaml ]        ; then ln -s $HIERA_DATA/hiera.yaml /etc/hiera.yaml; fi
-fi
-
-# Next is only necessary as librarian-puppet (0.9.8) cannot handle puppetlabs/postgresql
-if [ -d modules/postgresql ] ; then
-  puppet module install --modulepath modules puppetlabs/postgresql 
 fi
 
 dpkg -l etckeeper | grep ii
