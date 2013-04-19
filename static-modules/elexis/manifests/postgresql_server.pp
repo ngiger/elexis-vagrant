@@ -197,5 +197,23 @@ class elexis::postgresql_server inherits elexis::common {
       ]
       
   }
+
+  file {'/etc/logrotate.d/pg_elexis_dump':
+    ensure => present,
+    content => "\n${$pg_dump_dir}/elexis.dump.gz {
+    rotate 10
+    daily
+    missingok
+    notifempty
+    create 0640 root root
+    nocompress
+}
+",
+    owner => root,
+    group => root,
+    mode  => 0644,
+  }
+
+
 }
 
