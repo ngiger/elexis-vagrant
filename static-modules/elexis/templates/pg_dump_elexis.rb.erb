@@ -15,7 +15,7 @@ pg_tst_db_name       = '<%=  scope.function_hiera(['elexis::postgresql_server::p
 pg_dump_dir          = '<%=  scope.function_hiera(['elexis::postgresql_server::pg_dump_dir',         '/home/backup-pg']) %>'
 
 ENV['PGPASSWORD'] = pg_main_db_password
-dump   = "/opt/backup/#{pg_main_db_name}.dump.gz"
+dump   = "#{pg_dump_dir}/#{pg_main_db_name}.dump.gz"
 cmd =   "pg_dump --user #{pg_main_db_user} --host localhost "
 cmd +=  "--encoding=UTF-8 --file=#{dump} " 
 cmd +=  "--compress=9 --clean " # zip output and insert drop statement

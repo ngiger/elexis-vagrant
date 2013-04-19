@@ -1,6 +1,3 @@
-# <%= scope.function_include(['elexis::postgresql_server']) %>
-# <%= scope.lookupvar('::elexis::postgresql_server::pg_dump_dir') %>
-archive_command  = "/usr/bin/test ! -f <%= scope.lookupvar('::elexis::postgresql_server::pg_dump_dir') %>/wal/%f && /bin/cp %p <%= scope.lookupvar('::elexis::postgresql_server::pg_dump_dir') %>/wal/%f < /dev/null"
-archive_timeout  = 20s
-autovacuum  = 'on'
+# managed by puppet. see static-modules/elexis/manifests/postgresql_server.pp
+<%= scope.lookupvar('puppet_extras') %>
 
