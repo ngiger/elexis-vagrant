@@ -107,6 +107,36 @@ if hiera('elexis:mysql::ensure',    false)  { include elexis::mysql_server }
 if hiera('eclipse::ensure', false)   { include eclipse }
 if hiera('buildr::ensure', false)    { include buildr }
 if hiera('jubula::ensure', false)    { include jubula }
+
+if hiera('elexis::install::OpenSource::ensure', false)  
+{ 
+  # Generates Error: Puppet::Parser::AST::Resource failed with error ArgumentError: Invalid resource type elexis::install at /tmp/vagrant-puppet/modules-0/elexis/tests/install.pp:5 on node server.ngiger.dyndns.org
+  elexis::install  {"OpenSource":
+    programURL             => 'http://ftp.medelexis.ch/downloads_opensource/elexis/2.1.7.rc2/elexis-2.1.7.20121007-installer.jar',
+    version                => '2.1.7.rc2',
+    installBase            => '/opt/elexis_opensource',
+  }
+}
+
+if hiera('elexis::install::Medelexis::ensure', false)  
+{ 
+  elexis::install {"Medelexis":
+    programURL             => 'http://www.medelexis.ch/dl21.php?file=medelexis-linux',
+    version                => 'current',
+    installBase            => '/opt/elexis',
+  }
+}
+
+$display_manager =  hiera('X::display_manager', false)
+if ($display_manager) { package{$display_manager:} }
+
+$window_manager =  hiera('X::window_manager', false)
+if ($window_manager) { package{$window_manager:}
+  service{$window_manager:
+    require => Package[$window_manager],
+  }
+}
+
 # TODO: add a possibility to add some more private stuff
 include hiera('private_modules', [])  
 
