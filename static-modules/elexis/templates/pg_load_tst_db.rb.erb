@@ -15,7 +15,7 @@ pg_tst_db_name       = '<%=  scope.function_hiera(['elexis::postgresql_server::p
 pg_dump_dir          = '<%=  scope.function_hiera(['elexis::postgresql_server::pg_dump_dir',         '/home/backup-pg']) %>'
 
 ENV['PGPASSWORD'] = 'elexisTest'
-dump   = "/opt/backup/#{pg_main_db_name}.dump.gz"
+dump   = "#{pg_dump_dir}/#{pg_main_db_name}.dump.gz"
 
 cmd  = "gunzip --to-stdout #{dump} | "
 cmd += "psql --user elexis --host localhost --dbname=#{pg_tst_db_name}"
