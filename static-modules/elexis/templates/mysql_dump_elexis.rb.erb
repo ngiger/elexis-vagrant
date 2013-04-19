@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby
+#
+# Copyright (c) Niklaus Giger niklaus.giger@member.fsf.org
+#
+# Simple test script for the elexis-vagrant project to poll a dummy table
+# Used to verify that the backup server gets results from the main server
+# and updates its copy correctly
+require File.join(File.dirname(__FILE__), 'pg_util.rb')
+
+<%= scope.function_include(['elexis::mysql_server']) %>
+mysql_main_db_name      = '<%=  scope.function_hiera(['elexis::mysql_server::mysql_main_db_name',     'elexis']) %>'
+mysql_main_db_user      = '<%=  scope.function_hiera(['elexis::mysql_server::mysql_main_db_user',     'elexis']) %>'
+mysql_main_db_password  = '<%=  scope.function_hiera(['elexis::mysql_server::mysql_main_db_password', 'elexisTest']) %>'
+mysql_tst_db_name       = '<%=  scope.function_hiera(['elexis::mysql_server::mysql_tst_db_name',      'tst_db']) %>'
+mysql_dump_dir          = '<%=  scope.function_hiera(['elexis::mysql_server::mysql_dump_dir',         '/home/backup-mysql']) %>'
+
+dump   = "#{mysql_dump_dir}/#{mysql_main_db_name}.dump.gz"
+cmd =   "mysqldump --user #{mysql_main_db_user} --password='#{mysql_main_db_password}' --host localhost "
+cmd +=  "--add-locks --add-drop-table "
+cmd += mysql_main_db_name
+cmd += " | gzip -c | cat > #{dump} " 
+system(cmd)
+logAction("dump of #{mysql_main_db_name} into #{dump} finished")

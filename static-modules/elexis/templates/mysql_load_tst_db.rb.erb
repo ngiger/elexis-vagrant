@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby
+#
+# Copyright (c) Niklaus Giger niklaus.giger@member.fsf.org
+#
+# Simple test script for the elexis-vagrant project to import
+# the elexis database into the tst_db. Should be run e.g. each week
+
+require File.join(File.dirname(__FILE__), 'pg_util.rb')
+
+<%= scope.function_include(['elexis::mysql_server']) %>
+mysql_main_db_name      = '<%=  scope.function_hiera(['elexis::mysql_server::mysql_main_db_name',     'elexis']) %>'
+mysql_main_db_user      = '<%=  scope.function_hiera(['elexis::mysql_server::mysql_main_db_user',     'elexis']) %>'
+mysql_main_db_password  = '<%=  scope.function_hiera(['elexis::mysql_server::mysql_main_db_password', 'elexisTest']) %>'
+mysql_tst_db_name       = '<%=  scope.function_hiera(['elexis::mysql_server::mysql_tst_db_name' ,     'tst_db']) %>'
+mysql_dump_dir          = '<%=  scope.function_hiera(['elexis::mysql_server::mysql_dump_dir',         '/home/backup-mysql']) %>'
+
+dump   = "#{mysql_dump_dir}/#{mysql_main_db_name}.dump.gz"
+
+cmd  = "gunzip --to-stdout #{dump} | "
+cmd += "mysql --user elexis --password='#{mysql_main_db_password}' --host localhost #{mysql_tst_db_name}"
+
+system(cmd)
+logAction("load of #{mysql_main_db_name} via #{dump} into #{mysql_tst_db_name} finished")

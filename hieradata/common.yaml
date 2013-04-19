@@ -1,47 +1,72 @@
 ---
-'::db::users':  
-  - arzt
-  - mpa
-puppet apply --execute 'notify { "test": message => postgresql_password("mpa", "") }' --modulepath /vagrant/modules/  
-mpa::db_pw_hash: md55b4c600517d35939b9922164e8efd1c8
-mpa::os_pw_hash: zz
 dbs:
   -
     db_name: elexis
-    db_user: niklaus
+    db_user: elexis
     # specify either db_password or db_pw_hash
-    db_password: notSecretHere
+    # puppet apply --execute 'notify { "test": message => postgresql_password("elexis", "elexisTest") }' --modulepath /vagrant/modules/  
+    db_password: "thisPasswordOverrideBy db_pw_hash"
+    db_pw_hash: md5e0925320617bda379cf9db294f07caf2
+    # SELECT or UPDATE are not supported, only worked with ALL
     db_privileges: ALL
   -
     db_name: test
-    db_user: niklaus
-    # specify either db_password or db_pw_hash
-    db_password: notSecretHere
+    db_user: elexis
+    db_pw_hash: md5e0925320617bda379cf9db294f07caf2
     db_privileges: ALL
+  -
+    db_name: elexis
+    db_user: reader
+    # specify either db_password or db_pw_hash
+    db_password: elexisTest
+    db_privileges: 'ALL'
+  -
+    db_name: test
+    db_user: reader
+    # specify either db_password or db_pw_hash
+    db_password: elexisTest
+    db_privileges: ALL
+
+# some parameters for PostgreSQL users. We assume that we want it
+elexis::postgresql_server::ensure: true
+# next lines must be in sync with dbs
+elexis::postgresql_server::pg_main_db_name:     elexis
+elexis::postgresql_server::pg_tst_db_name:      test
+elexis::postgresql_server::pg_main_db_user:     elexis
+elexis::postgresql_server::pg_main_db_password: elexisTest
+
+elexis::postgresql_server::pg_dump_dir:         /home/postgresql/dumps/
+elexis::postgresql_server::pg_backup_dir:       /home/postgresql/backups/
+
+# Allows you to set parameters in pg_hba.conf    
+pg::config_hash:
+  ip_mask_deny_postgres_user: '0.0.0.0/32'
+  ip_mask_allow_all_users:    '10.0.2.0/24'
+  listen_addresses:           '*'
+  manage_redhat_firewall:     false
+  postgres_password:          postgres
+# next line(s) go into /etc/postgresql/9.1/main/postgresql_puppet_extras.conf
+pg::puppet_extras: "archive_command = '/usr/bin/test ! -f /home/backup-pg/wal/%f && /bin/cp %p /home/backup-pg/wal/%f < /dev/null'\n
+archive_timeout = 20s\n
+autovacuum =      on
+"
+
+# some parameters for MySQL users. We assume that we want 
+elexis::mysql_server::ensure: true
+elexis::mysql_server::mysql_main_db_name:     elexis
+elexis::mysql_server::mysql_tst_db_name:      test
+elexis::mysql_server::mysql_main_db_user:     elexis
+elexis::mysql_server::mysql_main_db_password: elexisTest
+elexis::mysql_server::mysql_dump_dir:         /home/mysql/dumps/
+elexis::mysql_server::mysql_backup_dir:       /home/mysql/backups/
+
 users:
   - 
     id: arzt
     name: "Dr. Max Müller"
     mandant:  true
-    db_access:
-      -
-        db_name: elexis
-        # specify either db_password or db_pw_hash
-        db_password: notSecretHere
-        db_privileges: ALL
-      -
-        db_name: test
-        # specify either db_password or db_pw_hash
-        db_password: notSecretHere
-        db_privileges: ALL
   - 
     id: mpa
     name: "Maria Bernasconi"
-    db_access:
-      -
-        db_name: elexis
-        # specify either db_password or db_pw_hash
-        db_password: open
-        db_privileges: SELECT
   
   
