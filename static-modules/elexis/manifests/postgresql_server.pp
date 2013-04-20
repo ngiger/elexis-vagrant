@@ -18,6 +18,7 @@ class elexis::postgresql_server(
   $pg_main_db_user      = hiera('elexis::postgresql_server::pg_main_db_user',     'elexis'),
   # puppet apply --execute 'notify { "test": message => postgresql_password("elexis", "elexisTest") }' --modulepath /vagrant/modules/
   $pg_main_db_password  = hiera('elexis::postgresql_server::pg_main_db_password', 'elexisTest'),
+  $pg_main_pw_hash      = hiera('elexis::postgresql_server::pg_main_db_password', 'elexisTest'),
   $pg_tst_db_name       = hiera('elexis::postgresql_server::pg_tst_db_name',      'tst_db'),
 ){
   include concat::setup
@@ -32,7 +33,7 @@ define elexis::db_user(
   $db_password = '',
 ) {
   
-  # notify{"$title: grant $db_privileges on $db_name to $db_user pw $db_password/$db_pw_hash": }
+  notify{"$title: grant $db_privileges on $db_name to $db_user pw $db_password/$db_pw_hash": }
   if ($db_pw_hash != '') {
     # notify{"$title: grant has $db_pw_hash": }
     $hash2use = $db_pw_hash
@@ -41,11 +42,17 @@ define elexis::db_user(
     # notify{"$title: grant uses password $db_password hash is $hash2use": }
   }
   
-  if !defined(Postgresql::Database_user["$db_user"]) {
-    postgresql::database_user{"$db_user":
-      password_hash => postgresql_password("$db_user", "$hash2use"),
+  if !defined(Postgresql::Role["$db_user"]) {
+    postgresql::role{"$db_user":
+      login => true,
+      password_hash => $hash2use,
     }
   }  
+  
+  if !defined(Postgresql::Database["$db_name"]) {
+    postgresql::database{"$db_name":
+    }
+  }
   
   $grant_id = "GRANT $db_user - $db_privileges - $db_name"  
   if !defined(Postgresql::Database_grant["$grant_id"]) {
@@ -54,8 +61,8 @@ define elexis::db_user(
       db          => "$db_name",
       role        => "$db_user",
       require => [
-        Postgresql::Database_user["$db_user"],
-        Postgresql::Db["$db_name"],
+        Postgresql::Role["$db_user"],
+        Postgresql::Database["$db_name"],
       ]
     }
   }
@@ -99,18 +106,36 @@ class elexis::postgresql_server inherits elexis::common {
     require => [ File["$conf_dir/postgresql_puppet_extras.conf"], Package['postgresql-contrib'] ],
   }
   
+  postgresql::pg_hba_rule { "allow application network to access all database from localhost":
+    description => "Open up postgresql for access from localhost",
+    type => 'host',
+    database => 'all',
+    user => 'all',
+    address => '127.0.0.1/32',
+    auth_method => 'md5',
+  }
+  
   $puppet_extras = hiera('pg::puppet_extras', '#no variable pg::puppet_extras defined!')
   file {"$conf_dir/postgresql_puppet_extras.conf":
     content => template("elexis/postgresql_puppet_extras.conf.erb"),
     owner  =>  'postgres', group => 'postgres',
     mode   => 0644, 
   }
+  
+  if (0 == 1) {
+  if ($pg_main_pw_hash != '') {
+    # notify{"$title: grant has $pg_main_pw_hash": }
+    $hash2use = $pg_main_pw_hash
+  } else {
+    $hash2use = postgresql_password("$pg_main_user", "$pg_main_password")
+    # notify{"$title: grant uses password $pg_main_password hash is $hash2use": }
+  }
      
   if $pg_main_db_name {
     postgresql::db { "$pg_main_db_name":
       locale => 'de_CH.UTF-8',      
       user    => $pg_main_db_user,
-      password => $db_main_pw_hash,
+      password => $hash2use,
     }
   }
   
@@ -118,8 +143,9 @@ class elexis::postgresql_server inherits elexis::common {
     postgresql::db { "$pg_tst_db_name":
       locale => 'de_CH.UTF-8',      
       user    => $pg_main_db_user,
-      password => $db_main_pw_hash,
+      password => $hash2use,
     }
+  }
   }
 
   $db_pg_dump_script = "/usr/local/bin/pg_dump_elexis.rb"
