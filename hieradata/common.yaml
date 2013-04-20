@@ -1,4 +1,6 @@
 ---
+# definition of postgresql database
+# unfortunately the syntax via puppet is signifcantly different so we need a different variable for mysql!
 dbs:
   -
     db_name: elexis
@@ -17,15 +19,41 @@ dbs:
   -
     db_name: elexis
     db_user: reader
-    # specify either db_password or db_pw_hash
     db_password: elexisTest
     db_privileges: 'ALL'
   -
     db_name: test
     db_user: reader
-    # specify either db_password or db_pw_hash
     db_password: elexisTest
     db_privileges: ALL
+
+mysql_dbs:
+  -
+    db_name: elexis
+    db_user: elexis@%
+    # specify either db_password or db_pw_hash
+#     # puppet apply --execute 'notify { "test": message => mysql_password("elexisTest") }' --modulepath /vagrant/modules/  
+    db_password: "thisPasswordOverrideBy db_pw_hash"
+    db_pw_hash: "*0B9FC6091D135BD4050DDBCA19FC9F73D7527C8B"
+    # Or specify individual privileges with columns from the mysql.db table:
+    # privileges => ['Select_priv', 'Insert_priv', 'Update_priv', 'Delete_priv']
+
+    db_privileges: ALL
+  -
+    db_name: test
+    db_user: elexis@%
+    db_pw_hash: "*0B9FC6091D135BD4050DDBCA19FC9F73D7527C8B"
+    db_privileges: ALL
+  -
+    db_name: elexis
+    db_user: reader@%
+    db_password: elexisTest
+    db_privileges: 'Select_priv'
+  -
+    db_name: test
+    db_user: reader@%
+    db_password: elexisTest
+    db_privileges: Select_priv
 
 # some parameters for PostgreSQL users. We assume that we want it
 elexis::postgresql_server::ensure: true
@@ -45,6 +73,7 @@ pg::config_hash:
   listen_addresses:           '*'
   manage_redhat_firewall:     false
   postgres_password:          postgres
+
 # next line(s) go into /etc/postgresql/9.1/main/postgresql_puppet_extras.conf
 pg::puppet_extras: "archive_command = '/usr/bin/test ! -f /home/backup-pg/wal/%f && /bin/cp %p /home/backup-pg/wal/%f < /dev/null'\n
 archive_timeout = 20s\n
@@ -52,6 +81,7 @@ autovacuum =      on
 "
 
 # some parameters for MySQL users. We assume that we want 
+mysql::server:root_password: elexisTest
 elexis::mysql_server::ensure: true
 elexis::mysql_server::mysql_main_db_name:     elexis
 elexis::mysql_server::mysql_tst_db_name:      test

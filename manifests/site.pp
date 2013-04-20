@@ -98,11 +98,6 @@ if hiera('x2go::ensure', false)      { include x2go }
 if hiera('elexis::praxis_wiki::ensure', false) { include elexis::praxis_wiki }
 if hiera('apache::ensure', false) { include apache }
 
-# usually only on database is ensure
-if hiera('elexis:postgres::ensure', false)  { include elexis::postgresql_server }
-if hiera('elexis:mysql::ensure',    false)  { include elexis::mysql_server }
-# TODO: add backup postgres-server
-
 # development stuff
 if hiera('eclipse::ensure', false)   { include eclipse }
 if hiera('buildr::ensure', false)    { include buildr }
@@ -128,14 +123,15 @@ if hiera('elexis::install::Medelexis::ensure', false)
 }
 
 $display_manager =  hiera('X::display_manager', false)
-if ($display_manager) { package{$display_manager:} }
-
-$window_manager =  hiera('X::window_manager', false)
-if ($window_manager) { package{$window_manager:}
-  service{$window_manager:
-    require => Package[$window_manager],
+if ($display_manager) { package{$display_manager:}
+  service{$display_manager:
+    ensure  => running,
+    require => Package[$display_manager],
   }
 }
+
+$window_manager =  hiera('X::window_manager', false)
+if ($window_manager) { package{$window_manager:} }
 
 # TODO: add a possibility to add some more private stuff
 include hiera('private_modules', [])  
@@ -149,10 +145,5 @@ include hiera('private_modules', [])
 # medelexis::app via http://www.medelexis.ch/dl21.php?file=medelexis-linux
 
 import "nodes/*.pp"
-
-$res = hiera('import:xxxxprivate:nodes', false)
-if $res {
-    #notify { "\nimporting private nodes res ist $res": }
-#    import "../private/nodes/*.pp";
-}
+# import "../private/nodes/*.pp";
 

@@ -14,33 +14,95 @@ class elexis::mysql_server(
 
 }
 
+define elexis::db_user(
+  $db_user,
+  $db_name,
+  $db_privileges  = 'ALL',
+  $db_pw_hash  = '',
+  $db_password = '',
+) {
+  
+  # notify{"$title: grant $db_privileges on $db_name to $db_user pw $db_password/$db_pw_hash": }
+  if ($db_pw_hash != '') {
+    # notify{"$title: grant has $db_pw_hash": }
+    $hash2use = $db_pw_hash
+  } else {
+    $hash2use = mysql_password("$db_password")
+    # notify{"$title: grant uses password $db_password hash is $hash2use": }
+  }
+  
+  if !defined(Database_user["$db_user"]) {
+    database_user{"$db_user":
+      password_hash => $hash2use,
+    }
+  }  
+  
+  if !defined(Database["$db_name"]) {
+    database{"$db_name":
+      ensure => present,
+      charset => 'de_CH.UTF-8',
+    }
+  }
+  
+  $grant_id = "${db_user}_on_${db_name}"
+  # notify{"$title: grantid $grant_id": }
+  if !defined(Database_grant["$grant_id"]) {
+    database_grant {$grant_id :
+      privileges => [$db_privileges] ,
+      # Or specify individual privileges with columns from the mysql.db table:
+      # privileges => ['Select_priv', 'Insert_priv', 'Update_priv', 'Delete_priv']
+      require => [
+        Database_user["$db_user"],
+        Database["$db_name"],
+      ]
+    }
+  }
+}
+
+define elexis::dbusers(
+) {
+  $db_name =  $title[db_name]
+  $db_pw_hash =  $title[db_pw_hash]
+  $db_user =  $title[db_user]
+  $db_password =  $title[db_password]
+  $db_privileges = $title[db_privileges]
+  $myName = "${db_name}_${db_user}"
+  elexis::db_user{$myName:
+    db_name => "$db_name",
+    db_user => "$db_user",
+    db_password => "$db_password",
+    db_pw_hash => "$db_pw_hash",
+    db_privileges => "$db_privileges",
+  }
+}
+
 class elexis::mysql_server inherits elexis::common {
   class { 'mysql::server': 
     config_hash => { 
       'root_password' => hiera('mysql::server:root_password', 'elexisTest'),
-      # [mysqld]
-      
+      # [mysqld]      
     } ,
   }
 
-  # With this file we ensure that the mysql root password is elexisTest!
-  file { '/etc/mysql/debian.cnf':
-    ensure => present,
-    owner => 'root',
-    mode => '640',
-    source => 'puppet:///modules/elexis/debian.cnf',
+  $dbs= hiera('mysql_dbs', 'cbs')
+  elexis::dbusers{$dbs: }
+
+  database_user{"elexis@localhost":
+    password_hash => mysql_password('elexisTest'),
+  }
+
+  database_user{'reader@%':
+    password_hash => mysql_password('elexisTest'),
   }
 
   notify{"m $mysql_main_db_name t $mysql_tst_db_name": }
-  if (0 == 1) {
-  mysql::db { "$mysql_main_db_name":
-    user     => $mysql_main_db_user,
-    password => $mysql_main_db_password,
-    host     => 'localhost',
-    ensure => present,
-    charset => 'utf8',      
+  if $mysql_main_db_name {
+    database { "$mysql_main_db_name":
+      ensure  => 'present',
+      charset => 'utf8',
+    }
   }
-}
+
   if $mysql_tst_db_name {
     database { "$mysql_tst_db_name":
       ensure  => 'present',
@@ -56,17 +118,6 @@ class elexis::mysql_server inherits elexis::common {
     mode => 0644,
   }
   
-  database_user{ 'niklaus@localhost':
-    ensure        => present,
-    password_hash => mysql_password(hiera('db::user:giger:password', 'giger')),
-    require       => Class['mysql::server'],
-  }
-
-  # TODO: Add grants for all Elexis users!
-  database_grant { ['arzt@localhost/elexis', 'niklaus@localhost/elexis', 'vagrant@localhost/elexis']:
-    privileges => ['all'] ,
-  }
-    
   $db_mysql_dump_script = "/usr/local/bin/mysql_dump_elexis.rb"
   file {$db_mysql_dump_script:
     ensure => present,

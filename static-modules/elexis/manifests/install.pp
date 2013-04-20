@@ -65,7 +65,6 @@ define elexis::install (
   }
 
   $logicalLink = "/usr/local/bin/$title"
-  notify{"elexis install $logicalLink": }
   file { $logicalLink:
     ensure => link,
     target => "$fullExecPath",
