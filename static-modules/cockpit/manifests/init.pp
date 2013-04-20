@@ -34,11 +34,8 @@ class cockpit(
   $useMock = true,
   $ensure  = true,
   $vcsRoot = '/home/elexis/cockpit',
-  $initFile = '/etc/init.d/cockpit',
   $rubyVersion = 'ruby-2.0.0-p0',
-) {
-
-
+) inherits elexis {
   include rvm
   if !defined(User['elexis']) {
     user { 'elexis': ensure => present }
@@ -88,15 +85,7 @@ class cockpit(
     $pkg_ensure = absent 
     notify{"ohne $initFile da $ensure und pkg $pkg_ensure ":} 
   }	
-	
-  file  { $initFile:
-    content => template('cockpit/cockpit.init.erb'),
-    ensure => $pkg_ensure,
-    owner => 'root',
-    group => 'root',
-    mode  => 0754,
-  }
-  
+
   vcsrepo {  "$vcsRoot":
       ensure => $pkg_ensure,
       provider => git,
@@ -110,25 +99,31 @@ class cockpit(
 
 class cockpit::service(
   $ensure  = true,
+
 ) inherits cockpit
 {
-  if ($ensure != absent) {
-    notify{"mit service da $ensure":} 
-    service { 'cockpit':
-      ensure => running,
-      enable => true,
-      hasstatus => false,
-      hasrestart => false,
-      require =>  [ File["$cockpit::initFile"], 
-        Exec[ 'bundle_trust_cockpit', 'gen_mockconfig'] ],
-    }
-  } else {
-    notify{"ohne service da $ensure":} 
-    service { 'cockpit':
-      ensure => stopped,
-      enable => true,
-      hasstatus => false,
-      hasrestart => false,
-    }
-  } 
+  $cockpit_name     = "elexis_cockpit"
+  $cockpit_run      = "/var/lib/service/$cockpit_name/run"
+  exec{ "$cockpit_run":
+    command => "$create_service_script elexis $cockpit_name '/usr/local/rvm/bin/rvm $rubyVersion do ruby $vcsRoot/elexis-cockpit.rb'",
+    path => '/usr/local/rvm/bin:/usr/local/bin:/usr/bin:/bin',
+    require => [
+      File["$create_service_script"],
+      User["elexis"],
+    ],
+    creates => "$cockpit_run",
+    user => 'root',
+  }
+
+  file{'/etc/init.d/cockpit': ensure => absent }
+  
+  service{"$cockpit_name":
+    ensure => running,
+    provider => "daemontools",
+    path    => "$service_path",
+    hasrestart => true,
+    subscribe  => Exec["$cockpit_run"],
+    require    => Exec["$cockpit_run"], 
+  }
+  
 }

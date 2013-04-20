@@ -42,6 +42,23 @@ class elexis (
   $backup_dir          =  '/opt/backup', # where we will put our backups
   $download_dir        =  '/opt/downloads',
   $bin_dir             =  '/usr/local/bin', # where we will put our binary helper scripts
-  $downloadURL         =  'http://ftp.medelexis.ch/downloads_opensource'
+  $downloadURL         =  'http://ftp.medelexis.ch/downloads_opensource',
+  $create_service_script = '/usr/local/bin/create_service.rb',
+  $service_path          = '/var/lib/service'
 ) {
+    package{'daemontools-run':} 
+    file {'/var/lib/service':
+      ensure => directory,
+      mode  => 0644,
+    }
+
+    file { "$create_service_script":
+      source => "puppet:///modules/elexis/create_service.rb",
+      mode  => 0774,
+      require =>         [
+        File['/var/lib/service'],
+        Package['daemontools-run'],
+      ],
+    }
+    
 }
