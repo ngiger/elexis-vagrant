@@ -103,6 +103,8 @@ elexis::install::Medelexis::version:     2.1.7.0
 X::display_manager: slim
 X::window_manager:  awesome
 
+elexis::cockit::vcsRoot: /opt/src/elexis-cockpit
+
 users:
   - 
     id: arzt
