@@ -3,11 +3,12 @@
 
 class elexis::jubula_elexis  inherits elexis::common {
 
+  $jubula_version = '6.0.01011'
+  
   class {"jubula":
-    # jubulaURL => "${downloadURL}/jubula/jubula_setup_5.2.00266.sh",
-    jubulaURL => 'http://ftp.medelexis.ch/downloads_opensource/jubula/jubula_setup_5.2.00266.sh',
-    destDir =>  '/opt/jubula_5.2.00266',
-    setupSh => '/opt/downloads/jubula_5.2.00266.sh',
+    jubulaURL => "http://ftp.medelexis.ch/downloads_opensource/jubula/jubula_setup_${jubula_version}.sh",
+    destDir =>   "/opt/jubula_${jubula_version}",
+    setupSh =>   "/opt/downloads/jubula_${jubula_version}.sh",
   }
     
   include elexis::mysql_server # we need also a MySQL-database

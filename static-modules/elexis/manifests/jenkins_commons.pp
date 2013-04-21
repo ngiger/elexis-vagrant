@@ -3,13 +3,13 @@
 # TODO: Jubula needs a 32-bit Java (and a 32-bit Elexis)
 # TODO: 32-bit java, eg. sudo apt-get install openjdk-6-jdk:i386 openjdk-6-jre-headless:i386
 
-class elexis::jenkins_commons inherits elexis::common {
-  require jenkins
-  notify { "elexis::jenkins_commons: ${jenkins::jenkinsRoot}/downloads": }
-  $downloadDir    =  "${jenkins::jenkinsRoot}/downloads"
-  $jobsDir        =  "${jenkins::jenkinsRoot}/jobs"
-  $neededUsers    = User[$jenkins::jenkinsUser,'elexis']
+class elexis::jenkins_commons(
+  $downloadDir    =  "$jenkinsRoot/downloads",
+  $jobsDir        =  "$jenkinsRoot/jobs",
   $elexisBaseURL  = "http://hg.sourceforge.net/hgweb/elexis"
+) inherits elexis::common {
+  require jenkins
+  $neededUsers    = User['jenkins','elexis']
 
   file { [$jobsDir, $downloadDir]:
     owner => 'jenkins',
@@ -39,24 +39,24 @@ class elexis::jenkins_commons inherits elexis::common {
     require => [User['jenkins']],
   }
   
-  file { [ "${jenkins::jenkinsRoot}/users", "${jenkins::jenkinsRoot}/users/elexis"]:
+  file { [ "${jenkinsRoot}/users", "${jenkinsRoot}/users/elexis"]:
     ensure => directory, # so make this a directory
   }
 
-  file { "${jenkins::jenkinsRoot}/users/elexis/config.xml":
+  file { "${jenkinsRoot}/users/elexis/config.xml":
     ensure => present,
     source => 'puppet:///modules/elexis/users/elexis.xml',
     replace => false,  # If the user changes the setup, don't overwrite it
   }
 
-  file { "${jenkins::jenkinsRoot}/config.xml":
+  file { "${jenkinsRoot}/config.xml":
     ensure => present,
     source => 'puppet:///modules/elexis/config.xml',
     replace => false,  # If the user changes the setup, don't overwrite it
   }
   # Our config.xml must be written, before we install jenkins, as the jenkins package
   # will install it's own version.
-  Package['jenkins'] <- File["${jenkins::jenkinsRoot}/config.xml"]
+  Package['jenkins'] <- File["${jenkinsRoot}/config.xml"]
 
   include elexis::latex # needed to create Elexis documentation in the ant jobs
   Elexis::Latex { notify => Service['jenkins'] }

@@ -1,34 +1,35 @@
 # Downloads various variants of the eclipse
-notify { "This is elexis::download_eclipse_version": }
 require jenkins
 require elexis::common
 
 define elexis::download_eclipse_version(
   $baseURL,
   $file_base = $title,
-  $downloadDir = "/opt/jenkins/downloads"
+  $downloadDir = "${elexis::jenkinsRoot}/downloadDir"
  ) {
-  $fullName = "$downloadDir/$filename"
-  $cmd = "wget --timestamping "
-  notify {"version-cmd  ${cmd} title ${title} from ${baseURL}":}
-  include jenkins
-  if !defined(Exec["create_$downloadDir"]) {
-    exec { "create_$downloadDir":
-      command => "mkdir -p ${downloadDir}",
-      path => '/usr/bin:/bin',
-      unless => "test -d ${downloadDir}"
-    }
+  if ( "$baseURL" == '' or "$file_base" == '' or "$downloadDir" == '' ) {
+    fail ("missing parameter ${cmd} title ${title} from ${baseURL} via $downloadDir")
   }
 
-
+  $fullName = "$downloadDir/$filename"
+  $cmd = "wget --timestamping "
+  # notify {"version-cmd  ${cmd} title ${title} from ${baseURL} via $downloadDir":}
+  include jenkins
   # default for the execs
   Exec {
     cwd     => $downloadDir,
     path    => '/usr/bin:/bin',
-    user    => $jenkins::jenkinsUser,
-    group   => $jenkins::jenkinsUser,
+    user    => 'jenkins',
+    group   => 'jenkins',
   }
 
+  $linux64 = "linux-gtk-x86_64.tar.gz"
+  exec { "${file_base}-$linux64":
+    command => "${cmd} ${baseURL}/${title}-$linux64",
+    creates => "${downloadDir}/${title}-$linux64",
+  }
+
+  if (0 == 1) { # starting with 2.1.7 we need only one version of the eclipse
   $win32 = "win32.zip"
   exec { "${file_base}-$win32":
     command => "${cmd} ${baseURL}/${title}-$win32",
@@ -41,18 +42,13 @@ define elexis::download_eclipse_version(
     creates => "${downloadDir}/${title}-$linux32",
   }
 
-  $linux64 = "linux-gtk-x86_64.tar.gz"
-  exec { "${file_base}-$linux64":
-    command => "${cmd} ${baseURL}/${title}-$linux64",
-    creates => "${downloadDir}/${title}-$linux64",
-  }
-
   $macosx64 = "macosx-cocoa-x86_64.tar.gz"
   exec { "${file_base}-$macosx64":
     command => "${cmd} ${baseURL}/${title}-$macosx64",
     creates => "${downloadDir}/${title}-$macosx64",
   }
-
+  }
+  
   # install elexis for the current OS/arch
   case downcase("${kernel}.${architecture}") {
     /linux.i386/:	{ $ext = $linux32 }
@@ -78,7 +74,7 @@ define elexis::download_eclipse_version(
     command => $unpackCmd,
     creates => ["${instDir}/eclipse/eclipse", "${instDir}/eclipse"],
     path => '/usr/bin:/bin',
-    require => Exec["${title}-${ext}"],
+    require => [ Exec["${title}-${ext}"], File["${downloadDir}"], ],
   }
 
   file {"${instDir}/eclipse":
