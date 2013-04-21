@@ -56,7 +56,7 @@ class jubula($jubulaURL = 'http://ftp.medelexis.ch/downloads_opensource/jubula/j
   }
 
   $cmd2 = "${scriptName} ${setupSh} ${destDir}"
-  notify {"install_jubula $cmd2":}
+  # notify {"install_jubula $cmd2":}
   exec{ $scriptName:
     command => $cmd2,
     creates => $jubulaEXE,

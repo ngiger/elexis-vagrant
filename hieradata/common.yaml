@@ -1,7 +1,7 @@
 ---
 # definition of postgresql database
 # unfortunately the syntax via puppet is signifcantly different so we need a different variable for mysql!
-dbs:
+pg_dbs:
   -
     db_name: elexis
     db_user: elexis
@@ -55,16 +55,46 @@ mysql_dbs:
     db_password: elexisTest
     db_privileges: Select_priv
 
-# some parameters for PostgreSQL users. We assume that we want it
-elexis::postgresql_server::ensure: true
-# next lines must be in sync with dbs
-elexis::postgresql_server::pg_main_db_name:     elexis
-elexis::postgresql_server::pg_tst_db_name:      test
-elexis::postgresql_server::pg_main_db_user:     elexis
-elexis::postgresql_server::pg_main_db_password: elexisTest
+editor::default:   /usr/bin/vim.nox
+editor::package:   vim-nox
+elexis::default_eclipse:      eclipse-rcp-juno-SR2
+elexis::jenkinsDir:           /opt/jenkins
+elexis::eclipseRelease:       juno
+elexis::default_eclipse:      eclipse-rcp-juno-SR2
+elexis::downloadURL:          http://ftp.medelexis.ch/downloads_opensource
+elexis::apt_prox_host:        172.25.1.233
+elexis::apt_prox_port:        3142
+elexis::db_type:   pg
+elexis::db_server: server
+elexis::db_backup: backup
+elexis::db_server::backup_server_is: backup
+elexis::db_port:   3306
+elexis::db_user:   elexis
+elexis::db_user:   elexis
+elexis::db_password:   elexisTest # password of main DB user
+# elexis::db_pw_hash:    elexisTest # or better and used if present password hash of main DB user
+elexis::db_main:   elexis   # Name of DB to use for production
+elexis::db_test:   test     # Name of test DB to use for production
+elexis::pg_dump_dir:         /home/postgresql/dumps/
+elexis::pg_backup_dir:       /home/postgresql/backups/
+elexis::pg_backup_files:     /home/postgresql/dumps/elexis.dump*.gz
+elexis::pg_switch_script:     /usr/local/bin/pg_switch.sh
 
-elexis::postgresql_server::pg_dump_dir:         /home/postgresql/dumps/
-elexis::postgresql_server::pg_backup_dir:       /home/postgresql/backups/
+elexis::bin_dir:  /usr/local/bin
+elexis::java:     'openjdk-6-jdk'
+elexis::service_path: /var/lib/service
+# This script must be normal bash scripts or we will have problem
+elexis::install_script: 
+server::reboot_script: '/usr/bin/sudo /sbin/shutdown -r -t 30 now'
+server::halt_script:   '/usr/bin/sudo /sbin/shutdown -h -t 30 now'
+
+# some parameters for PostgreSQL users. We assume that we want it
+elexis::ensure: true
+# next lines must be in sync with dbs
+elexis::pg_main_db_name:     elexis
+elexis::pg_tst_db_name:      test
+elexis::pg_main_db_user:     elexis
+elexis::pg_main_db_password: elexisTest
 
 # Allows you to set parameters in pg_hba.conf    
 pg::config_hash:
@@ -82,13 +112,14 @@ autovacuum =      on
 
 # some parameters for MySQL users. We assume that we want 
 mysql::server:root_password: elexisTest
-elexis::mysql_server::ensure: true
-elexis::mysql_server::mysql_main_db_name:     elexis
-elexis::mysql_server::mysql_tst_db_name:      test
-elexis::mysql_server::mysql_main_db_user:     elexis
-elexis::mysql_server::mysql_main_db_password: elexisTest
-elexis::mysql_server::mysql_dump_dir:         /home/mysql/dumps/
-elexis::mysql_server::mysql_backup_dir:       /home/mysql/backups/
+elexis::ensure: true
+elexis::mysql_main_db_name:     elexis
+elexis::mysql_tst_db_name:      test
+elexis::mysql_main_db_user:     elexis
+elexis::mysql_main_db_password: elexisTest
+elexis::mysql_dump_dir:         /home/mysql/dumps/
+elexis::mysql_backup_dir:       /home/mysql/backups/
+elexis::mysql_backup::files:    /home/mysql/dumps/elexis.dump*.gz
 
 # Install Elexis and/or Medelexis current versions
 elexis::install::OpenSource::ensure:     true

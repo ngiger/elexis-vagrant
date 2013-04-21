@@ -33,5 +33,5 @@ fi
 
 dpkg -l etckeeper | grep ii
 if [ $? -ne 0  ] ; then
-  apt-get install --quiet --assume-yes git etckeeper
+  apt-get install --quiet --assume-yes git etckeeper &> /var/log/etckeeper.log
 fi

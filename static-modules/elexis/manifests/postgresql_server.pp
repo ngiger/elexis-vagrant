@@ -12,20 +12,23 @@ class { 'postgresql':
 }
 
 class elexis::postgresql_server(
-  $pg_backup_dir        = hiera('elexis::postgresql_server::pg_backup_dir',       '/home/backups/postgresql'),
-  $pg_dump_dir          = hiera('elexis::postgresql_server::pg_dump_dir',         '/home/dumps/postgresql'),
-  $pg_main_db_name      = hiera('elexis::postgresql_server::pg_main_db_name',     'elexis'),
-  $pg_main_db_user      = hiera('elexis::postgresql_server::pg_main_db_user',     'elexis'),
+  $pg_backup_dir        = hiera('elexis::pg_backup_dir',       '/home/backups/postgresql'),
+  $pg_dump_dir          = hiera('elexis::pg_dump_dir',         '/home/dumps/postgresql'),
+  $pg_main_db_name      = hiera('elexis::pg_main_db_name',     'elexis'),
+  $pg_main_db_user      = hiera('elexis::pg_main_db_user',     'elexis'),
   # puppet apply --execute 'notify { "test": message => postgresql_password("elexis", "elexisTest") }' --modulepath /vagrant/modules/
-  $pg_main_db_password  = hiera('elexis::postgresql_server::pg_main_db_password', 'elexisTest'),
-  $pg_main_pw_hash      = hiera('elexis::postgresql_server::pg_main_db_password', 'elexisTest'),
-  $pg_tst_db_name       = hiera('elexis::postgresql_server::pg_tst_db_name',      'tst_db'),
+  $pg_main_db_password  = hiera('elexis::pg_main_db_password', 'elexisTest'),
+  $pg_main_pw_hash      = hiera('elexis::pg_main_db_password', 'elexisTest'),
+  $pg_tst_db_name       = hiera('elexis::pg_tst_db_name',      'tst_db'),
+  $db_pg_dump_script    = "/usr/local/bin/pg_dump_elexis.rb",
+  $db_pg_util_script    = "/usr/local/bin/pg_util.rb",
+  $db_pg_load_script    = "/usr/local/bin/pg_load_tst_db.rb",
 ){
   include concat::setup
 
 }
 
-define elexis::db_user(
+define elexis::pg_dbuser(
   $db_user,
   $db_name,
   $db_privileges  = 'ALL',
@@ -68,7 +71,7 @@ define elexis::db_user(
   }
 }
 
-define elexis::dbusers(
+define elexis::pg_dbusers(
 ) {
   $db_name =  $title[db_name]
   $db_pw_hash =  $title[db_pw_hash]
@@ -76,7 +79,7 @@ define elexis::dbusers(
   $db_password =  $title[db_password]
   $db_privileges = $title[db_privileges]
   $myName = "${db_name}_${db_user}"
-  elexis::db_user{$myName:
+  elexis::pg_dbuser{$myName:
     db_name => "$db_name",
     db_user => "$db_user",
     db_password => "$db_password",
@@ -87,8 +90,8 @@ define elexis::dbusers(
 
 class elexis::postgresql_server inherits elexis::common {
   include postgresql::params
-  $dbs= hiera('dbs', 'cbs')
-  elexis::dbusers{$dbs:   
+  $dbs= hiera('pg_dbs', 'cbs')
+  elexis::pg_dbusers{$dbs:   
   }
     
   file  { "${pg_backup_dir}/wal/":
@@ -122,33 +125,6 @@ class elexis::postgresql_server inherits elexis::common {
     mode   => 0644, 
   }
   
-  if (0 == 1) {
-  if ($pg_main_pw_hash != '') {
-    # notify{"$title: grant has $pg_main_pw_hash": }
-    $hash2use = $pg_main_pw_hash
-  } else {
-    $hash2use = postgresql_password("$pg_main_user", "$pg_main_password")
-    # notify{"$title: grant uses password $pg_main_password hash is $hash2use": }
-  }
-     
-  if $pg_main_db_name {
-    postgresql::db { "$pg_main_db_name":
-      locale => 'de_CH.UTF-8',      
-      user    => $pg_main_db_user,
-      password => $hash2use,
-    }
-  }
-  
-  if $pg_tst_db_name {
-    postgresql::db { "$pg_tst_db_name":
-      locale => 'de_CH.UTF-8',      
-      user    => $pg_main_db_user,
-      password => $hash2use,
-    }
-  }
-  }
-
-  $db_pg_dump_script = "/usr/local/bin/pg_dump_elexis.rb"
   file {$db_pg_dump_script:
     ensure => present,
     mode   => 0755,

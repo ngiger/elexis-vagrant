@@ -1,13 +1,12 @@
 # Install various plugins commonly used by Elexis developers
 # kate: replace-tabs on; indent-width 2; indent-mode cstyle; syntax ruby
 
-notify { "This is elexis::download_eclipse_version": }
 require jenkins
 require elexis::common
 
+
 define elexis::eclipse_plugins(
   $instDir = "/opt/eclipse/${title}/eclipse",
-  $eclipseRelease = 'indigo',
   $desired_plugins = 'copyright,egit,jinto,MercurialEclipse,wikitext,',
 ) {
 
@@ -29,7 +28,7 @@ define elexis::eclipse_plugins(
   case $desired_plugins {
     /egit/ : {
         eclipse::install_plugin {'org.eclipse.egit.feature.group':
-          pluginURL => 'http://download.eclipse.org/releases/indigo',
+          pluginURL => "http://download.eclipse.org/releases/$eclipseRelease",
           installIUs => 'org.eclipse.egit.feature.group',
           unlessFile => 'plugins/org.eclipse.egit_*.jar',
         }
@@ -61,12 +60,33 @@ define elexis::eclipse_plugins(
 
   case $desired_plugins {
     /wikitext/ : {
-	  eclipse::install_plugin {'org.eclipse.wikitext.feature.group':
-	    pluginURL => "http://download.eclipse.org/releases/$eclipseRelease",
-	    installIUs => 'org.eclipse.wikitext.feature.group',
-	    unlessFile => 'plugins/org.eclipse.mylyn.wikitext.core_*.jar',
-	  }
-	}
-    default: { notify{"skip wikitext plugin for ${instDir}": } }
+    eclipse::install_plugin {'org.eclipse.wikitext.feature.group':
+      pluginURL => "http://download.eclipse.org/releases/$eclipseRelease",
+      installIUs => 'org.eclipse.wikitext.feature.group',
+      unlessFile => 'plugins/org.eclipse.mylyn.wikitext.core_*.jar',
+      }
+    }
+    default: { notify{"skip MercurialEclipse plugin for ${instDir}": } }
   }
+
+# TODO: Fix this plugin
+#   case $desired_plugins {
+#      /tapiji/ : {
+#      # needs first jsf JavaServerFace 
+#      eclipse::install_plugin {'org.eclipse.jsf.feature.feature.group':
+#        pluginURL => "http://download.eclipse.org/releases/$eclipseRelease",
+#        installIUs => 'org.eclipse.jsf.feature.feature.group',
+#        unlessFile => 'plugins/org.eclipse.jsf*jar',
+#      }
+#      
+#      eclipse::install_plugin {'org.eclipselabs.tapiji.tools.feature.feature.group':
+#        pluginURL => "http://svn.codespot.com/a/eclipselabs.org/tapiji/update",
+#        installIUs => 'org.eclipselabs.tapiji.tools.feature.feature.group',
+#        unlessFile => 'plugins/org.eclipselabs.tapiji.tools.java*.jar',
+#        require => Eclipse::Install_plugin['org.eclipse.jsf.feature.feature.group'],
+#      }
+#     }
+#     default: { notify{"skip wikitext plugin for ${instDir}": } }
+#   }
+# 	
 }

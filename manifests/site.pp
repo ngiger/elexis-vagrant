@@ -13,15 +13,22 @@ stage { 'first': before => Stage['second'] }
 stage { 'second': before => Stage['main'] }
 stage { 'last': require => Stage['main'] }
 
-class { 'apt': }
+class { 'apt': 
+  proxy_host           => hiera('elexis::apt_prox_host', ''),
+  proxy_port           => hiera('elexis::apt_prox_port', '3142'),
+  purge_sources_list   => true,
+  purge_sources_list_d => true,
+  purge_preferences_d  => true,
+#  stage => first,
+}
 
 apt::source { 'debian_wheezy':
   location          => hiera('apt::source:location', 'http://mirror.switch.ch/ftp/mirror/debian/'),
   release           => hiera('apt::source:release', 'wheezy'),
   repos             => hiera('apt::source:repos', 'main contrib non-free'),
-#  required_packages => hiera('apt::source:required_packages', 'debian-keyring debian-archive-keyring'),
-#  key               => hiera('apt::source:key', '55BE302B'),
-#  key_server        => hiera('apt::source:key_server', 'subkeys.pgp.net'),
+  required_packages => hiera('apt::source:required_packages', 'debian-keyring debian-archive-keyring'),
+  key               => hiera('apt::source:key', '55BE302B'),
+  key_server        => hiera('apt::source:key_server', 'subkeys.pgp.net'),
 #  pin               => hiera('apt::source:pin', '-10'),
   include_src       => hiera('apt::source:include_src', true),
 }
@@ -69,19 +76,6 @@ package{  ['dlocate', 'mlocate', 'htop', 'curl', 'bzr', 'unzip']:
   ensure => present,
 }
 
-# The author's personal choice
-if hiera('editor:default', false) {
-  $editor_default = hiera('editor:default')  
-  package{ [ hiera('editor:package') ]:
-    ensure => present,
-  }
-  
-  exec {'set_default_editor':
-    command => "update-alternatives --set editor ${editor_default}",
-    require => Package[hiera('editor:package')],
-    path    => "/usr/bin:/usr/sbin:/bin:/sbin",
-  }  
-}
 node default {
     # notify { "\n\nsite.pp node default for hostname $hostname": }
 }

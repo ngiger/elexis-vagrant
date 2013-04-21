@@ -8,7 +8,6 @@ define elexis::install (
   $programURL             = 'http://www.medelexis.ch/dl21.php?file=medelexis-linux',
   $version                = 'current',
   $installBase            = '/opt/elexis',
-  $auto_install_template  = 'elexis/auto_install.xml.erb'
 ) {
   include elexis::common 
   include java
@@ -31,17 +30,8 @@ define elexis::install (
     }
   }
   
-  $autoInstallXml = "$installBase/auto_install-$version.xml"
   $installer      = "$installBase/elexis-installer-$version.jar"
-  # notify{"install $auto_install_template via $autoInstallXml and $installer": }
   
-  file { "$autoInstallXml":
-    content => template("$auto_install_template"),
-    owner  => 'elexis',
-    mode  => 0644,
-    require => [ User['elexis'], File[ "$installBase" ] ],
-  }
-
   if !defined(Package['wget']) { package{'wget': ensure => present, } }
   exec { "wget_$installer":
     cwd     => "/tmp",
@@ -51,16 +41,22 @@ define elexis::install (
     creates => "$installer",
   }
   
-  $fullExecPath = "$installDir/elexis"
+  $installer_script = '/usr/local/bin/install_elexis.rb'
+  if !defined(File[$installer_script]) {
+    file{$installer_script:
+      source => 'puppet:///modules/elexis/install_elexis.rb',
+      mode => 0755,
+      owner => root,
+      group => root,
+    }
+  }
 
+  $fullExecPath = "$installDir/elexis"
   exec { "$fullExecPath":
     cwd     => "/tmp",
-    command => "echo pwd
-    echo $installDir &&
-    java -jar $installer $autoInstallXml
-    ls -l $installDir/elexis",
+    command => "$installer_script $installer $installDir",
     creates => "$fullExecPath",
-    require => [ File[ "$installBase", "$autoInstallXml"], Exec["wget_$installer"], ],
+    require => [ File[ "$installBase"], Exec["wget_$installer"], ],
     path    => '/usr/bin:/bin',
   }
 

@@ -5,9 +5,9 @@
 
 define elexis::jenkins_elexis(
   $branch  = $title,
-  $baseURL = $elexis::jenkins_commons::elexisBaseURL,
+  $baseURL = $elexis::downloadURL,
   $archieURL = "http://archie.googlecode.com/svn/archie/ch.unibe.iam.scg.archie/branches/elexis-2.1",
-  $eclipseVersion = 'eclipse-rcp-indigo-SR2',
+  $eclipseVersion = "$elexis::defaultEclipse",
 ) {
   include jenkins
   include elexis::common
@@ -15,19 +15,21 @@ define elexis::jenkins_elexis(
   include elexis::jenkins_slave
 
   File{
-    owner   =>       $jenkins::jenkinsUser,
-    group   =>       $jenkins::jenkinsUser,
+    owner   =>       'jenkins',
+    group   =>       'jenkins',
   }
   
   if (!defined(Elexis::Download_eclipse_version[$eclipseVersion])) {
     elexis::download_eclipse_version{$eclipseVersion:
-      baseURL => "${elexis::downloadURL}/eclipse",
+      downloadDir => "${elexis::jenkinsRoot}/downloads",
+      baseURL     => "${elexis::downloadURL}/eclipse",
     }
     elexis::eclipse_plugins{$eclipseVersion:
     }
-    notify { "jenkins_elexis baseURL ist ${baseURL}": }
+    # notify { "jenkins_elexis baseURL ist ${baseURL} downloadDir ${elexis::jenkinsRoot}/downloads": }
   }
   
+  if (0==1) {  # TODO: Fix adding jobs to Jubula
   Jenkins::Job {                                   # Default values for Jenkins jobs here
     notify  => Service['jenkins'],                 # Restart jenkins after adding jobs
     require => Jenkins::Plugin[$elexis::jenkins_commons::pluginsForElexis], # The jobs need to have all plugins-installed
@@ -58,7 +60,7 @@ define elexis::jenkins_elexis(
     }
 
   $antJobName = "elexis-${branch}-ant"
-  $antJobDir      = "${jenkins::jenkinsRoot}/jobs/${antJobName}"
+  $antJobDir      = "${elexis::jenkinsRoot}/jobs/${antJobName}"
   jenkins::job{$antJobName:
       branch         => $branch,
       pollURL        => 'https://bitbucket.org/ngiger/elexis-bootstrap',
@@ -70,7 +72,7 @@ define elexis::jenkins_elexis(
   $skipPlugins         = ',ch.marlovits.addressSearch,ch.marlovits.vornamen,ch.marlovits.plz,at.medevit.elexis.gdt.customed,medshare-licence-generator,de.ralfebert.rcputils,de.ralfebert.rcputils.feature'
   $install_jar_project = $antJobName  # needed for jubula_config.erb
   $jubulaJobName       = "elexis-${branch}-jubula"
-  $jubulaJobDir        = "${jenkins::jenkinsRoot}/jobs/${jubulaJobName}"
+  $jubulaJobDir        = "${elexis::jenkinsRoot}/jobs/${jubulaJobName}"
   jenkins::job{"$jubulaJobName":
       branch         => 'jubula-1.1',
       pollURL        => 'https://bitbucket.org/ngiger/jubula-elexis',
@@ -79,18 +81,21 @@ define elexis::jenkins_elexis(
     }
 
   # To be able to run jubula, we need the patched version of run_jenkins.rb
-  notify{ "schon Jubula jubulaJobName ist ${jubulaJobName} jubulaJobDir ${jubulaJobDir}": }
+  # notify{ "schon Jubula jubulaJobName ist ${jubulaJobName} jubulaJobDir ${jubulaJobDir}": }
   file {"${jubulaJobDir}/vagrant_runs_jenkins.rb":
     ensure => present,
     mode   => 0755,
     content => template("elexis/jenkins/vagrant_runs_jenkins.erb"),
-    require => [User[$jenkins::jenkinsUser], Jenkins::Job[$jubulaJobName]],
+    require => [User['jenkins'], Jenkins::Job[$jubulaJobName]
+    ],
+  }
   }
 
   # speed up building and save space linking to common for the ant task
-  file { "${antJobDir}/downloads":
-    ensure => link, # so make this a link
-    target => "${jenkins::jenkinsRoot}/downloads",
+  if !defined(File["${antJobDir}/downloads"]) {
+    file { "${antJobDir}/downloads":
+      ensure => link, # so make this a link
+      target => "${elexis::jenkinsRoot}/downloads",
+    }
   }
-
 }

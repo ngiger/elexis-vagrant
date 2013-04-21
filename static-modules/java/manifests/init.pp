@@ -17,7 +17,7 @@ class java($version = 6, $variant = 'openjdk', $hasJdk = false, $hasJre = true )
 	    }
     }
   }
-  notify { "variant: $variant $version -> $jdkName ${jdkName}-jdk": }
+  # notify { "variant: $variant $version -> $jdkName ${jdkName}-jdk": }
 }
 
 include java

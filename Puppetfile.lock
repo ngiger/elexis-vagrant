@@ -15,19 +15,23 @@ FORGE
     puppetlabs/stdlib (3.2.0)
     puppetlabs/vcsrepo (0.1.1)
     ripienaar/concat (0.2.0)
-    rtyler/jenkins (0.2.3)
-      puppetlabs/apt (>= 0.0.1)
-      puppetlabs/stdlib (>= 2.0.0)
     thomasvandoren/etckeeper (0.0.8)
 
 GIT
   remote: git://github.com/ngiger/puppet-jenkins.git
   ref: master
-  sha: f3891e8975b71c24e7da88a5e0d070919e3a74db
+  sha: 3fa6e2718455d3227d2602e75c83409b479167b7
   specs:
-    jenkins (0.2.2)
-      puppetlabs/apt (>= 0.0.1)
+    jenkins (0.2.4)
+      puppetlabs/apt (>= 0.0.3)
       puppetlabs/stdlib (>= 2.0.0)
+
+GIT
+  remote: git://github.com/ngiger/puppet-samba.git
+  ref: master
+  sha: 280e37acab86c479484a07ad41912a311385eb5b
+  specs:
+    ajjahn/samba (0.1.2)
 
 GIT
   remote: git://github.com/ngiger/puppet-x2go.git
@@ -36,13 +40,6 @@ GIT
   specs:
     ngiger/x2go (0.1.0)
       puppetlabs/apt (>= 1.0)
-
-GIT
-  remote: git@github.com:ngiger/puppet-samba.git
-  ref: master
-  sha: 280e37acab86c479484a07ad41912a311385eb5b
-  specs:
-    ajjahn/samba (0.1.2)
 
 PATH
   remote: ./static-modules/apache
@@ -114,12 +111,10 @@ DEPENDENCIES
   ngiger/x2go (>= 0)
   ntp_demo (>= 0)
   puppetlabs/apt (>= 0)
-  puppetlabs/firewall (>= 0)
   puppetlabs/mysql (>= 0)
   puppetlabs/postgresql (>= 0)
   puppetlabs/vcsrepo (>= 0)
   ripienaar/concat (>= 0)
-  rtyler/jenkins (>= 0)
   sshd (>= 0)
   thomasvandoren/etckeeper (>= 0)
   util (>= 0)

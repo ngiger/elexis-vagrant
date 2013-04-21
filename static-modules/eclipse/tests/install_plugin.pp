@@ -7,7 +7,7 @@ eclipse::install_plugin { 'wdev91.eclipse.copyright':
 }
 
 eclipse::install_plugin {'org.eclipse.egit.feature.group':
-  pluginURL => 'http://download.eclipse.org/releases/indigo',
+  pluginURL => 'http://download.eclipse.org/releases/juno',
   installIUs => 'org.eclipse.egit.feature.group',
   unlessFile => 'plugins/org.eclipse.mylyn.wikitext.core_*.jar',
 }

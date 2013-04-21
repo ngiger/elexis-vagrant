@@ -31,8 +31,31 @@ class elexis::common (
     home => '/home/elexis',
     managehome => true,
     shell => '/bin/bash',
+    password => 'elexisTest',
 #    password => '$6$dhRZ0TiE$7XqShTeGp2ukRiMdGVyk/JIqbvRtwySwFkYaK3sbNxrH1vI9gvsBI7pdjYlugL/bgYavsx0wL3Z2CLJGKyBkN/', # elexisTest
     password_max_age => '99999',
     password_min_age => '0',
   }
+  
+  package{['daemontools-run', 'anacron']:} 
+  file {'/var/lib/service':
+    ensure => directory,
+    mode  => 0644,
+  }
+  
+  file {'/etc/sudoers.d/elexis':
+    ensure => present,
+    content => "elexis ALL=NOPASSWD:ALL\n",
+    mode  => 0644,
+  }
+
+  file { "$create_service_script":
+    source => "puppet:///modules/elexis/create_service.rb",
+    mode  => 0774,
+    require =>         [
+      File['/var/lib/service'],
+      Package['daemontools-run'],
+    ],
+  }
+  
 }

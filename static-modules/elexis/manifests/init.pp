@@ -32,33 +32,29 @@
 #
 
 class elexis (
-  $java                = 'openjdk-6-jdk',
-  $eclipse             = 'eclipse-rcp-juno-linux-gtk-x86_64',
-  $db_type             =  'mysql', # mysql or pg for postgresql
-  $db_main             =  hiera('::db::main', 'elexis'), # Name of DB to use for production
-  $db_test             =  'elexis', # DB to use for tests
-  $db_user             =  'elexis', # DB-User to access both DB
-  $db_password         =  'elexisTest', # a convention, which should be overridden somewhere!!!
-  $backup_dir          =  '/opt/backup', # where we will put our backups
-  $download_dir        =  '/opt/downloads',
-  $bin_dir             =  '/usr/local/bin', # where we will put our binary helper scripts
-  $downloadURL         =  'http://ftp.medelexis.ch/downloads_opensource',
-  $create_service_script = '/usr/local/bin/create_service.rb',
-  $service_path          = '/var/lib/service'
-) {
-    package{'daemontools-run':} 
-    file {'/var/lib/service':
-      ensure => directory,
-      mode  => 0644,
-    }
+  $db_type             =  hiera('elexis::db_type', 'mysql'),           # mysql or pg for postgresql
+  $db_main             =  hiera('elexis::db_main', 'elexis'),          # Name of DB to use for production
+  $db_test             =  hiera('elexis::db_test', 'test'),            # Name of test DB to use for production
+  $db_password         =  hiera('elexis::db_password', 'elexisTest'),  # password of main DB user
+  $db_pw_hash          =  hiera('elexis::db_pw_hash', ''),             # or better and used if present password hash of main DB user
+  
+  $java                = hiera('elexis::java_version', 'openjdk-6-jdk'),
+  $bin_dir             = hiera('elexis::bin_dir',      '/usr/local/bin'),          # where we will put our binary helper scripts
+  $create_service_script = "$bin_dir/create_service.rb",                # read-only for various services
+  $service_path          = hiera('elexis::service', '/var/lib/service'),
 
-    file { "$create_service_script":
-      source => "puppet:///modules/elexis/create_service.rb",
-      mode  => 0774,
-      require =>         [
-        File['/var/lib/service'],
-        Package['daemontools-run'],
-      ],
-    }
-    
+  $jenkinsRoot          = hiera('elexis::jenkinsDir',       '/opt/jenkins'),
+  $eclipseRelease       = hiera('elexis::eclipseRelease',   'juno'),
+  $defaultEclipse       = hiera('elexis::default_eclipse',  'eclipse-rcp-juno-SR2'),
+  $downloadURL          = hiera('elexis::downloadURL',      'http://ftp.medelexis.ch/downloads_opensource'),
+
+) {
+  # notify{"elexis with java $java":}
+  # class java($version = 6, $variant = 'openjdk', $hasJdk = false, $hasJre = true ) {
+  class { 'java':
+    version => 6,
+    variant => 'openjdk', # sun gibt es ab Debian Wheezy nicht mehr!
+    hasJdk => true,
+    hasJre => true,
+  }  
 }

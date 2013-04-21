@@ -37,9 +37,7 @@ class cockpit(
   $rubyVersion = 'ruby-2.0.0-p0',
 ) inherits elexis {
   include rvm
-  if !defined(User['elexis']) {
-    user { 'elexis': ensure => present }
-  }
+  
   if ($ensure != absent ) { 
     $pkg_ensure = present 
  
@@ -102,6 +100,8 @@ class cockpit::service(
 
 ) inherits cockpit
 {
+  include elexis::common
+  
   $cockpit_name     = "elexis_cockpit"
   $cockpit_run      = "/var/lib/service/$cockpit_name/run"
   exec{ "$cockpit_run":
