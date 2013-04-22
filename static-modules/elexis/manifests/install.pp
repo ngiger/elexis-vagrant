@@ -9,6 +9,7 @@ define elexis::install (
   $version                = 'current',
   $installBase            = '/opt/elexis',
 ) {
+  include elexis::admin
   include elexis::common 
   include java
   $installDir         =   "$installBase/$version"
@@ -56,7 +57,7 @@ define elexis::install (
     cwd     => "/tmp",
     command => "$installer_script $installer $installDir",
     creates => "$fullExecPath",
-    require => [ File[ "$installBase"], Exec["wget_$installer"], ],
+    require => [ File[ "$installBase", '/etc/auto_install_elexis.xml'], Exec["wget_$installer"], ],
     path    => '/usr/bin:/bin',
   }
 

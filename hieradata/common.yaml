@@ -70,7 +70,6 @@ elexis::db_backup: backup
 elexis::db_server::backup_server_is: backup
 elexis::db_port:   3306
 elexis::db_user:   elexis
-elexis::db_user:   elexis
 elexis::db_password:   elexisTest # password of main DB user
 # elexis::db_pw_hash:    elexisTest # or better and used if present password hash of main DB user
 elexis::db_main:   elexis   # Name of DB to use for production
@@ -79,6 +78,11 @@ elexis::pg_dump_dir:         /home/postgresql/dumps/
 elexis::pg_backup_dir:       /home/postgresql/backups/
 elexis::pg_backup_files:     /home/postgresql/dumps/elexis.dump*.gz
 elexis::pg_switch_script:     /usr/local/bin/pg_switch.sh
+
+# ensure that you can send mail via an sstmp user
+# elexis::mail::user:      'put your username   into hieradata/private/config.yaml'
+# elexis::mail::password:  'put your password   into hieradata/private/config.yaml'
+# elexis::mail::smtp_host: 'put your smtp_host  into hieradata/private/config.yaml'
 
 elexis::bin_dir:  /usr/local/bin
 elexis::java:     'openjdk-6-jdk'

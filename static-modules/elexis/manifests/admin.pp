@@ -1,7 +1,10 @@
 # Here we define a install various utilities for the administrator
 
 
-class elexis::admin inherits elexis::common {
+class elexis::admin (
+  $pg_util_rb = '/usr/local/bin/pg_util.rb'
+)
+inherits elexis::common {
   
   # The config writer personal choice
   if hiera('editor::default', false) {
@@ -13,12 +16,23 @@ class elexis::admin inherits elexis::common {
       command => "update-alternatives --set editor ${editor_default}",
       require => Package[$editor_package],
       path    => "/usr/bin:/usr/sbin:/bin:/sbin",
+      environment => 'LANG=C',
+      unless  => "update-alternatives --display editor --quiet | grep currently | grep ${editor_default}"
     }  
   }
   
   file { '/etc/timezone': 
     content => "Europe/Zurich\n",
   }
+
+  # see http://johnleach.co.uk/words/771/puppet-dependencies-and-run-stages
+  # The following two dependencies should in my opinion be handled in module apt
+  include apt
+  # Ensure apt is setup before running apt-get update
+  Apt::Key <| |> -> Exec["apt_update"]
+
+  # Ensure apt-get update has been run before installing any packages
+  Exec["apt_update"] -> Package <| |>
   
   # needed to install via elexis-cockpit
   $installBase = 'dummy'
@@ -26,9 +40,22 @@ class elexis::admin inherits elexis::common {
     content => template('elexis/auto_install.xml.erb'),
     mode  => 0644,
   }
+  # --- done patching module apt
     
-  package{'htop':}
-  
+  # etckeeper is a nice utility which will track (each day or for each apt-get run) the changes
+  # in the /etc directory. Handy to know why suddenly a package does not work anymore!
+  include etckeeper # will define package git, too
+  if !defined(Package['unzip']) { package {'unzip': ensure => present, } }
+  package{  ['dlocate', 'mlocate', 'htop', 'curl', 'bzr']:
+    ensure => present,
+  }
+
+  file {"$pg_util_rb":
+    ensure => present,
+    mode   => 0755,
+    content => template("elexis/pg_util.rb.erb"),
+  }
+    
   # we migth use https://forge.puppetlabs.com/rendhalver/sudo to manage
   # permissions for these commands
   file { '/usr/local/bin/reboot.sh': 

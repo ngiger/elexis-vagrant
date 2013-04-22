@@ -14,6 +14,7 @@ stage { 'second': before => Stage['main'] }
 stage { 'last': require => Stage['main'] }
 
 class { 'apt': 
+  always_apt_update    => true,
   proxy_host           => hiera('elexis::apt_prox_host', ''),
   proxy_port           => hiera('elexis::apt_prox_port', '3142'),
   purge_sources_list   => true,
@@ -69,18 +70,12 @@ class ensureLibShadow{
   }
 }
 
-# etckeeper is a nice utility which will track (each day or for each apt-get run) the changes
-# in the /etc directory. Handy to know why suddenly a package does not work anymore!
-include etckeeper # will define package git, too
-package{  ['dlocate', 'mlocate', 'htop', 'curl', 'bzr', 'unzip']:
-  ensure => present,
-}
-
 node default {
     # notify { "\n\nsite.pp node default for hostname $hostname": }
 }
 
 # Some common stuff for the admin
+if hiera('elexis::admin::ensure', true) { include elexis::admin }
 if hiera('etckeeper::ensure', false) { include etckeeper }
 
 # User setup. Choose between KDE and (gnome, unity: both not yet supported)

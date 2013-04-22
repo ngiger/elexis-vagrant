@@ -4,8 +4,8 @@
 #
 # Simple test script for the elexis-vagrant project to import
 # the elexis database into the tst_db. Should be run e.g. each week
-
-require File.join(File.dirname(__FILE__), 'pg_util.rb')
+$: << File.dirname( __FILE__)
+require 'pg_util.rb'
 
 <%= scope.function_include(['elexis::postgresql_server']) %>
 pg_main_db_name      = '<%=  scope.function_hiera(['elexis::postgresql_server::pg_main_db_name',     'elexis']) %>'

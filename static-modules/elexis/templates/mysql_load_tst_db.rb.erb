@@ -4,15 +4,15 @@
 #
 # Simple test script for the elexis-vagrant project to import
 # the elexis database into the tst_db. Should be run e.g. each week
-
-require File.join(File.dirname(__FILE__), 'pg_util.rb')
+$: << File.dirname( __FILE__)
+require 'pg_util.rb'
 
 <%= scope.function_include(['elexis::mysql_server']) %>
-mysql_main_db_name      = '<%=  scope.function_hiera(['elexis::mysql_server::mysql_main_db_name',     'elexis']) %>'
-mysql_main_db_user      = '<%=  scope.function_hiera(['elexis::mysql_server::mysql_main_db_user',     'elexis']) %>'
-mysql_main_db_password  = '<%=  scope.function_hiera(['elexis::mysql_server::mysql_main_db_password', 'elexisTest']) %>'
-mysql_tst_db_name       = '<%=  scope.function_hiera(['elexis::mysql_server::mysql_tst_db_name' ,     'tst_db']) %>'
-mysql_dump_dir          = '<%=  scope.function_hiera(['elexis::mysql_server::mysql_dump_dir',         '/home/backup-mysql']) %>'
+mysql_main_db_name      = '<%=  scope.function_hiera(['elexis::mysql_main_db_name',     'elexis']) %>'
+mysql_main_db_user      = '<%=  scope.function_hiera(['elexis::mysql_main_db_user',     'elexis']) %>'
+mysql_main_db_password  = '<%=  scope.function_hiera(['elexis::mysql_main_db_password', 'elexisTest']) %>'
+mysql_tst_db_name       = '<%=  scope.function_hiera(['elexis::mysql_tst_db_name' ,     'tst_db']) %>'
+mysql_dump_dir          = '<%=  scope.function_hiera(['elexis::mysql_dump_dir',         '/home/backup-mysql']) %>'
 
 dump   = "#{mysql_dump_dir}/#{mysql_main_db_name}.dump.gz"
 
