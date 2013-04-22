@@ -20,9 +20,9 @@ class elexis::postgresql_server(
   $pg_main_db_password  = hiera('elexis::pg_main_db_password', 'elexisTest'),
   $pg_main_pw_hash      = hiera('elexis::pg_main_db_password', 'elexisTest'),
   $pg_tst_db_name       = hiera('elexis::pg_tst_db_name',      'tst_db'),
-  $db_pg_dump_script    = "/usr/local/bin/pg_dump_elexis.rb",
-  $db_pg_util_script    = "/usr/local/bin/pg_util.rb",
-  $db_pg_load_script    = "/usr/local/bin/pg_load_tst_db.rb",
+  $pg_dump_script    = "/usr/local/bin/pg_dump_elexis.rb",
+  $pg_util_script    = "/usr/local/bin/pg_util.rb",
+  $pg_load_script    = "/usr/local/bin/pg_load_tst_db.rb",
 ){
   include concat::setup
 
@@ -90,6 +90,8 @@ define elexis::pg_dbusers(
 
 class elexis::postgresql_server inherits elexis::common {
   include postgresql::params
+  include elexis::admin
+  
   $dbs= hiera('pg_dbs', 'cbs')
   elexis::pg_dbusers{$dbs:   
   }
@@ -125,38 +127,32 @@ class elexis::postgresql_server inherits elexis::common {
     mode   => 0644, 
   }
   
-  file {$db_pg_dump_script:
+  file {$pg_dump_script:
     ensure => present,
     mode   => 0755,
     content => template("elexis/pg_dump_elexis.rb.erb"),
-    require => File['/usr/local/bin/pg_util.rb'],
+    require => File[$pg_util_rb],
   }
 
   file {"/usr/local/bin/pg_fill.rb":
     ensure => present,
     mode   => 0755,
     content => template("elexis/pg_fill.rb.erb"),
-    require => File['/usr/local/bin/pg_util.rb'],
+    require => File[$pg_util_rb],
   }
   
   file {"/usr/local/bin/pg_load_tst_db.rb":
     ensure => present,
     mode   => 0755,
     content => template("elexis/pg_load_tst_db.rb.erb"),
-    require => File['/usr/local/bin/pg_util.rb'],
+    require => File[$pg_util_rb],
   }
   
   file {"/usr/local/bin/pg_poll.rb":
     ensure => present,
     mode   => 0755,
     content => template("elexis/pg_poll.rb.erb"),
-    require => File['/usr/local/bin/pg_util.rb'],
-  }
-  
-  file {"/usr/local/bin/pg_util.rb":
-    ensure => present,
-    mode   => 0755,
-    content => template("elexis/pg_util.rb.erb"),
+    require => File[$pg_util_rb],
   }
   
   exec { "$pg_backup_dir":
@@ -189,17 +185,29 @@ class elexis::postgresql_server inherits elexis::common {
     
   cron { 'pg-backup':
       ensure  => $ensure,
-      command => "$db_pg_dump_script",
+      command => "$pg_dump_script",
       user    => 'root',
       hour    => 23,
       minute  => 15,
       require => [
-        File["$db_pg_dump_script", "$pg_backup_dir"],
+        File["$pg_dump_script", "$pg_backup_dir"],
         Exec["$pg_backup_dir", "$pg_dump_dir"],
       ]
       
   }
 
+  file {'/etc/cron.weekly/pg_load_tst_db.rb':
+    ensure => present,
+    owner => 'root',
+    group => 'root',
+    mode  => 0755,
+    require => File["$pg_load_script"],
+    content => "#!/bin/sh
+test -x ${pg_load_script} || exit 0
+${pg_load_script}
+"
+  }
+  
   file {'/etc/logrotate.d/pg_elexis_dump':
     ensure => present,
     content => "\n${$pg_dump_dir}/elexis.dump.gz {

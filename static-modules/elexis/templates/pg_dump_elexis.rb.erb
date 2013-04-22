@@ -5,7 +5,8 @@
 # Simple test script for the elexis-vagrant project to poll a dummy table
 # Used to verify that the backup server gets results from the main server
 # and updates its copy correctly
-require File.join(File.dirname(__FILE__), 'pg_util.rb')
+$: << File.dirname( __FILE__)
+require 'pg_util.rb'
 
 <%= scope.function_include(['elexis::postgresql_server']) %>
 pg_main_db_name      = '<%=  scope.function_hiera(['elexis::postgresql_server::pg_main_db_name',     'elexis']) %>'

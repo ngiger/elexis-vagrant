@@ -3,7 +3,8 @@
 # Copyright (c) Niklaus Giger niklaus.giger@member.fsf.org
 #
 # Simple test script for the elexis-vagrant project to fill a dummy table
-require File.join(File.dirname(__FILE__), 'pg_util.rb')
+$: << File.dirname( __FILE__)
+require 'pg_util.rb'
 <%= scope.function_include(['elexis::postgresql_server']) %>
 pg_main_db_name      = '<%=  scope.function_hiera(['elexis::postgresql_server::pg_main_db_name',     'elexis']) %>'
 pg_main_db_user      = '<%=  scope.function_hiera(['elexis::postgresql_server::pg_main_db_user',     'elexis']) %>'
@@ -26,4 +27,3 @@ while true
   exit if loops > 3 and $VERBOSE
   sleep 7
 end
-

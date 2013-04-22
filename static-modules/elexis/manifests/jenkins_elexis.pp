@@ -2,6 +2,7 @@
 # Here we setup a few elexis related jenkins job configuration files
 # TODO: Jubula needs a 32-bit Java (and a 32-bit Elexis)
 # TODO: 32-bit java, eg. sudo apt-get install openjdk-6-jdk:i386 openjdk-6-jre-headless:i386
+include elexis
 
 define elexis::jenkins_elexis(
   $branch  = $title,
@@ -26,7 +27,7 @@ define elexis::jenkins_elexis(
     }
     elexis::eclipse_plugins{$eclipseVersion:
     }
-    # notify { "jenkins_elexis baseURL ist ${baseURL} downloadDir ${elexis::jenkinsRoot}/downloads": }
+    # notify { "jenkins_elexis  down ${elexis::downloadURL}  baseURL ist ${baseURL} downloadDir ${elexis::jenkinsRoot}/downloads": }
   }
   
   if (0==1) {  # TODO: Fix adding jobs to Jubula

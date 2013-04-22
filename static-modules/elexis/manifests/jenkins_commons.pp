@@ -11,7 +11,7 @@ class elexis::jenkins_commons(
   require jenkins
   $neededUsers    = User['jenkins','elexis']
 
-  file { [$jobsDir, $downloadDir]:
+  file { [$jenkinsRoot, $jobsDir, $downloadDir]:
     owner => 'jenkins',
     mode => '644',
     ensure => directory, # so make this a directory

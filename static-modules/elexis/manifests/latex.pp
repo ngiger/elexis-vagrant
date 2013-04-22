@@ -20,8 +20,10 @@ inherits elexis::common {
     require => File[$downloadDir],
   }
 
-  file {$destDir:
-    ensure => directory,
+  exec { "$destDir":
+    command => "mkdir -p $destDir",
+    path => '/usr/bin:/bin',
+    creates => "$destDir"
   }
 
   $cmdFile = "${downloadDir}/install_floatflt.sh"
@@ -44,9 +46,8 @@ cp floatflt.sty ${floatStyName} && texhash
     creates => $floatStyName,
     cwd => $downloadDir,
     path => '/usr/bin:/bin',
-    require => [File[$cmdFile, $destDir],
-		Exec[$destZip],
-		# Class['elexis::download_floatflt'],
+    require => [File[$cmdFile],
+		Exec[$destDir, $destZip],
 		Package['unzip', 'texlive', 'texinfo', 'texlive-lang-german', 'texlive-latex-extra']],
   }
 }

@@ -12,7 +12,7 @@ define elexis::eclipse_plugins(
 
   Eclipse::Install_plugin {
     eclipse_root => $instDir,
-    require => File[$instDir],
+    require => [ Class['Java'], File[$instDir] ],
   }
   case $desired_plugins {
     /copyright/ : {

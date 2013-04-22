@@ -10,10 +10,11 @@ define elexis::download_eclipse_version(
   if ( "$baseURL" == '' or "$file_base" == '' or "$downloadDir" == '' ) {
     fail ("missing parameter ${cmd} title ${title} from ${baseURL} via $downloadDir")
   }
+  
 
   $fullName = "$downloadDir/$filename"
   $cmd = "wget --timestamping "
-  # notify {"version-cmd  ${cmd} title ${title} from ${baseURL} via $downloadDir":}
+  # notify {"version-cmd  ${cmd} title ${title}\nfrom ${baseURL} via $downloadDir":}
   include jenkins
   # default for the execs
   Exec {

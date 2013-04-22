@@ -10,9 +10,15 @@ cd $PUPPET_DIR
 # we want to use rvm and puppet installed via gem as the
 # puppet installed via apt has hiera 1.1 and therefore chokes
 # when seening %{::environment} in its configuration
+grep puppet /etc/.gitignore | grep puppet
+if [ $? -ne 0  ] ; then
+  echo puppet/ >> /etc/.gitignore
+fi
+
 apt-get update 
-apt-get remove  --quiet --assume-yes puppet
-apt-get install --quiet --assume-yes ruby ruby-dev libaugeas-ruby 
+apt-get remove    --quiet --assume-yes    puppet
+apt-get upgrade   --quiet --assume-yes
+apt-get install   --quiet --assume-yes    ruby ruby-dev libaugeas-ruby 
 export PATH=/usr/local/bin:$PATH
 source /usr/local/rvm/scripts/rvm
 rvm use system --default 
