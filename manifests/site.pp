@@ -70,8 +70,11 @@ class ensureLibShadow{
   }
 }
 
-node default {
-    # notify { "\n\nsite.pp node default for hostname $hostname": }
+users { sysadmins: }
+users { elexis: }
+
+node /default/ {
+    notify { "\n\nsite.pp node default for hostname $hostname": }
 }
 
 # Some common stuff for the admin
@@ -80,7 +83,6 @@ if hiera('etckeeper::ensure', false) { include etckeeper }
 
 # User setup. Choose between KDE and (gnome, unity: both not yet supported)
 if hiera('kde::ensure', false)       { include kde }
-if hiera('sshd::ensure', false)      { include sshd }
 if hiera('x2go::ensure', false)      { include x2go }
 
 # stuff for the server

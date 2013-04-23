@@ -79,6 +79,124 @@ elexis::pg_backup_dir:       /home/postgresql/backups/
 elexis::pg_backup_files:     /home/postgresql/dumps/elexis.dump*.gz
 elexis::pg_switch_script:     /usr/local/bin/pg_switch.sh
 
+# On debian passwordhash can be generate using mkpasswd -m sha-512 yourPassword
+passwords:
+  rgw:
+    password: '$6$y.DmNxI9ibt$u656hqnBunFDHZaOmO/VM60ENoVLxoTC9pyfofAcwbfef4sV39hXN/jYAM4V/SPbKbpYCuVZE743.ZDjFEVpC0' # was 8200
+  thomashu:
+    password: '$6$XfboSHLp$2dbGluTUvur1WlGY3jcskxN/4iMp2m95C97PRyVxU1wsITkM45lkqjvz1nJRk.ujOJlvPdJO7CsXeJgZ08oPJ.' # was 6840
+  
+users_devel:
+  rgw:
+    ensure: present
+    uid: 1201
+    groups:  [ adm, dialout, cdrom, elexis, plugdev, netdev, rvm, sudo ]
+    comment: Without him there would be no Elexis. Thanks a lot!
+    managehome: true
+    shell: /bin/bash
+    password: '$6$y.DmNxI9ibt$u656hqnBunFDHZaOmO/VM60ENoVLxoTC9pyfofAcwbfef4sV39hXN/jYAM4V/SPbKbpYCuVZE743.ZDjFEVpC0' # was 8200
+  thomashu:
+    ensure: present
+    uid: 1202
+    groups:  [ adm, dialout, cdrom, elexis, plugdev, netdev, rvm, sudo ]
+    comment: Core developer
+    managehome: true
+    shell: /bin/bash
+    password: '$6$XfboSHLp$2dbGluTUvur1WlGY3jcskxN/4iMp2m95C97PRyVxU1wsITkM45lkqjvz1nJRk.ujOJlvPdJO7CsXeJgZ08oPJ.' # was 6840
+  marcode79:
+    ensure: present
+    uid: 1203
+    groups:  [ adm, dialout, cdrom, elexis, plugdev, netdev, rvm, sudo ]
+    comment: Core developer and responsible for the database versions
+    managehome: true
+    shell: /bin/bash
+    password: '$6$XfboSHLp$2dbGluTUvur1WlGY3jcskxN/4iMp2m95C97PRyVxU1wsITkM45lkqjvz1nJRk.ujOJlvPdJO7CsXeJgZ08oPJ.' # was 6840
+  jsigle:
+    ensure: present
+    uid: 1204
+    groups:  [ adm, dialout, cdrom, elexis, plugdev, netdev, rvm, sudo ]
+    comment: Our LibreOffice guru and bug fixer
+    managehome: true
+    shell: /bin/bash
+    password: '$6$GJvs7SLbFkWzv3j$63jbsREdXBCGsbls.fsdNGeKzp3hHXEAxrw4r9YDjgHB8QCEj.M.BdqAO5cASLYclhKAfxINVXxjZz4UOOOqj0' # was 3004
+  freakyPenguin:
+    ensure: present
+    uid: 1205
+    groups:  [ adm, dialout, cdrom, elexis, plugdev, netdev, rvm, sudo ]
+    comment: ODF text plugin and hilotec KG
+    managehome: true
+    shell: /bin/bash
+    password: '$6$0gxFH7BZp$AE/WvqtBBnTQovhkgxN6vaxQl4AFo7GH3i2eTxqA2UW5prnjikDNnbBauIoy8OwTqfcuzqxtlLbDZIw9LfCUd1'  # was 3550
+    
+  niklaus:
+    ensure: present
+    uid: 1206
+    groups:  [ adm, dialout, cdrom, elexis, plugdev, netdev, rvm, sudo ]
+    comment: The elexis release manager
+    managehome: true
+    shell: /bin/bash
+    # was 8753
+    password: '$6$YIy.xAQcKOXUY9CU$dqun8A3EZ7i/wKP9C/lqriWApx9GwRuDMy5psPlL2JSTm4d/dJvU4tSIYnFs81uSVyuE2FkwI.K/jzqj01JVH1'
+
+users_elexis:
+  arzt:
+    ensure: present
+    uid: 1500
+    groups:  [ adm, dialout, cdrom, elexis, plugdev, netdev, rvm, sudo ]
+    comment: elexis
+    managehome: true
+    password: '$6$4OQ1nIYTLfXE$xFV/8f6MIAo6XKZg8fYbF//w1lhFrCJ60JMcptwESgbHaH52c2UZbUUAAlydCRQy9wDYEgt5dUpTyHjFhCy5E.'
+
+# For each of the trusted_hosts we will do the following
+# The users elexis and postgres (without shell) will be able to execute ssh (password-less) commands on each of the other hosts
+# This is done via generating for each host a separate RSA key under hieradata/private/<hostname>
+
+elexis::trusted_hosts:
+  elexis:
+    hosts:
+      - server
+      - backup 
+      - devel
+  postgres:
+    hosts:
+      - server
+      - backup 
+      - devel
+  vagrant:
+    hosts:
+      - server
+      - backup 
+      - devel
+
+ssh::access::allow:
+  - 'elexis'
+  - 'vagrant'
+#  - 'www-data'
+#  - '@sysadmins'
+ssh::access::deny:
+  - 'mallory'
+#  - '@dev'
+
+# ssh::keys::www-data:
+#   type: 'ssh-rsa'
+#   public_key: 'AAAAB3NzaC1yc2EAAAABJQAAAQBaSth67VpPf6i737TWFYwBUwZdovDyfr2df94YbINWOkOQTBoaR5TnUSgqorpTUGmif8w2khqWWb/ZI+l5HQckR8WVVgBDnFPnXcYZ2ok0qV85bD/ttlpw4QDMb82+f72YcBu4h5A2eKxroqFQCyigfXtE3JjgakIm3iW7OW6XQUkAT8MZFhy3xlodJCdNOxvxawd9CVpw70cTeA7bXBiS8AFUpcKp20Z45tixiESrH2E4TRCy8HHxnN6fGUG+Xt6No265fPpEc+Bg+/hkrguIVEuj2NoIoQcS4F8Kew73jnJte4qugNbJIwcKTWn3NvgjA2CwPIWxvkvJerx129cf'
+
+ssh::users:
+#  www-data:
+#    allow: [ 'elexis', 'www-data' ]
+#    deny:  [ 'mallory' ]
+#  tomcat1:
+#    allow: [ 'elexis', 'www-data' ]
+  
+ssh::keys::elexis:
+  type: 'ssh-rsa'
+  public_key: 'AAAAB3NzaC1yc2EAAAABJQAAAQBaSth67VpPf6i737TWFYwBUwZdovDyfr2df94YbINWOkOQTBoaR5TnUSgqorpTUGmif8w2khqWWb/ZI+l5HQckR8WVVgBDnFPnXcYZ2ok0qV85bD/ttlpw4QDMb82+f72YcBu4h5A2eKxroqFQCyigfXtE3JjgakIm3iW7OW6XQUkAT8MZFhy3xlodJCdNOxvxawd9CVpw70cTeA7bXBiS8AFUpcKp20Z45tixiESrH2E4TRCy8HHxnN6fGUG+Xt6No265fPpEc+Bg+/hkrguIVEuj2NoIoQcS4F8Kew73jnJte4qugNbJIwcKTWn3NvgjA2CwPIWxvkvJerx129cf'
+
+ssh::users:
+  elexis:
+    allow: [ 'elexis',] 
+#    deny:  [ 'mallory' ]
+
 # ensure that you can send mail via an sstmp user
 # elexis::mail::user:      'put your username   into hieradata/private/config.yaml'
 # elexis::mail::password:  'put your password   into hieradata/private/config.yaml'
@@ -109,6 +227,8 @@ pg::config_hash:
   postgres_password:          postgres
 
 # next line(s) go into /etc/postgresql/9.1/main/postgresql_puppet_extras.conf
+pg::archive_timeout: 20s
+
 pg::puppet_extras: "archive_command = '/usr/bin/test ! -f /home/backup-pg/wal/%f && /bin/cp %p /home/backup-pg/wal/%f < /dev/null'\n
 archive_timeout = 20s\n
 autovacuum =      on
