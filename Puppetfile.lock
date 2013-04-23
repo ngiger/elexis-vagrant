@@ -52,11 +52,6 @@ PATH
     apache (0.0.1)
 
 PATH
-  remote: ./static-modules/buildr
-  specs:
-    buildr (0.0.1)
-
-PATH
   remote: ./static-modules/cockpit
   specs:
     cockpit (0.0.1)
@@ -99,7 +94,6 @@ PATH
 DEPENDENCIES
   ajjahn/samba (>= 0)
   apache (>= 0)
-  buildr (>= 0)
   cockpit (>= 0)
   domcleal/augeasproviders (>= 0)
   eclipse (>= 0)

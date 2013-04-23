@@ -194,7 +194,7 @@ ssh::keys::elexis:
 
 ssh::users:
   elexis:
-    allow: [ 'elexis',] 
+    allow: [ 'elexis' ] 
 #    deny:  [ 'mallory' ]
 
 # ensure that you can send mail via an sstmp user

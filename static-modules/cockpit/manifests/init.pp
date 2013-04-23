@@ -31,52 +31,34 @@
 # Copyright 2013 Niklaus Giger <niklaus.giger@member.fsf.org>
 #
 class cockpit(
-  $useMock = true,
-  $ensure  = true,
-  $vcsRoot = '/home/elexis/cockpit',
-  $rubyVersion = 'ruby-2.0.0-p0',
+  $useMock = hiera('elexis::cockit::useMock', false),
+  $ensure  = hiera('elexis::cockit::ensure ', true),
+  $vcsRoot = hiera('elexis::cockit::vcsRoot', '/home/elexis/cockpit'),
 ) inherits elexis {
-  include rvm
 
   # TODO: Install correct ruby 
   if ($ensure != absent ) { 
     $pkg_ensure = present 
  
-    # rvm does not handle absent correctly!
-    rvm_system_ruby {
-      "$rubyVersion":
-        ensure => $pkg_ensure,
-        default_use => false;
+    package{ 'bundle':
+      provider => gem,
+      ensure => installed,
     }
-     
-    rvm_gemset {
-      "$rubyVersion@cockpit":
-        ensure => $pkg_ensure,
-        require => Rvm_system_ruby[ $rubyVersion  ];
-    }
-    
-    rvm_gem {
-      "$rubyVersion@cockpit/bundler":
-        ensure => $pkg_ensure,
-        require => Rvm_gemset["$rubyVersion@cockpit"];
-    }
-      
     exec { 'bundle_trust_cockpit':
-      command => "sudo -iH rvm $rubyVersion do bundle install --gemfile $vcsRoot/Gemfile &> $vcsRoot/install.log",
+      command => "bundle install --gemfile $vcsRoot/Gemfile &> $vcsRoot/install.log",
       creates => "$vcsRoot/install.log",
       cwd => "/usr/bin",
-      path => '/usr/local/rvm/bin:/usr/local/bin:/usr/bin:/bin',
-      require => [  Rvm_gem ["$rubyVersion@cockpit/bundler"],
-                    Vcsrepo[$vcsRoot] ],
+      path => '/usr/local/bin:/usr/bin:/bin',
+      require => [ Vcsrepo[$vcsRoot], 
+        Package['bundle'] 
+        ],
     }
     exec { 'gen_mockconfig':
-      command => "rvm rvmrc trust $vcsRoot \
-      && cd $vcsRoot && pwd   \
-      && rake mock_scripts 2>&1| tee mock_scripts.log",
+      command => "rake mock_scripts 2>&1| tee mock_scripts.log",
       creates => "$vcsRoot/mock_scripts.log",
       cwd => "/usr/bin",
-      path => '/usr/local/rvm/bin:/usr/local/bin:/usr/bin:/bin',
-      require =>  [ Rvm_system_ruby["$rubyVersion"], Vcsrepo[$vcsRoot], 
+      path => '/usr/local/bin:/usr/bin:/bin',
+      require =>  [ Vcsrepo[$vcsRoot], 
                     Exec['bundle_trust_cockpit'], ],
     }
   } 
@@ -106,8 +88,8 @@ class cockpit::service(
   $cockpit_name     = "elexis_cockpit"
   $cockpit_run      = "/var/lib/service/$cockpit_name/run"
   exec{ "$cockpit_run":
-    command => "$create_service_script elexis $cockpit_name '/usr/local/rvm/bin/rvm $rubyVersion do ruby $vcsRoot/elexis-cockpit.rb'",
-    path => '/usr/local/rvm/bin:/usr/local/bin:/usr/bin:/bin',
+    command => "$create_service_script elexis $cockpit_name 'ruby $vcsRoot/elexis-cockpit.rb'",
+    path => '/usr/local/bin:/usr/bin:/bin',
     require => [
       File["$create_service_script"],
       User["elexis"],

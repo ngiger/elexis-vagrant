@@ -44,7 +44,6 @@ mod "ngiger/x2go", :git => 'git://github.com/ngiger/puppet-x2go.git'
 
 # Lokale, nicht echte Module von mir
 mod 'apache',     :path => './static-modules/apache'
-mod 'buildr',     :path => './static-modules/buildr'
 mod 'cockpit',    :path => './static-modules/cockpit'
 mod 'eclipse',    :path => './static-modules/eclipse'
 mod 'elexis',     :path => './static-modules/elexis'

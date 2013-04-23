@@ -95,8 +95,7 @@ class elexis::mysql_server inherits elexis::common {
     } ,
   }
 
-
-  $dbs= hiera('mysql_dbs', 'cbs')
+  $dbs         = hiera('mysql_dbs', 'cbs')
   elexis::mysql_dbusers{$dbs: }
   $mainUser = hiera("elexis::db_user", 'elexis')
   $mainPw   = hiera("elexis::db_password", 'elexisTest')
@@ -115,7 +114,7 @@ class elexis::mysql_server inherits elexis::common {
   database_grant {"${$mainUser}@localhost" :
     privileges => ['all'] ,
     require => [
-      Database_user["${mainUser}@localhost"],
+#      Database_user["${mainUser}@localhost"],
       Class['mysql::config', 'mysql::backup'],
     ]
   }
