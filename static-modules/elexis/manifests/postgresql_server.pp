@@ -24,8 +24,6 @@ class elexis::postgresql_server(
   $pg_util_script    = "/usr/local/bin/pg_util.rb",
   $pg_load_script    = "/usr/local/bin/pg_load_tst_db.rb",
 ){
-  include concat::setup
-
 }
 
 define elexis::pg_dbuser(
@@ -36,7 +34,7 @@ define elexis::pg_dbuser(
   $db_password = '',
 ) {
   
-  notify{"$title: grant $db_privileges on $db_name to $db_user pw $db_password/$db_pw_hash": }
+  # notify{"$title: grant $db_privileges on $db_name to $db_user pw $db_password/$db_pw_hash": }
   if ($db_pw_hash != '') {
     # notify{"$title: grant has $db_pw_hash": }
     $hash2use = $db_pw_hash
@@ -49,6 +47,7 @@ define elexis::pg_dbuser(
     postgresql::role{"$db_user":
       login => true,
       password_hash => $hash2use,
+      require => Service[postgresqld],
     }
   }  
   
@@ -66,6 +65,7 @@ define elexis::pg_dbuser(
       require => [
         Postgresql::Role["$db_user"],
         Postgresql::Database["$db_name"],
+        Service[postgresqld],
       ]
     }
   }
@@ -73,6 +73,7 @@ define elexis::pg_dbuser(
 
 define elexis::pg_dbusers(
 ) {
+  include elexis::postgresql_server
   $db_name =  $title[db_name]
   $db_pw_hash =  $title[db_pw_hash]
   $db_user =  $title[db_user]
@@ -89,8 +90,16 @@ define elexis::pg_dbusers(
 }
 
 class elexis::postgresql_server inherits elexis::common {
+  include concat::setup
   include postgresql::params
   include elexis::admin
+  
+  user{'postgres': 
+    require => package['postgresql-common'],
+  }
+  group{'postgres':
+    require => package['postgresql-common'],
+  }
   
   $dbs= hiera('pg_dbs', 'cbs')
   elexis::pg_dbusers{$dbs:   
@@ -99,13 +108,69 @@ class elexis::postgresql_server inherits elexis::common {
   file  { "${pg_backup_dir}/wal/":
     ensure => directory,
     owner  => 'postgres',
+    group  => 'postgres',
     mode   => 0755,
   }
   package { 'postgresql-contrib':
     ensure => present,
     }
+
+  # now comes the whole setup for online backup on server and backup
+  if ("$hostname"== "server") {
+    $backup_partner       = "backup"
+    $backup_dir           = "/opt/backups_from_backup"
+    $reverse_backup_dir   = "/opt/backups_from_server"
+  } else { if ("$hostname"== "backup") {
+    $backup_partner       = "server"
+    $backup_dir           = "/opt/backups_from_server"  
+    $reverse_backup_dir   = "/opt/backups_from_backup"
+  } else  {
+    notify{"host $hostname is neither backup nor server": }
+  } }  
+  notify{"pg: wal $backup_dir $reverse_backup_dir": }
+  if ("$backup_dir" != "")  {
+    notify{"pg: Creating $backup_dir $reverse_backup_dir": }
+    sshd_config { "PermitEmptyPasswords":
+      ensure    => present,
+      condition => "Host $backup_partner",
+      value     => "yes",
+    }
+    
+    file { "$backup_dir":
+      ensure => directory,
+    }
+    
+    file { "$reverse_backup_dir":
+      ensure => directory,
+    }
+    
+    file { "$backup_dir/wal":
+      ensure => directory,
+      require => File[$backup_dir],
+    }
+    
+  }
+  file { '/usr/local/bin/pg_archive_wal.sh':
+    ensure => present,
+    source => 'puppet:///modules/elexis/pg_archive_wal.sh',
+    owner  => 'postgres',
+    group  => 'postgres',
+    mode   => 0744,
+  }
+    
   $config_hash = hiera('pg::config_hash', '')
   $conf_dir    = $postgresql::params::confdir
+  $archive_timeout = hiera('pg::pg_archive_timeout', '600') # by default every 10 minutes = 600 seconds
+  # template("elexis/postgresql_puppet_extras.conf.erb"),
+  file {"$conf_dir/postgresql_puppet_extras.conf":
+    content => "# managed by puppet. see elexis/manifests/postgresql_server.pp
+archive_command = '/usr/bin/test ! -f ${backup_dir}/wal/%f && /bin/cp %p ${reverse_backup_dir}/%f < /dev/null'
+archive_timeout = ${archive_timeout}
+autovacuum =      on
+",
+  }
+  
+  
   class {'postgresql::server':
     config_hash => $config_hash,
     require => [ File["$conf_dir/postgresql_puppet_extras.conf"], Package['postgresql-contrib'] ],
@@ -120,39 +185,32 @@ class elexis::postgresql_server inherits elexis::common {
     auth_method => 'md5',
   }
   
-  $puppet_extras = hiera('pg::puppet_extras', '#no variable pg::puppet_extras defined!')
-  file {"$conf_dir/postgresql_puppet_extras.conf":
-    content => template("elexis/postgresql_puppet_extras.conf.erb"),
-    owner  =>  'postgres', group => 'postgres',
-    mode   => 0644, 
-  }
-  
   file {$pg_dump_script:
     ensure => present,
     mode   => 0755,
     content => template("elexis/pg_dump_elexis.rb.erb"),
-    require => File[$pg_util_rb],
+    require => File[$elexis::admin::pg_util_rb],
   }
 
   file {"/usr/local/bin/pg_fill.rb":
     ensure => present,
     mode   => 0755,
     content => template("elexis/pg_fill.rb.erb"),
-    require => File[$pg_util_rb],
+    require => File[$elexis::admin::pg_util_rb],
   }
   
   file {"/usr/local/bin/pg_load_tst_db.rb":
     ensure => present,
     mode   => 0755,
     content => template("elexis/pg_load_tst_db.rb.erb"),
-    require => File[$pg_util_rb],
+    require => File[$elexis::admin::pg_util_rb],
   }
   
   file {"/usr/local/bin/pg_poll.rb":
     ensure => present,
     mode   => 0755,
     content => template("elexis/pg_poll.rb.erb"),
-    require => File[$pg_util_rb],
+    require => File[$elexis::admin::pg_util_rb],
   }
   
   exec { "$pg_backup_dir":
@@ -224,7 +282,6 @@ ${pg_load_script}
     group => root,
     mode  => 0644,
   }
-
-
+  
 }
 

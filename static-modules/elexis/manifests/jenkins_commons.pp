@@ -4,28 +4,26 @@
 # TODO: 32-bit java, eg. sudo apt-get install openjdk-6-jdk:i386 openjdk-6-jre-headless:i386
 
 class elexis::jenkins_commons(
-  $downloadDir    =  "$jenkinsRoot/downloads",
+  $downloads      =  "$jenkinsRoot/downloads",
   $jobsDir        =  "$jenkinsRoot/jobs",
   $elexisBaseURL  = "http://hg.sourceforge.net/hgweb/elexis"
 ) inherits elexis::common {
   require jenkins
   $neededUsers    = User['jenkins','elexis']
 
-  file { [$jenkinsRoot, $jobsDir, $downloadDir]:
+  file { [$jenkinsRoot, $jobsDir]:
     owner => 'jenkins',
     mode => '644',
     ensure => directory, # so make this a directory
   }
 
   # include jenkins::repo::debian # This does not work under Ubuntu to get the latest version!!
-#  class { 'jenkins': version => latest }
   include jenkins
   include jenkins::package
   include jenkins::repo::debian
   include apt
   include jenkins::service
   include elexis::jubula_elexis
-#  include elexis::postgresql_server # we want to be able to test with postgresql, too
 
   $pluginsForElexis = ["mercurial", "subversion", "git", "ant", "buckminster", "build-timeout", "cvs", "disk-usage", "javadoc", "jobConfigHistory", "copy-to-slave", "locks-and-latches", "ssh-slaves", "ruby", "timestamper","xvnc" ] 
 

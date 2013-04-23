@@ -4,11 +4,10 @@
 class elexis::elexis_bootstrap(
   $vcsRoot = "/home/elexis/elexis-bootstrap",
   $rubyVersion = 'jruby-1.6.7.2',
-  $eclipseVersion = "$elexis::defaultEclipse"
-  $baseURL = "$elexis::downloadURL/eclipse"
+  $eclipseVersion = "$elexis::defaultEclipse",
+  $baseURL = "$elexis::downloadURL/eclipse",
 ) inherits elexis::common {
-#  include java6
-  include elexis::rvm
+  include elexis::jenkins_commons
   
   package { ['fop', 'ant', 'ant-contrib', 'mercurial']:
     ensure => latest
@@ -18,30 +17,22 @@ class elexis::elexis_bootstrap(
     elexis::download_eclipse_version{"$eclipseVersion": baseURL => "$baseURL", }
   }
   
-  rvm_system_ruby {
-      'jruby-1.6.7.2':
-      ensure => 'present',
-      default_use => false;
-  }
-  
-  rvm_gemset {
-    "jruby-1.6.7.2@elexis_bootstrap":
-      ensure => present,
-      require => Rvm_system_ruby['jruby-1.6.7.2'];
-  }
-  rvm_gem {
-    'jruby-1.6.7.2@elexis_bootstrap/bundler':
-      ensure => '1.0.21',
-      require => Rvm_gemset['jruby-1.6.7.2@elexis_bootstrap'];
-  }
-
   vcsrepo {  "$vcsRoot":
       ensure => present,
       provider => hg,
       owner => 'elexis',
       group => 'elexis',
       source => "https://bitbucket.org/ngiger/elexis-bootstrap",
-      require => [User['elexis'],Package['mercurial'] ],
+      require => [User['elexis'], Package['mercurial'] ],
   }  
   
+  $P2_EXE = "/opt/eclipse/${elexis::defaultEclipse}/eclipse/"
+  notify{"P2_EXE ist $P2_EXE": }
+  file { "$vcsRoot/build_elexis_in_vagrant.sh":
+    owner => 'elexis',
+    group => 'elexis',
+    content => template('elexis/build_elexis_in_vagrant.sh.erb'),
+    require => Vcsrepo[$vcsRoot],
+    mode => 0755,
+  }
 }
