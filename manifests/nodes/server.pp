@@ -3,15 +3,17 @@ node "server" {
   notify{"Adding node server": }
   # These are the defaults for the node called server
   if hiera('elexis::praxis_wiki::ensure', true)         { include elexis::praxis_wiki }
-  if hiera('elexis::postgresql_server::ensure', false)  { include elexis::postgresql_server }
-  if hiera('elexis::mysql_server::ensure', false)       { include elexis::mysql_server }
+  if hiera('elexis::postgresql_server::ensure', true)  { include elexis::postgresql_server }
+  if hiera('elexis::mysql_server::ensure', true)       { include elexis::mysql_server }
+  if hiera('elexis::mysql_server::ensure', true)       { include elexis::mysql_server }
+  include cockpit
   # TODO: add backup postgres-server
   
   # Default values can be overridden by setting value in your private/config.yaml
 
   # This medical doctor uses KDE as his/her GUI
-  # kde { "kde-env": ensure => hiera('kde::ensure', true) }
-
+  if hiera('elexis::kde::ensure', true)       { include kde }
+  
   # She/he uses the OpenSource Elexis client
   # elexis::client {"elexis-client": ensure => hiera('elexis::client::ensure', true) }
 

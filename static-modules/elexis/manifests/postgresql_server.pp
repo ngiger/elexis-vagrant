@@ -91,14 +91,15 @@ define elexis::pg_dbusers(
 
 class elexis::postgresql_server inherits elexis::common {
   include concat::setup
-  include postgresql::params
+  include postgresql
+  include postgresql::client
   include elexis::admin
   
   user{'postgres': 
-    require => package['postgresql-common'],
+    require => package[$postgresql::params::client_package_name],
   }
   group{'postgres':
-    require => package['postgresql-common'],
+    require => package[$postgresql::params::client_package_name],
   }
   
   $dbs= hiera('pg_dbs', 'cbs')
