@@ -46,8 +46,15 @@ inherits elexis::common {
   # in the /etc directory. Handy to know why suddenly a package does not work anymore!
   include etckeeper # will define package git, too
   if !defined(Package['unzip']) { package {'unzip': ensure => present, } }
-  package{  ['dlocate', 'mlocate', 'htop', 'curl', 'bzr']:
+  package{  ['dlocate', 'mlocate', 'htop', 'curl', 'bzr', 'unattended-upgrades']:
     ensure => present,
+  }
+
+  file {'/etc/apt/apt.conf.d/50unattended-upgrades':
+    content => template('elexis/unattended_upgrades.erb'),
+    owner => root,
+    group => root,
+    mode => 0644,
   }
 
   file {"$pg_util_rb":
