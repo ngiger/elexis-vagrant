@@ -1,7 +1,12 @@
 FORGE
   remote: http://forge.puppetlabs.com
   specs:
+    domcleal/augeasproviders (0.6.1)
+    erwbgy/ssh (0.2.1)
+      domcleal/augeasproviders (>= 0.5.1)
     maestrodev/rvm (1.0.0)
+    mthibaut/users (1.0.9)
+      puppetlabs/stdlib (>= 0.0.0)
     puppetlabs/apt (1.1.0)
       puppetlabs/stdlib (>= 2.2.1)
     puppetlabs/firewall (0.2.1)
@@ -87,11 +92,6 @@ PATH
     ntp_demo (0.0.1)
 
 PATH
-  remote: ./static-modules/sshd
-  specs:
-    sshd (0.0.1)
-
-PATH
   remote: ./static-modules/util
   specs:
     util (0.0.1)
@@ -101,13 +101,16 @@ DEPENDENCIES
   apache (>= 0)
   buildr (>= 0)
   cockpit (>= 0)
+  domcleal/augeasproviders (>= 0)
   eclipse (>= 0)
   elexis (>= 0)
+  erwbgy/ssh (>= 0)
   java (>= 0)
   jenkins (>= 0)
   jubula (>= 0)
   kde (>= 0)
   maestrodev/rvm (>= 0)
+  mthibaut/users (>= 0)
   ngiger/x2go (>= 0)
   ntp_demo (>= 0)
   puppetlabs/apt (>= 0)
@@ -115,7 +118,6 @@ DEPENDENCIES
   puppetlabs/postgresql (>= 0)
   puppetlabs/vcsrepo (>= 0)
   ripienaar/concat (>= 0)
-  sshd (>= 0)
   thomasvandoren/etckeeper (>= 0)
   util (>= 0)
 
