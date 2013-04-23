@@ -37,7 +37,8 @@ class cockpit(
   $rubyVersion = 'ruby-2.0.0-p0',
 ) inherits elexis {
   include rvm
-  
+
+  # TODO: Install correct ruby 
   if ($ensure != absent ) { 
     $pkg_ensure = present 
  

@@ -9,7 +9,8 @@ class kde {
   'kate',
   'kontact',
   'krusader',
-	'kde-l10n-de',
+  'kde-l10n-de',
+  'okular',
 #	'manpages-de', 'hyphen-de' task-german
 	# for debian 'task-german-kde-desktop',
 	#  language-pack-kde-de language-pack-kde-de-base

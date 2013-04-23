@@ -18,7 +18,7 @@ define elexis::install (
   file { "$installBase":
     ensure => directory,
     owner  => 'elexis',
-    mode  => 0755,
+    mode  => 0666,
     require => [ User['elexis'] ];
   }
 
@@ -68,4 +68,31 @@ define elexis::install (
     mode   => 0755,
     require => Exec["$fullExecPath"],
   }
+  # add a menu entry for KDE, e.g. /usr/share/applications/kde4/kmail_view.desktop
+  if false {
+    notify{"kde4: Has problem with first bringup":}
+    file { "/usr/share/applications/kde4/${title}.desktop":
+      ensure => present,
+      content=> "[Desktop Entry]
+  Name=Elexis for medical practices
+  Name[de]=Elexis für die Praxis ($title)
+  Type=Application
+  Exec=${title}
+  Icon=${title}
+  # X-DocPath=kmail/index.html
+  # X-KDE-StartupNotify=true
+  # X-DBUS-StartupType=Unique
+  # X-DBUS-ServiceName=org.kde.kmail
+  ",
+      mode  => 0644,
+      require => [ File[$logicalLink], Class[kde],],
+    }
+
+    file { "/usr/share/icons/hicolor/128x128/apps/${title}.png":
+      source => 'puppet:///modules/elexis/elexis.png', # copied from ch.ngiger.opensource/splash.png
+      mode  => 0644,
+      require => File[$logicalLink],
+    }
+  }
+  
 }

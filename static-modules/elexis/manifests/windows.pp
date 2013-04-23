@@ -35,8 +35,8 @@ class elexis::windows (
 #    user  => 'root',
     creates => "$openjdkDownload",
     require => [ Exec["$installDir"] ],
-    path => "/usr/local/rvm/bin:/usr/local/bin:/usr/bin:/bin",
-v  }
+    path => "/usr/local/bin:/usr/bin:/bin",
+  }
   
   $installed_java_exe = "$sambaBase/java-se-7-ri/bin/java.exe"
   exec { "$installed_java_exe":
@@ -45,7 +45,7 @@ v  }
     cwd   => "$sambaBase",
     creates => "$installed_java_exe",
     require => [ Exec["$openjdkDownload"] ],
-    path => "/usr/local/rvm/bin:/usr/local/bin:/usr/bin:/bin",
+    path => "usr/local/bin:/usr/bin:/bin",
   }
   
   $autoInstallXml = "$installBase/auto_windows-$version.xml"

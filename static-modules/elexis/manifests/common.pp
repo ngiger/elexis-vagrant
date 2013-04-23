@@ -19,7 +19,7 @@ class elexis::common (
     gid => 1300,
   }
 
-  group {[ 'adm','dialout', 'cdrom', 'plugdev', 'netdev', 'rvm',]:
+  group {[ 'adm','dialout', 'cdrom', 'plugdev', 'netdev']:
     ensure => present,
   }
 
@@ -27,7 +27,7 @@ class elexis::common (
     ensure => present,
     uid => 1300,
     gid => 'elexis',
-    groups => ['adm','dialout', 'cdrom', 'plugdev', 'netdev', 'rvm'],
+    groups => ['adm','dialout', 'cdrom', 'plugdev', 'netdev'],
     home => '/home/elexis',
     managehome => true,
     shell => '/bin/bash',

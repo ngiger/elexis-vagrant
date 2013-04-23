@@ -22,7 +22,7 @@ define elexis::jenkins_elexis(
   
   if (!defined(Elexis::Download_eclipse_version[$eclipseVersion])) {
     elexis::download_eclipse_version{$eclipseVersion:
-      downloadDir => "${elexis::jenkinsRoot}/downloads",
+      downloadDir => "${elexis::jenkins_commons::downloads}",
       baseURL     => "${elexis::downloadURL}/eclipse",
     }
     elexis::eclipse_plugins{$eclipseVersion:

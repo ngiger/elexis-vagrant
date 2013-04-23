@@ -18,11 +18,11 @@ fi
 apt-get update 
 apt-get remove    --quiet --assume-yes    puppet
 apt-get upgrade   --quiet --assume-yes
-apt-get install   --quiet --assume-yes    ruby ruby-dev libaugeas-ruby 
-export PATH=/usr/local/bin:$PATH
-source /usr/local/rvm/scripts/rvm
-rvm use system --default 
+apt-get install   --quiet --assume-yes    ruby ruby-dev libaugeas-ruby linux-headers-amd64
 
+# we don't want to be in a directory where a .rvmrc lays aout
+
+pwd
 # we must have puppet install or we cannot call vagrant up
 if [ "$(gem search -i puppet)" = "false" ]; then
   gem install --no-ri --no-rdoc puppet
@@ -41,3 +41,4 @@ dpkg -l etckeeper | grep ii
 if [ $? -ne 0  ] ; then
   apt-get install --quiet --assume-yes git etckeeper &> /var/log/etckeeper.log
 fi
+

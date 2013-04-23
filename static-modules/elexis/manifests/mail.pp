@@ -44,4 +44,12 @@ FromLineOverride=Yes
     require => Package[$mail_package],
 }
   
+# setup some mail aliases
+  mailalias { "root":
+    ensure    => present,
+    recipient => "$email_user",
+    provider  => augeas,
+  }
+  
+
 }

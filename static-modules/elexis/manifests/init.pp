@@ -46,7 +46,7 @@ class elexis (
   $jenkinsRoot          = hiera('elexis::jenkinsDir',       '/opt/jenkins'),
   $eclipseRelease       = hiera('elexis::eclipseRelease',   'juno'),
   $defaultEclipse       = hiera('elexis::default_eclipse',  'eclipse-rcp-juno-SR2'),
-  $downloadURL          = hiera('elexis::downloadURL',      'http://ftp.medelexis.ch/downloads_opensourceXXXXXXXXXXXXX'),
+  $downloadURL          = hiera('elexis::downloadURL',      'http://ftp.medelexis.ch/downloads_opensource'),
 
 ) {
   # notify{"elexis with java $java downloadURL $downloadURL ":}
