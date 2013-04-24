@@ -1,4 +1,15 @@
 ---
+
+# Copyright 2013 by Niklaus Giger <niklaus.giger@member.fsf.org>
+
+# Here you find the default values for a medical practice using Elexis
+# You should create a folder private and copy this file to private/config.yml
+# Review each line carefully before modifying it. We tried hard to make it as simple
+# as possible, but changing variables without some inner knowledge risks breaking
+# the whole system.
+
+# As per April 2013 there are still a lot of changes coming!
+
 # definition of postgresql database
 # unfortunately the syntax via puppet is signifcantly different so we need a different variable for mysql!
 pg_dbs:
@@ -62,8 +73,8 @@ elexis::jenkinsDir:           /opt/jenkins
 elexis::eclipseRelease:       juno
 elexis::default_eclipse:      eclipse-rcp-juno-SR2
 elexis::downloadURL:          http://ftp.medelexis.ch/downloads_opensource
-elexis::apt_prox_host:        172.25.1.233
-elexis::apt_prox_port:        3142
+# elexis::apt_proxy_host:        172.25.1.233
+elexis::apt_proxy_port:        3142
 elexis::db_type:   pg
 elexis::db_server: server
 elexis::db_backup: backup

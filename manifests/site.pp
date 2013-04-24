@@ -15,8 +15,8 @@ stage { 'last': require => Stage['main'] }
 
 class { 'apt': 
   always_apt_update    => true,
-  proxy_host           => hiera('elexis::apt_prox_host', ''),
-  proxy_port           => hiera('elexis::apt_prox_port', '3142'),
+  proxy_host           => hiera('elexis::apt_proxy_host', ''),
+  proxy_port           => hiera('elexis::apt_proxy_port', '3142'),
   purge_sources_list   => true,
   purge_sources_list_d => true,
   purge_preferences_d  => true,
