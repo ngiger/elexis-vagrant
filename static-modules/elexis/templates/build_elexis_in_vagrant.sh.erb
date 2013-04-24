@@ -3,7 +3,6 @@
 export P2_EXE=<%= scope.lookupvar('P2_EXE') %>
 export PATH=$HOME/rvm/bin:/usr/local/bin:/usr/bin:/bin
 RUBY_VERSION=jruby-1.6.7.2
-RVM_CMD="rvm use $RUBY_VERSION do"
 
 # we want to switch to the branch 2.1.7 first
 hg update -C 2.1.7  
@@ -23,7 +22,7 @@ if [ $? -eq 0  ] ; then
   echo "$RUBY_VERSION is alreay installed"
 else
   echo "Must install $RUBY_VERSION"
-  $RVM_CMD install $RUBY_VERSION
+  rvm install $RUBY_VERSION
 fi
 
 
@@ -38,7 +37,7 @@ fi
 bundle install  --deployment
 
 # fetch all needed opensource repositories
-time $RVM_CMD ./gen_repo.rb --branch 2.1.7
+time rvm use $RUBY_VERSION do ./gen_repo.rb --branch 2.1.7
 
 # No rebuild the whole Elexis. Output is found under deploy
-time $RVM_CMD ./rebuild_all.rb
+time rvm use $RUBY_VERSION do ./rebuild_all.rb

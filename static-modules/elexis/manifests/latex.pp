@@ -12,12 +12,12 @@ inherits elexis::common {
   }
 
   $cmd = "wget --timestamp -O ${destZip} ${floatfltURL}"
-  exec {$destZip:
+  exec {"X$destZip":
     command => $cmd,
     creates => $destZip,
-    cwd => $downloadDir,
+    cwd => $elexis::downloadDir,
     path => '/usr/bin:/bin',
-    require => File[$downloadDir],
+    require => File[$elexis::downloadDir],
   }
 
   exec { "$destDir":
@@ -26,11 +26,11 @@ inherits elexis::common {
     creates => "$destDir"
   }
 
-  $cmdFile = "${downloadDir}/install_floatflt.sh"
-  file {$cmdFile:
+  $cmdFile = "/${elexis::downloadDir}/install_floatflt.sh"
+  file {"$cmdFile":
     mode => 0755,
     content => "#!/bin/bash -v
-cd ${downloadDir}
+cd $elexis::downloadDir
 # Just in case we got called a second time
 rm -rf floatflt
 unzip ${destZip}
@@ -41,15 +41,15 @@ cp floatflt.sty ${floatStyName} && texhash
   }
 
 
-  exec {$floatStyName:
+  exec {"$floatStyName":
     command => $cmdFile,
     creates => $floatStyName,
-    cwd => $downloadDir,
+    cwd => $elexis::downloadDir,
     path => '/usr/bin:/bin',
     require => [File[$cmdFile],
-		Exec[$destDir, $destZip],
+		Exec[$destDir, "X$destZip"],
 		Package['unzip', 'texlive', 'texinfo', 'texlive-lang-german', 'texlive-latex-extra']],
   }
 }
 
-class {['elexis::latex']: stage => last; } # I want the interesting things to load first!
+# class {['elexis::latex']: stage => last; } # I want the interesting things to load first!
