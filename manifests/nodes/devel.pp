@@ -8,6 +8,7 @@ class includeAllThingsForA_Developer {
     include kde
     # include elexis::kde
     include elexis::elexis_bootstrap 
+    class { 'x2go': version => 'baikal', }
     x2go::server {"x2go-server": }    
     users { devel: }
     package{ "iceweasel": }

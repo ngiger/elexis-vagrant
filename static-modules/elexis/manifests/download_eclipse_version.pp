@@ -1,29 +1,25 @@
 # Downloads various variants of the eclipse
-require jenkins
+include elexis # to get user elexis, etc
+include elexis::common
 require elexis::common
 
 define elexis::download_eclipse_version(
   $baseURL,
   $file_base = $title,
-  $downloadDir = "${elexis::jenkins_commons::downloads}"
  ) {
+  $downloadDir = "$elexis::jenkinsDownloads"
   if ( "$baseURL" == '' or "$file_base" == '' or "$downloadDir" == '' ) {
     fail ("missing parameter ${cmd} title ${title} from ${baseURL} via $downloadDir")
   }
-  file { $downloadDir:
-    ensure => directory,
-    recurse => true,
-    mode    => 066,
-  }
-
+  
   $fullName = "$downloadDir/$filename"
   $cmd = "wget --timestamping "
   notify {"version-cmd  ${cmd} title ${title}\nfrom ${baseURL} via $downloadDir":}
-  include jenkins
   # default for the execs
   Exec {
     cwd     => $downloadDir,
     path    => '/usr/bin:/bin',
+    require => File["${downloadDir}"],
   }
 
   $linux64 = "linux-gtk-x86_64.tar.gz"

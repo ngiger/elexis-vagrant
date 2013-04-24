@@ -4,14 +4,11 @@
 # TODO: 32-bit java, eg. sudo apt-get install openjdk-6-jdk:i386 openjdk-6-jre-headless:i386
 
 class elexis::jenkins_commons(
-  $downloads      =  "$jenkinsRoot/downloads",
-  $jobsDir        =  "$jenkinsRoot/jobs",
-  $elexisBaseURL  = "http://hg.sourceforge.net/hgweb/elexis"
 ) inherits elexis::common {
   require jenkins
   $neededUsers    = User['jenkins','elexis']
 
-  file { [$jenkinsRoot, $jobsDir]:
+  file { [$jenkinsJobsDir]:
     owner => 'jenkins',
     mode => '644',
     ensure => directory, # so make this a directory
@@ -37,24 +34,24 @@ class elexis::jenkins_commons(
     require => [User['jenkins']],
   }
   
-  file { [ "${jenkinsRoot}/users", "${jenkinsRoot}/users/elexis"]:
+  file { ["$elexis::jenkinsRoot/users", "$elexis::jenkinsRoot/users/elexis"]:
     ensure => directory, # so make this a directory
   }
 
-  file { "${jenkinsRoot}/users/elexis/config.xml":
+  file { "$elexis::jenkinsRoot/users/elexis/config.xml":
     ensure => present,
     source => 'puppet:///modules/elexis/users/elexis.xml',
     replace => false,  # If the user changes the setup, don't overwrite it
   }
 
-  file { "${jenkinsRoot}/config.xml":
+  file { "$elexis::jenkinsRoot/config.xml":
     ensure => present,
     source => 'puppet:///modules/elexis/config.xml',
     replace => false,  # If the user changes the setup, don't overwrite it
   }
   # Our config.xml must be written, before we install jenkins, as the jenkins package
   # will install it's own version.
-  Package['jenkins'] <- File["${jenkinsRoot}/config.xml"]
+  Package['jenkins'] <- File["$elexis::jenkinsRoot/config.xml"]
 
   include elexis::latex # needed to create Elexis documentation in the ant jobs
   Elexis::Latex { notify => Service['jenkins'] }

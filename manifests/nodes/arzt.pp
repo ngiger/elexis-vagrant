@@ -12,7 +12,10 @@ node 'arzt' {
 	# elexis::mysql_server{ "mysql-server:": ensure => hiera('elexis::mysql_server::ensure', true) }
 	
 	# When at home She/he uses x2go to connect to the practice server
-	x2go::client {"x2go-client": ensure => hiera('x2go::client::ensure', true) }
+  if ( hiera('x2go::client::ensure', true) ) {
+    class { 'x2go': ensure => present, version => 'baikal', }    
+    x2go::client {"x2go-client": ensure =>  present }
+	}
 	  
     # She/he wants to write letters and browse the internet
     # elexis::libreoffice {'loffice': ensure => hiera('elexis::libreoffice::ensure', true) }

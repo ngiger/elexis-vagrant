@@ -38,16 +38,18 @@ class elexis (
   $db_password         =  hiera('elexis::db_password', 'elexisTest'),  # password of main DB user
   $db_pw_hash          =  hiera('elexis::db_pw_hash', ''),             # or better and used if present password hash of main DB user
   
-  $java                = hiera('elexis::java_version', 'openjdk-6-jdk'),
-  $bin_dir             = hiera('elexis::bin_dir',      '/usr/local/bin'),          # where we will put our binary helper scripts
-  $create_service_script = "$bin_dir/create_service.rb",                # read-only for various services
-  $service_path          = hiera('elexis::service', '/var/lib/service'),
-
+  $java                = hiera('elexis::java_version',      'openjdk-6-jdk'),
+  $binDir              = hiera('elexis::bin_dir',           '/usr/local/bin'),          # where we will put our binary helper scripts
+  $service_path         = hiera('elexis::service',          '/var/lib/service'),
   $jenkinsRoot          = hiera('elexis::jenkinsDir',       '/opt/jenkins'),
   $eclipseRelease       = hiera('elexis::eclipseRelease',   'juno'),
   $defaultEclipse       = hiera('elexis::default_eclipse',  'eclipse-rcp-juno-SR2'),
+  $downloadDir          = hiera('elexis::downloadDir',      '/opt/downloads'),
   $downloadURL          = hiera('elexis::downloadURL',      'http://ftp.medelexis.ch/downloads_opensource'),
-
+  $jenkinsRoot          = hiera('elexis::jenkinsRoot',      '/opt/jenkins'),
+  $jenkinsDownloads     = hiera('elexis::jenkinsDownloads', '/opt/jenkins/downloads'),
+  $jenkinsJobsDir       = hiera('elexis::jenkinsJobsDir',   '/opt/jenkins/jobs'),
+  $elexisBaseURL        = hiera('elexis::elexisBaseURL',    'http://hg.sourceforge.net/hgweb/elexis')
 ) {
   # notify{"elexis with java $java downloadURL $downloadURL ":}
   # class java($version = 6, $variant = 'openjdk', $hasJdk = false, $hasJre = true ) {

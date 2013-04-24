@@ -7,8 +7,7 @@ class elexis::elexis_bootstrap(
   $eclipseVersion = "$elexis::defaultEclipse",
   $baseURL = "$elexis::downloadURL/eclipse",
 ) inherits elexis::common {
-  include elexis::jenkins_commons
-  
+
   package { ['fop', 'ant', 'ant-contrib', 'mercurial']:
     ensure => latest
   }

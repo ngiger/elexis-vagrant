@@ -22,6 +22,7 @@ node "server" {
   # elexis::mysql_server{ "mysql-server:": ensure => hiera('elexis::mysql_server::ensure', true) }
 
   # When at home She/he uses x2go to connect to the practice server
+  class { 'x2go': version => 'baikal', }
   x2go::client {"x2go-client": ensure => hiera('x2go::client::ensure', true) }
   x2go::server {"x2go-server": ensure => hiera('x2go::server::ensure', true) }
 

@@ -2,14 +2,29 @@
 # kate: replace-tabs on; indent-width 2; indent-mode cstyle; syntax ruby
 
 class elexis::common (
-  $downloadDir = "/opt/downloads",
-  $destZip = "${downloadDir}/floatflt.zip",
+  $destZip = "$elexis::downloadDir/floatflt.zip",
   $elexisFileServer = "http://ftp.medelexis.ch/downloads_opensource",
 )  inherits elexis {
-#  notify { "downloadURL     is set to '$downloadURL'": }
-#  notify { "dbMain          is set to '$db_main'": }
+  include elexis::params
   
-  file { $downloadDir:
+  if !defined(User["jenkins"]) {
+    user { 'jenkins': ensure => present}
+  }
+  if !defined(File["$jenkinsDownloads"]) {
+    file { "$jenkinsDownloads":
+      ensure => directory, # so make this a directory
+      require => [ File[$jenkinsRoot], User['jenkins'], ],
+    }    
+  }
+  
+  file {"$jenkinsRoot":
+    owner => 'jenkins',
+    mode => '644',
+    ensure => directory, # so make this a directory
+    require => User['jenkins'],
+  }
+
+  file { "$elexis::downloadDir":
     ensure => directory, # so make this a directory
   }
 
@@ -49,7 +64,7 @@ class elexis::common (
     mode  => 0644,
   }
 
-  file { "$create_service_script":
+  file { "$elexis::params::create_service_script":
     source => "puppet:///modules/elexis/create_service.rb",
     mode  => 0774,
     require =>         [

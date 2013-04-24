@@ -5,8 +5,8 @@
 include elexis
 
 define elexis::jenkins_elexis(
-  $branch  = $title,
-  $baseURL = $elexis::downloadURL,
+  $branch  = "$title",
+  $baseURL = "$elexis::downloadURL",
   $archieURL = "http://archie.googlecode.com/svn/archie/ch.unibe.iam.scg.archie/branches/elexis-2.1",
   $eclipseVersion = "$elexis::defaultEclipse",
 ) {
@@ -22,12 +22,11 @@ define elexis::jenkins_elexis(
   
   if (!defined(Elexis::Download_eclipse_version[$eclipseVersion])) {
     elexis::download_eclipse_version{$eclipseVersion:
-      downloadDir => "${elexis::jenkins_commons::downloads}",
       baseURL     => "${elexis::downloadURL}/eclipse",
     }
     elexis::eclipse_plugins{$eclipseVersion:
     }
-    # notify { "jenkins_elexis  down ${elexis::downloadURL}  baseURL ist ${baseURL} downloadDir ${elexis::jenkinsRoot}/downloads": }
+    # notify { "jenkins_elexis  down ${elexis::downloadURL}  baseURL ist ${baseURL} downloadDir ${elexis::jenkinsDownloads}": }
   }
   
   if (0==1) {  # TODO: Fix adding jobs to Jubula
@@ -61,7 +60,7 @@ define elexis::jenkins_elexis(
     }
 
   $antJobName = "elexis-${branch}-ant"
-  $antJobDir      = "${elexis::jenkinsRoot}/jobs/${antJobName}"
+  $antJobDir      = "${elexis::jenkinsJobDir}/${antJobName}"
   jenkins::job{$antJobName:
       branch         => $branch,
       pollURL        => 'https://bitbucket.org/ngiger/elexis-bootstrap',
@@ -73,7 +72,7 @@ define elexis::jenkins_elexis(
   $skipPlugins         = ',ch.marlovits.addressSearch,ch.marlovits.vornamen,ch.marlovits.plz,at.medevit.elexis.gdt.customed,medshare-licence-generator,de.ralfebert.rcputils,de.ralfebert.rcputils.feature'
   $install_jar_project = $antJobName  # needed for jubula_config.erb
   $jubulaJobName       = "elexis-${branch}-jubula"
-  $jubulaJobDir        = "${elexis::jenkinsRoot}/jobs/${jubulaJobName}"
+  $jubulaJobDir        = "${elexis::jenkinsJobDir}/${jubulaJobName}"
   jenkins::job{"$jubulaJobName":
       branch         => 'jubula-1.1',
       pollURL        => 'https://bitbucket.org/ngiger/jubula-elexis',
@@ -96,7 +95,7 @@ define elexis::jenkins_elexis(
   if !defined(File["${antJobDir}/downloads"]) {
     file { "${antJobDir}/downloads":
       ensure => link, # so make this a link
-      target => "${elexis::jenkinsRoot}/downloads",
+      target => "${elexis::jenkinsDownloads}",
     }
   }
 }
