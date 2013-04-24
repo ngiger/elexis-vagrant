@@ -41,9 +41,9 @@ GIT
 GIT
   remote: git://github.com/ngiger/puppet-x2go.git
   ref: master
-  sha: 1b707300a5e9e10e526c0dbd67ea4e1a59d4162e
+  sha: d55da318d3a4dd84bc182abb239c37e2ff886f0b
   specs:
-    ngiger/x2go (0.1.0)
+    ngiger/x2go (0.1.1)
       puppetlabs/apt (>= 1.0)
 
 PATH
