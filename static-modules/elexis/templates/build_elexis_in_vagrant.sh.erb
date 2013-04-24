@@ -1,24 +1,43 @@
 #!/bin/bash -v
-export PATH=/usr/local/rvm/bin:/usr/local/bin:/usr/bin:/bin
+
+export P2_EXE=<%= scope.lookupvar('P2_EXE') %>
+export PATH=$HOME/rvm/bin:/usr/local/bin:/usr/bin:/bin
+RUBY_VERSION=jruby-1.6.7.2
+RVM_CMD="rvm use $RUBY_VERSION do"
 
 # we want to switch to the branch 2.1.7 first
 hg update -C 2.1.7  
 
-# activate rvm and assume that we already have jruby-1.6.7.2 installed
+# activate rvm
 if [ ! -d $HOME/.rvm ] ; then
-  curl -L https://get.rvm.io | bash -s stable
+  curl -#L https://get.rvm.io | bash -s stable --autolibs=3
   echo "Installed rvm for user $USER"
 else
   echo "RVM seems to be installed"
 fi
-RVM_CMD='rvm use jruby-1.6.7.2 do'
+
+# Load RVM into a shell session *as a function*
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" 2>&1 /dev/null 
+rvm list | grep $RUBY_VERSION
+if [ $? -eq 0  ] ; then
+  echo "$RUBY_VERSION is alreay installed"
+else
+  echo "Must install $RUBY_VERSION"
+  $RVM_CMD install $RUBY_VERSION
+fi
+
 
 # install needed Ruby gems
-gem install bundler
-bundle install
+gem list bundler | grep bundler
+if [ $? -eq 0  ] ; then
+  echo "bundler is alreay installed"
+else
+  echo "Must install bundler"
+  gem install bundler
+fi
+bundle install  --deployment
 
 # fetch all needed opensource repositories
-export P2_EXE=<%= scope.lookupvar('P2_EXE') %>
 time $RVM_CMD ./gen_repo.rb --branch 2.1.7
 
 # No rebuild the whole Elexis. Output is found under deploy
