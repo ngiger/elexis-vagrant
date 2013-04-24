@@ -1,0 +1,161 @@
+h1. Bootstrapping an Elexis development and testing environment made easy!
+
+Bootstrapping and testing Elexis took me (Niklaus) many hours when I started working on Elexis.
+Therefore I was always looking for clever shortcuts to create a simple, reproducible build environment.
+With this project I am coming much closer! 
+
+Preparing the 0.1 release took me a few days of work and
+confronted me (again) with all the small, pesky details I had to overcome to run my Jenkins CI under
+http://ngiger.dyndns.org/jenkins/.
+
+Some ideas/concept are inspired by reading http://www.jedi.be/blog/2011/03/28/using-vagrant-as-a-team/
+
+h2. Requirements
+
+* Sufficientyl powerfull HW (e.g needed for this task)
+** disk space (about 30 GB, 20 GB reservev for the VM, 10 GB were not enough, with 256 MB RAM I did see Out of memory situations)
+** 1 GB/1 CPU for the virtual machine (with 256
+** CPUs with support for virtualization
+* Needed SW (available for most Linux, Windows & MacOSX)
+** "VirtualBox":https://www.virtualbox.org/
+** "Vagrant":http://vagrantup.com/
+* A good, reliable connection to the internet. The whole process will download something like 5 or 10 GB
+
+On a Debian wheezy, Ubuntu 12.04 LTS this is done issuing the command @sudo apt-get install vagrant virtualbox@. For other OS its up to you.
+
+h2. Bring-up of a TestSystem
+
+* Ubuntu-Server 12.04 LTS (servername ubuntu) via USB-Stick, e.g. @sudo dd if=ubuntu-12.04-server-amd64.iso of=/dev/sdb@
+* Choose server, but only activated OpenSSH
+* @sudo apt-get install etckeeper git virtualbox@ # this installs a lot of packages
+* Install vagrant (I used version 1.1.5) from "vagrantup":http://downloads.vagrantup.com/tags/v1.1.5
+* @git clone https://github.com/ngiger/elexis-vagrant /opt/vagrant-elexis@
+* @cd /opt/vagrant-elexis@
+* @git checkout last_known_good_tag@ , eg. v0.1
+* Set up a local fileserver on you net. This speeds things greatly up, if you use this project more than once.
+** Execute @./gen_fileserver.rb@. It will download about 2 GB into /var/opt/fileserver. If you want to change this location edit the scripts
+** Let your HTTP server serve this page under "http://<ipaddress of your pc>/fileserver". In my case I only did a @ln -s /var/opt/fileserver /var/www/@ and my Apache server was happy.
+** Uncomment the line @$elexis::downloadURL: 'http://172.25.1.61/fileserver/elexis'@ in @hiera/config.yaml@ and set it to match you IP-address.
+* APT-Proy
+** Adapt the lines in @manifests/site.pp@ which define a proxy_host for apt to match your host/port number.
+** If you do not have such proxy (and don't want to install one, e.g. @sudo apt-get install apt-cacher-ng@) then simply remove the line
+   @class { 'apt': proxy_host => "172.25.1.61", proxy_port => 3142, }@
+* @vagrant up@
+  Now you have to wait a long time (30 minutes with caches filled! May be one hour or more)
+** If you want to debug use @VAGRANT_LOG=DEBUG vagrant up@
+* Point your browser at "http://localhost:48080":http://localhost:48080 and you should be able to see a 
+  "running Jenkins":https://github.com/ngiger/elexis-vagrant/raw/master/images/vagrant_1.png! Another hour or so later, your jenkins jobs should have completed and every project should hava 
+* Security has been disabled, therefore you may change everything to you liking.
+* The jenkins will download the Elexis "2.1.6":https://github.com/ngiger/elexis-vagrant/raw/master/images/vagrant_2.png branch, build it for several OS
+* Then it will launch the Jubula GUI-Tests (takes 7 minutes on my big AMD64 machine, more than 14 minutes as VM (1 CPU/256 MB RAM) on my notebook. If you are happy (and nobody pushed a breaking commit into the 2.1.7 branch) you should end up with 4 projects showing a blue sky under a "bright sun":https://github.com/ngiger/elexis-vagrant/raw/master/images/vagrant_3.png.
+
+
+h2. Troubleshooting. Instructions above didn't work. Why?
+
+* Ignore the error lines containing  @Could not find group puppet@. The puppet port to squeeze does not support all features.
+* If you find lines like
+@err: /Stage[main]/Elexis::Jenkins_2_1_7/Jenkins::Plugin[mercurial]/Exec[download-mercurial]/returns: change from notrun to 0 failed: wget --no-check-certificate http://updates.jenkins-ci.org/latest/mercurial.hpi returned 4 instead of one of [0] at /tmp/vagrant-puppet/modules-0/jenkins/manifests/plugin.pp:46@ then jenkins-ci has a problem. (Last seen on July 8 2012). After two hours the problem went away.
+
+h2. What you can do with your fancy new virtual machine
+
+* have look at the installed apache server, which is accessible on main machine via http://localhost:40080. The content rendered may be found
+  in the file @modules/apache/manifests/init.pp@
+* Log-in as vagrant (password vagrant) and use the Eclipse (with Mercurial, Jinto, copyright plugins) using the GUI
+* Login via ssh @ssh vagrant@10.11.12.43@ or even simpler with @vagrant ssh@. In the second case you don't even have to give the password
+* Play with the jenkins. Security has been disabled. Don't use this setup on a public accessible server! The changes you make will not be overriden.
+* Use the mysql client/server, eg. on the command line @mysql -u elexis --password=elexisTest elexis@. You should have two databases:
+** elexis
+** jubula_vagrant
+* Login via x2goclient IP 10.11.12.43, user vagrant/vagrant
+
+h1. Howto improve/extend the existing puppet receipes
+
+From "Best Practices":http://docs.puppetlabs.com/puppet/2.7/reference/modules_fundamentals.html
+
+bq. The classes, defined types, and plugins in a module should all be related, and the module should aim to be as self-contained as possible.
+
+I also created for each (mini-) feature a file <feature>.pp in the tests folders of the module. This allows me to test/debug a feature like this.
+
+@cd /path/to/checkout
+@sudo puppet apply --confdir . modules/x2go/tests/client.pp --debug@
+
+h2. puppet testing on the development
+
+Test the module java on a machine where you have a working copy of this project, just call (in your own development environemnt):
+@cd /path/to/checkout@
+@vagrant provision@
+
+h2. puppet testing on the target
+
+@cd /path/to/checkout@
+@vagrant ssh@
+@sudo puppet apply --modulepath /tmp/vagrant-puppet/modules-0 /tmp/vagrant-puppet/modules-0/java/tests/init.pp --debug@
+
+h2. git howto
+
+* See "Git-Tools":http://git-scm.com/book/en/Git-Tools-Submodules
+* Common usage
+* If you make changes or add a new module, fork the original module into your github account, then
+* @git submodule add https://github.com/<yourname>/puppet-x2go modules/x2go@
+* To ease pushing to your personal github account use @git remote add github git@github.com:<yourname>/puppetlabs-mysql.git@
+* This enables you to use @cd modules/x2go && git push github@
+
+h2. create a base box
+
+See the readme.texile in the subfolder definitions. This was used to create the Elexis-Squeeze-i386.box which can be downloaded
+via http://ftp.medelexis.ch/downloads_opensource/boxes
+
+In the subfolder environments you will find more and more testing scenarios, each consisting of a Vagrantfile, which describes the vm(s) to be used. I will investigate the possibility to start/stop theses environments for each execution of a Jenkins test (e.g. running Jubula under various OS/Eclipse/Java combinations). Running them all in parallel consumes just way too much RAM/CPU.
+
+In the root folder of the project you find just a logical link to a demo environment.
+
+h2. TODO/Goals
+
+h3. Goals to be achieved before declaring feature completeness
+
+* Integrate changes/suggestion to make the project interesting for more developpers (let it fullfill theirs and my requirements). I started with my requirements but I will happy to help others to try to find a solution which works fine for everybody!
+
+Probably for Release 0.2
+
+* Fix gollum-servie not starting (squeeze installs gollum into /usr/bin, instead of /usr/local/bin) TODO: before 0.2
+* Support 32-bit and 64-bit Jubula GUI-tests in the Jenkins
+
+Probably for Release 0.3
+* Add support for Elexis client testing under MacOSX
+* Minimal setup for a medical practice (DB & backup)
+
+To be determined
+
+* Support PostgresSQL
+* Add LibreOffice to test elexis text plugins
+* Investigate, decide/document how different developpers/OC may refine/add files/requirements
+* Add proper support for a puppet master/dashboard
+* Adapt KDE to match some preferences (e.g. keyboard layout, tabs for the konsole application)
+* Support several javas (e.g. Sun-Java-6, OpenJDK-6, OpenJDK-7)
+* backup and anonymiser scripts/setup for MySQL/PostgresSQL, e.g. http://www.slideshare.net/roidelapluie/postgresql-90-ha-at-rmll-2012
+  git://github.com/roidelapluie/postgres9-demo-vagrant.git
+  https://github.com/KrisBuytaert/puppet-postgres
+* Support at least one wiki installation, gollum,mediawiki, "pmwiki":http://www.pmwiki.org/
+  Evtl. convert "pmwiki_mediawiki":http://sourceforge.net/projects/pm2media/
+* install elexis versions correctly, via apt or Elexis-installer
+* os/db-user elexis (dito Arztx, MPAx,oc)
+* Deutsch als Vorgabesprache (veewee with elexisBaseBox passes validation, but cannot be used)
+* Merge project with elexis-admin
+* Setup mail-delivery/archiving
+* Have at least 2 additional developpers using at least a part of the puppet stuff
+* Have at least 5 beta installation in medical practices
+* Specify specific version of jenkins and its plugins
+
+h3. Feature that might be in 1.0 or later
+
+* Add support for Elexis client testing under Windows (Puppet has only initial support for windows)
+
+h3. Ideas for cleanup
+
+* Most classes should be parametrable
+
+h1. History
+
+* Release 0.1: July 15, 2012. Runs Jubula integration tests with Elexis 2.1.6 on a Debian Squeeze 32-bit machine
+
+Ideas/comments are welcome. Use the "elexis-develop":http://sourceforge.net/mailarchive/forum.php?forum_name=elexis-develop mailing list or contact the author directly via niklaus.giger@member.fsf.org
