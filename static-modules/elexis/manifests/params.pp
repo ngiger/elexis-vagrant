@@ -35,3 +35,4 @@ class elexis::params (
   $create_service_script = "${elexis::binDir}/create_service.rb"
 ) inherits elexis {
 }
+

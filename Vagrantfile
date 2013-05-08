@@ -13,7 +13,7 @@ bridgedNetworkAdapter = "eth0" # adapt it to your liking, e.g. on MacOSX it migh
 
 # Allows you to select the VMs to boot
 # systemsToBoot = [ :server, :backup, :devel, :arzt ]
-systemsToBoot = [ :devel ]
+systemsToBoot = [ :server ]
 
 # Patch the next lines if you have more than one elexis-vagrant running in your network
 firstPort       = 10000   
