@@ -35,7 +35,8 @@ class cockpit(
   $ensure  = hiera('elexis::cockit::ensure ', true),
   $vcsRoot = hiera('elexis::cockit::vcsRoot', '/home/elexis/cockpit'),
 ) inherits elexis {
-
+  include elexis::params
+  
   # TODO: Install correct ruby 
   if ($ensure != absent ) { 
     $pkg_ensure = present 
@@ -45,10 +46,11 @@ class cockpit(
       ensure => installed,
     }
     exec { 'bundle_trust_cockpit':
-      command => "bundle install --gemfile $vcsRoot/Gemfile &> $vcsRoot/install.log",
+      command => "bundle install --gemfile $vcsRoot/Gemfile.1.9.3 &> $vcsRoot/install.log",
       creates => "$vcsRoot/install.log",
       cwd => "/usr/bin",
       path => '/usr/local/bin:/usr/bin:/bin',
+      user => 'elexis',
       require => [ Vcsrepo[$vcsRoot], 
         Package['bundle'] 
         ],
@@ -88,10 +90,10 @@ class cockpit::service(
   $cockpit_name     = "elexis_cockpit"
   $cockpit_run      = "/var/lib/service/$cockpit_name/run"
   exec{ "$cockpit_run":
-    command => "$create_service_script elexis $cockpit_name 'ruby $vcsRoot/elexis-cockpit.rb'",
+    command => "$elexis::params::create_service_script elexis $cockpit_name 'ruby $vcsRoot/elexis-cockpit.rb'",
     path => '/usr/local/bin:/usr/bin:/bin',
     require => [
-      File["$create_service_script"],
+      File["$elexis::params::create_service_script"],
       User["elexis"],
     ],
     creates => "$cockpit_run",
