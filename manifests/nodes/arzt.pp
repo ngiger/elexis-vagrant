@@ -13,7 +13,6 @@ node 'arzt' {
 	
 	# When at home She/he uses x2go to connect to the practice server
   if ( hiera('x2go::client::ensure', true) ) {
-    class { 'x2go': ensure => present, version => 'baikal', }    
     x2go::client {"x2go-client": ensure =>  present }
 	}
 	  

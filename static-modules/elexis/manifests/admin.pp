@@ -21,9 +21,12 @@ inherits elexis::common {
     }  
   }
   
-  file { '/etc/timezone': 
-    content => "Europe/Zurich\n",
-  }
+  exec {'set_timezone_zurich':
+    command => "echo 'Europe/Zurich' > /etc/timezone && dpkg-reconfigure --frontend noninteractive tzdata",
+    path    => "/usr/bin:/usr/sbin:/bin:/sbin",
+    environment => 'LANG=C',
+    unless  => "diff /usr/share/zoneinfo/Europe/Zurich /etc/timezone"
+  } 
 
   # see http://johnleach.co.uk/words/771/puppet-dependencies-and-run-stages
   # The following two dependencies should in my opinion be handled in module apt
@@ -44,11 +47,8 @@ inherits elexis::common {
     
   # etckeeper is a nice utility which will track (each day or for each apt-get run) the changes
   # in the /etc directory. Handy to know why suddenly a package does not work anymore!
-  include etckeeper # will define package git, too
-  if !defined(Package['unzip']) { package {'unzip': ensure => present, } }
-  package{  ['dlocate', 'mlocate', 'htop', 'curl', 'bzr', 'unattended-upgrades']:
-    ensure => present,
-  }
+  include etckeeper
+  ensure_packages['git', 'unzip', 'dlocate', 'mlocate', 'htop', 'curl', 'bzr', 'unattended-upgrades']
 
   file {'/etc/apt/apt.conf.d/50unattended-upgrades':
     content => template('elexis/unattended_upgrades.erb'),

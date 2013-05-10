@@ -42,7 +42,8 @@ class elexis::common (
     ensure => present,
     uid => 1300,
     gid => 'elexis',
-    groups => ['adm','dialout', 'cdrom', 'plugdev', 'netdev'],
+    # groups mysql and postgres are needed for creating manual backup via elexis-cockpit
+    groups => ['adm','dialout', 'cdrom', 'plugdev', 'netdev', 'mysql', 'postgres'],
     home => '/home/elexis',
     managehome => true,
     shell => '/bin/bash',

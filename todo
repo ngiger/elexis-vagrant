@@ -6,6 +6,21 @@
 # dito other languages
 # Alle features testen !!
 
+# should also add (if not present)
+# /home/*/.kde/share/config/kxkbrc with the following content
+[Layout]
+DisplayNames=
+LayoutList=ch
+LayoutLoopCount=-1
+Model=pc105
+ResetOldOptions=false
+ShowFlag=false
+ShowLabel=true
+ShowLayoutIndicator=true
+ShowSingle=false
+SwitchMode=Global
+Use=true
+
 
 # von schoebu /etc/postgresql/8.1/main/pg_hba.conf
 # wie wird backup

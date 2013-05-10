@@ -5,9 +5,7 @@ class elexis::praxis_wiki inherits elexis::common {
   $initFile =  '/etc/init.d/gollum'
   $vcsRoot = '/home/elexis/praxis_wiki'
 
-  package { ['make', 'libxslt1-dev', 'libxml2-dev']:
-    ensure => installed,
-  }
+  ensure_packages(['make', 'libxslt1-dev', 'libxml2-dev'])
   package{  ['gollum', # markdowns is currently well supported, including live editing
     'RedCloth',  # to support textile, but no live editing at the moment
     'wikicloth'  # to support mediawiki, but no live editing at the moment

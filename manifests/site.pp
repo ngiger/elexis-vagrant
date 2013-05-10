@@ -1,5 +1,5 @@
 # kate: replace-tabs on; indent-width 2; indent-mode cstyle; syntax ruby
-
+# encoding: utf-8
 # stages are use like this:
 # first: Install additional apt-sources, keys etc
 # second: Call apt-get update
@@ -70,19 +70,20 @@ class ensureLibShadow{
   }
 }
 
-users { sysadmins: }
-users { elexis: }
+$users_elexis        = hiera('users_elexis')
+if ($users_elexis) { elexis::users  {"users_elexis": user_definition       => $users_elexis} }
 
 node /default/ {
     notify { "\n\nsite.pp node default for hostname $hostname": }
 }
 
 # Some common stuff for the admin
-if hiera('elexis::admin::ensure', true) { include elexis::admin }
+if hiera('elexis::admin::ensure', false) { include elexis::admin }
 if hiera('etckeeper::ensure', false) { include etckeeper }
 
 # User setup. Choose between KDE and (gnome, unity: both not yet supported)
 if hiera('kde::ensure', false)       { include kde }
+ensure_resource('class', 'x2go',  {version => 'baikal', } )
 if hiera('x2go::ensure', false)      { include x2go }
 
 # stuff for the server

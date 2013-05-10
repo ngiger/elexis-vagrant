@@ -1,18 +1,22 @@
 # Here we define all needed stuff to bring up a complete
+# encoding: utf-8
 # mysql-server environment for Elexis
 
 class elexis::mysql_server(
-  $mysql_backup_dir        = hiera('elexis::mysql_backup_dir',       '/home/backups/mysql'),
-  $mysql_dump_dir          = hiera('elexis::mysql_dump_dir',         '/home/backup-mysql'),
   $mysql_main_db_name      = hiera('elexis::mysql_main_db_name',     'elexis'),
   $mysql_main_db_user      = hiera('elexis::mysql_main_db_user',     'elexis'),
-  # puppet apply --execute 'notify { "test": message => mysql_password("elexisTest") }' --modulepath /vagrant/modules/
   $mysql_main_db_password  = hiera('elexis::mysql_main_db_password', 'elexisTest'),
-  $mysql_tst_db_name       = hiera('elexis::mysql_tst_db_name',      'tst_db'),
-
+  $mysql_tst_db_name       = hiera('elexis::mysql_tst_db_name',      'test'),
+  $mysql_dump_dir          = hiera('elexis::mysql_dump_dir',         '/opt/backup/mysql/dumps'),
+  $mysql_backup_dir        = hiera('elexis::mysql_backup_dir',       '/opt/backup/mysql/backups'),
+  $mysql_group             = 'mysql',
+  $mysql_user              = 'mysql',
 ) {
   include elexis::admin
-
+  ensure_resource('user', 'mysql', { ensure => present})
+  $mysql_dump_script       = '/usr/local/bin/mysql_dump_elexis.rb'
+  $mysql_load_main_script  = '/usr/local/bin/mysql_load_main_db.rb'
+  $mysql_load_test_script  = '/usr/local/bin/mysql_load_test_db.rb'
 }
 
 define elexis::mysql_dbuser(
@@ -28,11 +32,18 @@ define elexis::mysql_dbuser(
   if ($db_pw_hash != '') {
     # notify{"$title: $db_user grant $db_privileges has $db_pw_hash": }
     $hash2use = $db_pw_hash
-  } else {
-    $hash2use = mysql_password("$db_password")
-    # notify{"$title:  $db_user grant $db_privileges uses password $db_password hash is $hash2use": }
+  } else 
+  {
+    if ("$db_password" == '') {
+      $hash2use = ''
+      # notify{"$title:  empty hash":}
+    } else
+    {
+      $hash2use = mysql_password("$db_password")
+      # notify{"$title:  $db_user grant $db_privileges uses password $db_password hash is $hash2use": }
+    }
   }
-
+  
   # Ensure mysql is setup before running database/user creation
   Package[$mysql::params::server_package_name] -> Database       <| |> 
   Package[$mysql::params::client_package_name] -> Database       <| |> 
@@ -40,12 +51,15 @@ define elexis::mysql_dbuser(
   Package[$mysql::params::client_package_name] -> Database_user  <| |> 
 
 
-  if (!defined(Database_user["$db_user"])) {
-    database_user{"$db_user":
-      password_hash => $hash2use,
-      require       => Class['mysql::config', 'mysql::backup'],
-    }
-  }  
+
+  if ("$hash2use" != '') {
+    ensure_resource(database_user, "$db_user",
+      {
+        password_hash => $hash2use,
+        require => Class['mysql::config'],
+      }
+    )
+  }
   
   if !defined(Database["$db_name"]) {
     database{"$db_name":
@@ -55,19 +69,21 @@ define elexis::mysql_dbuser(
   }
   
   $grant_id = "${db_user}"
-  # notify{"$title: grantid $grant_id": }
+  $msg = "grantid $grant_id mit hash $hash2use"
+  # if !defined(Notify[$msg]) { notify{"$msg": }  }
   if !defined(Database_grant["$grant_id"]) {
     database_grant {$grant_id :
       privileges => [$db_privileges] ,
       # Or specify individual privileges with columns from the mysql.db table:
       # privileges => ['Select_priv', 'Insert_priv', 'Update_priv', 'Delete_priv']
       require => [
-#        Database_user["$db_user"],
         Database["$db_name"],
-        Class['mysql::config', 'mysql::backup'],
+        Class['mysql::config'],
       ]
     }
   }
+  
+
 }
 
 define elexis::mysql_dbusers(
@@ -78,12 +94,20 @@ define elexis::mysql_dbusers(
   $db_password =  $title[db_password]
   $db_privileges = $title[db_privileges]
   $myName = "${db_name}_${db_user}"
-  elexis::mysql_dbuser{$myName:
+  # notify{"mysql_dbusers $myName mit $db_name priv $db_privileges": }
+  elexis::mysql_dbuser{"$myName":
     db_name => "$db_name",
     db_user => "$db_user",
     db_password => "$db_password",
     db_pw_hash => "$db_pw_hash",
     db_privileges => "$db_privileges",
+  }
+  database_grant {"$myName" :
+    privileges => [$db_privileges] ,
+    require => [
+      Database["$db_name"],
+      Class['mysql::config'],
+    ]
   }
 }
 
@@ -95,29 +119,11 @@ class elexis::mysql_server inherits elexis::common {
     } ,
   }
 
-  $dbs         = hiera('mysql_dbs', 'cbs')
-  elexis::mysql_dbusers{$dbs: }
+  $dbs         = hiera('mysql_dbs', '')
+  # notify{"nmysql dbs are $dbs": }
+  if ($dbs != '') {  elexis::mysql_dbusers{$dbs: } }
   $mainUser = hiera("elexis::db_user", 'elexis')
   $mainPw   = hiera("elexis::db_password", 'elexisTest')
-
-  $localName = "${mainUser}@localhost"
-  
-  if ("$localName" != "elexis@localhost" and !defined(Database_user["$localName"])) {
-    database_user { "$localName":
-      ensure        => $ensure,
-      password_hash => mysql_password($mainPw),
-      provider      => 'mysql',
-      require       => Class['mysql::config'],
-    }
-  }
-  
-  database_grant {"${$mainUser}@localhost" :
-    privileges => ['all'] ,
-    require => [
-#      Database_user["${mainUser}@localhost"],
-      Class['mysql::config', 'mysql::backup'],
-    ]
-  }
 
   # notify{"m $mysql_main_db_name t $mysql_tst_db_name": }
   if $mysql_main_db_name {
@@ -137,15 +143,14 @@ class elexis::mysql_server inherits elexis::common {
     }
   }
 
-  file {'/etc/mysql/conf.d/lowercase.conf':
+  file {'/etc/mysql/conf.d/lowercase.cnf':
     ensure => present,
-    content => "[mysqld]\nlower_case_table_names = 1\n",
+    content => "[mysqld]\nlower_case_table_names=1\n",
     owner => root,
     group => root,
     mode => 0644,
   }
   
-  $mysql_dump_script = "/usr/local/bin/mysql_dump_elexis.rb"
   file {"$mysql_dump_script":
     ensure => present,
     mode   => 0755,
@@ -153,8 +158,14 @@ class elexis::mysql_server inherits elexis::common {
     require => File[$elexis::admin::pg_util_rb],
   }
 
-  $mysql_load_script = "/usr/local/bin/mysql_load_tst_db.rb"
-  file {$mysql_load_script:
+  file {"${mysql_load_main_script}":
+    ensure => present,
+    mode   => 0755,
+    content => template("elexis/mysql_load_main_db.rb.erb"),
+    require => File[$elexis::admin::pg_util_rb],
+  }
+  
+  file {"$mysql_load_test_script":
     ensure => present,
     mode   => 0755,
     content => template("elexis/mysql_load_tst_db.rb.erb"),
@@ -167,10 +178,12 @@ class elexis::mysql_server inherits elexis::common {
     creates => "$mysql_backup_dir"
   }
   
-  class { 'mysql::backup':
-    backupuser     =>  'backup', # hiera("elexis::db_user", 'elexis'),
-    backuppassword =>  hiera("elexis::db_password", 'elexisTest'),
-    backupdir      =>  $mysql_backup_dir,
+  if (0==1) { # we don't use the backup class of mysql as it creates the backupdir as root:root
+    class { 'mysql::backup':
+      backupuser     =>  'backup', # hiera("elexis::db_user", 'elexis'),
+      backuppassword =>  hiera("elexis::db_password", 'elexisTest'),
+      backupdir      =>  $mysql_backup_dir,
+    }
   }
 
   exec { "$mysql_dump_dir":
@@ -179,11 +192,11 @@ class elexis::mysql_server inherits elexis::common {
     creates => "$mysql_dump_dir"
   }
 
-  file { $mysql_dump_dir :
+  file { [ $mysql_dump_dir, $mysql_backup_dir]: #  $mysql_backup_dir not needed as already declared in modules/mysql/manifests/backup.pp:70
     ensure => directory,
-    mode   => 0755,
+    mode   => 0775,
     recurse => true,
-    owner  =>  $::mysql::params::user, group => $::mysql::params::group,
+    owner  =>  $mysql_user, group => $mysql_group,
     require     => Exec["$mysql_dump_dir"],
   }
     
@@ -200,18 +213,6 @@ class elexis::mysql_server inherits elexis::common {
       
   }
 
-  file {'/etc/cron.weekly/mysql_load_tst_db.rb':
-    ensure => present,
-    owner => 'root',
-    group => 'root',
-    mode  => 0755,
-    require => File["$mysql_load_script"],
-    content => "#!/bin/sh
-test -x ${mysql_load_script} || exit 0
-${mysql_load_script}
-"
-  }
-  
   file {'/etc/logrotate.d/mysql_elexis_dump':
     ensure => present,
     content => "\n${$mysql_dump_dir}/elexis.dump.gz {

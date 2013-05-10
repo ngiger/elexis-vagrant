@@ -1,4 +1,5 @@
-# Here we setup a host
+# Here we setup trust between the hosts server and backup for postgresql_server
+require stdlib
 
 define elexis::set_user_id_rsa(
   $user_name,

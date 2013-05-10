@@ -6,12 +6,13 @@ class includeAllThingsForA_Developer {
     include elexis::postgresql_server
     include elexis::devel
     include kde
-    # include elexis::kde
     include elexis::elexis_bootstrap 
-    class { 'x2go': version => 'baikal', }
-    x2go::server {"x2go-server": }    
-    users { devel: }
-    package{ "iceweasel": }
+    if hiera('x2go::ensure', true)       { 
+      package{ "iceweasel": }
+      x2go::server {"x2go-server": }
+    }
+    $users_devel        = hiera('users_devel')
+    if ($users_devel) { elexis::users  {"developement users": user_definition       => $users_devel} }
 }
 
 node 'devel' {

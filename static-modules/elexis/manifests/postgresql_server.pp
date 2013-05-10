@@ -12,18 +12,23 @@ class { 'postgresql':
 }
 
 class elexis::postgresql_server(
-  $pg_backup_dir        = hiera('elexis::pg_backup_dir',       '/home/backups/postgresql'),
-  $pg_dump_dir          = hiera('elexis::pg_dump_dir',         '/home/dumps/postgresql'),
   $pg_main_db_name      = hiera('elexis::pg_main_db_name',     'elexis'),
   $pg_main_db_user      = hiera('elexis::pg_main_db_user',     'elexis'),
-  # puppet apply --execute 'notify { "test": message => postgresql_password("elexis", "elexisTest") }' --modulepath /vagrant/modules/
   $pg_main_db_password  = hiera('elexis::pg_main_db_password', 'elexisTest'),
-  $pg_main_pw_hash      = hiera('elexis::pg_main_db_password', 'elexisTest'),
-  $pg_tst_db_name       = hiera('elexis::pg_tst_db_name',      'tst_db'),
-  $pg_dump_script    = "/usr/local/bin/pg_dump_elexis.rb",
-  $pg_util_script    = "/usr/local/bin/pg_util.rb",
-  $pg_load_script    = "/usr/local/bin/pg_load_tst_db.rb",
+#  $pg_main_db_password  = hiera('elexis::pg_main_pw_hash',     'elexisTest'),
+  $pg_test_db_name      = hiera('elexis::pg_test_db_name',     'test'),
+  $pg_dump_dir          = hiera('elexis::pg_dump_dir',         '/opt/backup/pg/dumps'),
+  $pg_backup_dir        = hiera('elexis::pg_backup_dir',       '/opt/backup/pg/backups'),
+  $pg_group             = 'postgres',
+  $pg_user              = 'postgres',
 ){
+  $pg_dump_script       = '/usr/local/bin/pg_dump_elexis.rb'
+  $pg_load_main_script  = '/usr/local/bin/pg_load_main_db.rb'
+  $pg_load_test_script  = '/usr/local/bin/pg_load_test_db.rb'
+  $pg_util_script       = '/usr/local/bin/pg_util.rb'
+  $pg_poll_script       = '/usr/local/bin/pg_poll.rb'
+  $pg_fill_script       = '/usr/local/bin/pg_fill.rb'
+  $pg_archive_wal_script= '/usr/local/bin/pg_archive_wal.sh'
 }
 
 define elexis::pg_dbuser(
@@ -96,10 +101,10 @@ class elexis::postgresql_server inherits elexis::common {
   include elexis::admin
   
   user{'postgres': 
-    require => package[$postgresql::params::client_package_name],
+    require => Package[$postgresql::params::client_package_name],
   }
   group{'postgres':
-    require => package[$postgresql::params::client_package_name],
+    require => Package[$postgresql::params::client_package_name],
   }
   
   $dbs= hiera('pg_dbs', 'cbs')
@@ -108,9 +113,9 @@ class elexis::postgresql_server inherits elexis::common {
     
   file  { "${pg_backup_dir}/wal/":
     ensure => directory,
-    owner  => 'postgres',
-    group  => 'postgres',
-    mode   => 0755,
+    owner  => $pg_user,
+    group  => $pg_group,
+    mode   => 0775,
   }
   package { 'postgresql-contrib':
     ensure => present,
@@ -128,9 +133,9 @@ class elexis::postgresql_server inherits elexis::common {
   } else  {
     notify{"host $hostname is neither backup nor server": }
   } }  
-  notify{"pg: wal $backup_dir $reverse_backup_dir": }
+  # notify{"pg: wal $backup_dir $reverse_backup_dir": }
   if ("$backup_dir" != "")  {
-    notify{"pg: Creating $backup_dir $reverse_backup_dir": }
+    # notify{"pg: Creating $backup_dir $reverse_backup_dir": }
     sshd_config { "PermitEmptyPasswords":
       ensure    => present,
       condition => "Host $backup_partner",
@@ -151,7 +156,7 @@ class elexis::postgresql_server inherits elexis::common {
     }
     
   }
-  file { '/usr/local/bin/pg_archive_wal.sh':
+  file {"$pg_archive_wal_script":
     ensure => present,
     source => 'puppet:///modules/elexis/pg_archive_wal.sh',
     owner  => 'postgres',
@@ -186,28 +191,35 @@ autovacuum =      on
     auth_method => 'md5',
   }
   
-  file {$pg_dump_script:
+  file {"$pg_dump_script":
     ensure => present,
     mode   => 0755,
     content => template("elexis/pg_dump_elexis.rb.erb"),
     require => File[$elexis::admin::pg_util_rb],
   }
 
-  file {"/usr/local/bin/pg_fill.rb":
+  file {"$pg_fill_script":
     ensure => present,
     mode   => 0755,
     content => template("elexis/pg_fill.rb.erb"),
     require => File[$elexis::admin::pg_util_rb],
   }
   
-  file {"/usr/local/bin/pg_load_tst_db.rb":
+  file {"$pg_load_test_script":
     ensure => present,
     mode   => 0755,
     content => template("elexis/pg_load_tst_db.rb.erb"),
     require => File[$elexis::admin::pg_util_rb],
   }
   
-  file {"/usr/local/bin/pg_poll.rb":
+  file {"$pg_load_main_script":
+    ensure => present,
+    mode   => 0755,
+    content => template("elexis/pg_load_main_db.rb.erb"),
+    require => File[$elexis::admin::pg_util_rb],
+  }
+  
+  file {"$pg_poll_script":
     ensure => present,
     mode   => 0755,
     content => template("elexis/pg_poll.rb.erb"),
@@ -255,15 +267,15 @@ autovacuum =      on
       
   }
 
-  file {'/etc/cron.weekly/pg_load_tst_db.rb':
+  file {'/etc/cron.weekly/pg_load_test_script.rb':
     ensure => present,
     owner => 'root',
     group => 'root',
     mode  => 0755,
-    require => File["$pg_load_script"],
+    require => File["$pg_load_test_script"],
     content => "#!/bin/sh
-test -x ${pg_load_script} || exit 0
-${pg_load_script}
+test -x ${pg_load_test_script} || exit 0
+${pg_load_test_script}
 "
   }
   

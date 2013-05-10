@@ -20,7 +20,7 @@ include elexis::mysql_server
 include elexis::postgresql_server
 include elexis::praxis_wiki
 include elexis::samba
-include elexis::trusted_hosts
+#include elexis::trusted_hosts
 # don't 
 # include elexis::vagrant
 include elexis::windows

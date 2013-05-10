@@ -4,8 +4,9 @@
 #------------------------------------------------------------------------------------------------------------
 # Some simple customization below
 #------------------------------------------------------------------------------------------------------------
-private = 'XXX/opt/src/veewee-elexis/Elexis-Wheezy-amd64-20130423.boxx'
-boxUrl = File.exists?(private) ? private : 'http://ngiger.dyndns.org/downloads/Elexis-Wheezy-amd64-20130423.box'
+boxId = 'Elexis-Wheezy-amd64-20130510'
+private = "/opt/src/veewee-elexis/#{boxId}.box"
+boxUrl = File.exists?(private) ? private : "http://ngiger.dyndns.org/downloads/#{boxId}.box"
 puts "Using boxUrl #{boxUrl}"
 
 bridgedNetworkAdapter = "eth0" # adapt it to your liking, e.g. on MacOSX it might 
@@ -52,7 +53,7 @@ Vagrant::Config.run do |config|
     server.vm.host_name = "server.#{`hostname -d`.chomp}"
     server.vm.network :bridged, { :mac => macFirst2Bytes + '27226F02', :bridge => bridgedNetworkAdapter }
 #    server.vm.network :hostonly, "192.168.50.10"
-    server.vm.box     = "Elexis-Wheezy-amd64"
+    server.vm.box     = boxId
     server.vm.box_url = boxUrl
     server.vm.forward_port   22, firstPort +  22    # ssh
     server.vm.forward_port   80, firstPort +  80    # Apache
@@ -64,7 +65,7 @@ Vagrant::Config.run do |config|
   config.vm.define :backup do |backup|  
     backup.vm.host_name = "backup.#{`hostname -d`.chomp}"
     backup.vm.network :bridged, { :mac => macFirst2Bytes + '37226F02', :bridge => bridgedNetworkAdapter }
-    backup.vm.box     = "Elexis-Wheezy-amd64"
+    backup.vm.box     = boxId
     backup.vm.box_url = boxUrl
     backup.vm.forward_port   22, firstPort + 1022    # ssh
     backup.vm.forward_port   80, firstPort + 1080    # Apache
@@ -77,7 +78,7 @@ Vagrant::Config.run do |config|
     config.vm.customize  ["modifyvm", :id, "--memory", 2048, "--cpus", 2,  ]
     devel.vm.host_name = "devel.#{`hostname -d`.chomp}"
     devel.vm.network :bridged, { :mac => macFirst2Bytes + '47226F02', :bridge => bridgedNetworkAdapter }
-    devel.vm.box     = "Elexis-Wheezy-amd64"
+    devel.vm.box     = boxId
     devel.vm.box_url = boxUrl
     devel.vm.forward_port    22, firstPort + 2022    # ssh
     devel.vm.forward_port    80, firstPort + 2080    # Apache

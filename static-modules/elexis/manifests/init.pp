@@ -58,5 +58,6 @@ class elexis (
     variant => 'openjdk', # sun gibt es ab Debian Wheezy nicht mehr!
     hasJdk => true,
     hasJre => true,
-  }  
+  }
+  
 }

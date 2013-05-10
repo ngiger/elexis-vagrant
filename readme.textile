@@ -73,6 +73,7 @@ h2. git howto
 * @git submodule add https://github.com/<yourname>/puppet-x2go modules/x2go@
 * To ease pushing to your personal github account use @git remote add github git@github.com:<yourname>/puppetlabs-mysql.git@
 * This enables you to use @cd modules/x2go && git push github@
+* To update all submodules call @git submodule foreach git pull origin master@
 
 h2. create a base box
 

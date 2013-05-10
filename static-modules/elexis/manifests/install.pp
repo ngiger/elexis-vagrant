@@ -34,7 +34,8 @@ define elexis::install (
   $installer      = "$installBase/elexis-installer-$version.jar"
   # elexis always wants to open a pdf with evince and not okular
   # Debian sets evince as default pdf-viewer in /etc/mailcap or ~/.mailcap
-  package{'evince':  ensure => present,  } 
+  if !defined(Package['evince']) { package{'evince': ensure => present, } }
+  if !defined(Package['iceweasel']) { package{'iceweasel': ensure => present, } }
 
   if !defined(Package['wget']) { package{'wget': ensure => present, } }
   exec { "wget_$installer":

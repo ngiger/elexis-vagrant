@@ -20,7 +20,7 @@ puts ARGV.inspect
 dump = ARGV[0] if ARGV.size > 0
 
 cmd  = "gunzip --to-stdout #{dump} | "
-cmd += "psql --user elexis --host localhost --dbname=#{pg_tst_db_name}"
+cmd += "psql --user elexis --host localhost --dbname=#{pg_main_db_name}"
 
 system(cmd)
-logAction("load of #{pg_main_db_name} via #{dump} into #{pg_tst_db_name} finished")
+logAction("load/restore of #{pg_main_db_name} from file #{dump} finished")

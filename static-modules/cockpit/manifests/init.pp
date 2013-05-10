@@ -34,9 +34,20 @@ class cockpit(
   $useMock = hiera('elexis::cockit::useMock', false),
   $ensure  = hiera('elexis::cockit::ensure ', true),
   $vcsRoot = hiera('elexis::cockit::vcsRoot', '/home/elexis/cockpit'),
+  $local_bin = '/usr/local/bin',
 ) inherits elexis {
-  include elexis::params
-  
+  include elexis::params  
+  include elexis::common
+  # ensure_resource('user', 'elexis', {ensure => present,} )
+  ensure_resource('file', $local_bin, {ensure => directory,} )
+  ensure_packages(['bash', 'curl', 'git', 'patch', 'bzip2', 'build-essential', 
+    'openssl', 'libreadline6', 'libreadline6-dev', 'curl', 'zlib1g', 
+    'zlib1g-dev', 'libssl-dev', 'libyaml-dev', 'libsqlite3-dev', 'sqlite3', 'libxml2-dev', 
+    'libxslt-dev', 'autoconf', 'libc6-dev', 'libgdbm-dev', 'ncurses-dev', 'automake', 
+    'libtool', 'bison', 'libffi-dev', 'libvirt-dev', 'ruby1.9.1', 
+    'libaugeas-ruby'
+  ])   
+
   # TODO: Install correct ruby 
   if ($ensure != absent ) { 
     $pkg_ensure = present 
@@ -49,66 +60,33 @@ class cockpit(
       command => "bundle install --gemfile $vcsRoot/Gemfile.1.9.3 &> $vcsRoot/install.log",
       creates => "$vcsRoot/install.log",
       cwd => "/usr/bin",
-      path => '/usr/local/bin:/usr/bin:/bin',
+      path => "$local_bin:/usr/bin:/bin",
       user => 'elexis',
       require => [ Vcsrepo[$vcsRoot], 
-        Package['bundle'] 
+        Package['bundle'],
+#        File["$local_bin"],
         ],
     }
     exec { 'gen_mockconfig':
-      command => "rake mock_scripts 2>&1| tee mock_scripts.log",
+      command => "rake mock_scripts 2>&1| tee $vcsRoot/mock_scripts.log",
       creates => "$vcsRoot/mock_scripts.log",
       cwd => "/usr/bin",
-      path => '/usr/local/bin:/usr/bin:/bin',
+      path => "$local_bin:/usr/bin:/bin",
       require =>  [ Vcsrepo[$vcsRoot], 
+                    File["$local_bin"],
                     Exec['bundle_trust_cockpit'], ],
     }
+    vcsrepo {  "$vcsRoot":
+        ensure => $pkg_ensure,
+        provider => git,
+        owner => 'elexis',
+        group => 'elexis',
+        source => "https://github.com/elexis/elexis-cockpit.git",
+        require => [User['elexis'],],
+    }  
   } 
   else { 
     $pkg_ensure = absent 
-    notify{"ohne $initFile da $ensure und pkg $pkg_ensure ":} 
   }	
 
-  vcsrepo {  "$vcsRoot":
-      ensure => $pkg_ensure,
-      provider => git,
-      owner => 'elexis',
-      group => 'elexis',
-      source => "https://github.com/elexis/elexis-cockpit.git",
-      require => [User['elexis'],],
-  }  
-}
-
-
-class cockpit::service(
-  $ensure  = true,
-
-) inherits cockpit
-{
-  include elexis::common
-  
-  $cockpit_name     = "elexis_cockpit"
-  $cockpit_run      = "/var/lib/service/$cockpit_name/run"
-  exec{ "$cockpit_run":
-    command => "$elexis::params::create_service_script elexis $cockpit_name 'ruby $vcsRoot/elexis-cockpit.rb'",
-    path => '/usr/local/bin:/usr/bin:/bin',
-    require => [
-      File["$elexis::params::create_service_script"],
-      User["elexis"],
-    ],
-    creates => "$cockpit_run",
-    user => 'root',
-  }
-
-  file{'/etc/init.d/cockpit': ensure => absent }
-  
-  service{"$cockpit_name":
-    ensure => running,
-    provider => "daemontools",
-    path    => "$service_path",
-    hasrestart => true,
-    subscribe  => Exec["$cockpit_run"],
-    require    => Exec["$cockpit_run"], 
-  }
-  
 }
