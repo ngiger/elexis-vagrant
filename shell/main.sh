@@ -18,7 +18,7 @@ fi
 apt-get update 
 apt-get remove    --quiet --assume-yes    puppet
 apt-get upgrade   --quiet --assume-yes
-apt-get install   --quiet --assume-yes    ruby ruby-dev libaugeas-ruby linux-headers-amd64
+apt-get install   --quiet --assume-yes    ruby ruby-dev libaugeas-ruby ruby-shadow linux-headers-amd64
 
 # we don't want to be in a directory where a .rvmrc lays aout
 

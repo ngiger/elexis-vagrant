@@ -1,31 +1,19 @@
-# Crontab-Job to pull daily updates from the project
-# netboot for ZOTAC
-# libreoffice
-# firefox 
-# all corresponding german (hyphenation, ticket)
-# dito other languages
-# Alle features testen !!
-
-# should also add (if not present)
-# /home/*/.kde/share/config/kxkbrc with the following content
-[Layout]
-DisplayNames=
-LayoutList=ch
-LayoutLoopCount=-1
-Model=pc105
-ResetOldOptions=false
-ShowFlag=false
-ShowLabel=true
-ShowLayoutIndicator=true
-ShowSingle=false
-SwitchMode=Global
-Use=true
-
+* Initialisierung der Mandanten (kontakt, password, ESR, Taxpunkte, schoebu befragen)
+* Elexis wirklich starten (noVnc) & freigeben via Elexis-Cockpit
+* PostgreSQL hotbackup
+* Microsoft Exchange ersatz, s.a.
+** http://www.linux.com/learn/tutorials/338482-microsoft-exchange-alternatives-for-linux
+** http://linuxblog.darkduck.com/2012/03/8-free-open-source-alternatives-to.html
+* Crontab-Job to pull daily/weekly updates from the project
+* netboot for ZOTAC
+* libreoffice
+* all corresponding german (hyphenation, ticket)
+* dito other languages
+* Alle features testen !!
 
 # von schoebu /etc/postgresql/8.1/main/pg_hba.conf
 # wie wird backup
-local   all         all                               ident sameuser
-
+bc. local   all         all                               ident sameuser
 host    workingetorix   workingetorix   192.168.1.0/24  md5
 host    elexis      elexis      192.168.1.0/24        md5
 host    elexis-test elexis      192.168.1.0/24        md5
@@ -36,7 +24,6 @@ host    elexis      elexis      192.168.50.0/24       md5
 host    elexis-test elexis      192.168.50.0/24       md5
 host    elexis-debug elexis      192.168.50.0/24       md5
 host    tarmed      elexis      192.168.1.0/24        md5
-
 # IPv4 local connections:
 host    all         all         127.0.0.1/32          md5
 # IPv6 local connections:

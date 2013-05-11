@@ -1,7 +1,6 @@
 # kate: replace-tabs on; indent-width 2; indent-mode cstyle; syntax ruby
 # encoding: utf-8
 # A utility class to easily add users for Elexis
-
 define elexis::users(
   $user_definition
 ) {
@@ -37,8 +36,9 @@ define setpass($hash, $file='/etc/shadow') {
   ensure_key_value{ "set_pass_$name":
     file      => $file,
     key       => $name,
-    value     => "$hash:13572:0:99999:7:::",
-    delimiter => ':'
+    value     => "$hash:0:0:99999:7:::",
+    delimiter => ':',
+    require   => User[$name],
     }
 }
 
@@ -51,29 +51,48 @@ define system_user(
   $ensure = present,
   $shell  = '/bin/sh',
 ) {
-  # notify{"system_user: $username uid $uid g $groups pw $password comment $comment": }
-  setpass { "$username": hash => "$password", }    
-  user{$username:
-    managehome => true,
-    ensure     => $ensure,
-    groups     => $groups,
-    comment    => $comment, # Motzt bei nicht US-ASCII Kommentaren wir Müller, aber nur wenn er nichts zu tun hat
-    shell      => $shell,
-    uid        => $uid,
-  }
-}
+  
+  ensure_packages(['ruby-shadow']) # needed for managing password
+  $splitted = split($homes, ',')
+  
+  if ("/home/$username" in $splitted)  {
+    user{$username:
+      managehome => true,
+      ensure     => $ensure,
+      groups     => $groups,
+      shell      => $shell,
+      uid        => $uid,
+    }
+  } else {
+    user{$username:
+      managehome => true,
+      ensure     => $ensure,
+      groups     => $groups,
+      comment    => $comment, # Motzt bei nicht US-ASCII Kommentaren wir Müller, aber nur wenn er nichts zu tun hat
+      shell      => $shell,
+      uid        => $uid,
+      password_min_age => 0, # force user to change it soon
+    } 
+    if ("$ensure" != 'absent' ) { setpass { "$username": hash => "$password",  } }
+  }    
+} 
 
 define system_users(
 ) {
-  ensure_resource('system_user', $title[name], 
-    { 
-      username   => $title['name'],
-      password   => $title['password'],
-      uid        => $title['uid'],
-      groups     => $title['groups'],
-      comment    => $title['comment'],
-      shell      => $title['shell'],
-      ensure     => $title['ensure'],
-    }    
-  )
+
+  $username = $title['name']
+  $expire_log = "/var/log/expire_user_$username"
+  $comment    = $title['comment']
+  $ensure   = $title['ensure']
+  # comment Motzt bei nicht US-ASCII Kommentaren wir Müller, aber nur wenn
+  # der kommentar schon definiert wurd
+  system_user{$username: 
+    username   => $username,
+    password   => $title['password'],
+    uid        => $title['uid'],
+    groups     => $title['groups'],
+    comment    => $comment,
+    shell      => $title['shell'],
+    ensure     => $title['ensure'],
+  }    
 }
