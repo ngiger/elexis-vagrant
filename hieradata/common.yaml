@@ -37,7 +37,7 @@ x2go::ensure: true
 
 # Install Elexis and/or Medelexis current versions
 elexis::install::OpenSource::ensure:     true
-elexis::install::OpenSource::programURL: http://ftp.medelexis.ch/downloads_opensource/elexis/2.1.7.rc2/elexis-2.1.7.20121007-installer.jar
+elexis::install::OpenSource::programURL: http://ngiger.dyndns.org/jenkins/job/elexis-2.1.7-Buildr/375/artifact/deploy/elexis-2.1.7.1rc320130503-installer.jar
 elexis::install::OpenSource::version:    2.1.7.rc2
 
 elexis::install::Medelexis::ensure:      true
@@ -180,7 +180,23 @@ passwords:
     password: '$6$y.DmNxI9ibt$u656hqnBunFDHZaOmO/VM60ENoVLxoTC9pyfofAcwbfef4sV39hXN/jYAM4V/SPbKbpYCuVZE743.ZDjFEVpC0' # was 8200
   thomashu:
     password: '$6$XfboSHLp$2dbGluTUvur1WlGY3jcskxN/4iMp2m95C97PRyVxU1wsITkM45lkqjvz1nJRk.ujOJlvPdJO7CsXeJgZ08oPJ.' # was 6840
-    
+
+# must define all groups not specified as users below    
+groups_elexis_main: [ dialout, cdrom, plugdev, netdev, adm, sudo, ssh ]
+users_elexis_main:
+  name:  elexis
+  mandant:  true
+  ensure: present
+  uid: 1300
+  gid: 1300
+  group:   elexis
+  groups:  [ dialout, cdrom, plugdev, netdev, adm, sudo, ssh, mysql, postgres ]
+  comment: "Elexis User for Database and backup"
+  managehome: true
+  # password is elexisTest
+  password: '$6$4OQ1nIYTLfXE$xFV/8f6MIAo6XKZg8fYbF//w1lhFrCJ60JMcptwESgbHaH52c2UZbUUAAlydCRQy9wDYEgt5dUpTyHjFhCy5E.'
+  shell: /bin/bash
+
 users_elexis:
   - 
     name:  arzt
