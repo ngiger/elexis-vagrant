@@ -50,8 +50,6 @@ define elexis::mysql_dbuser(
   Package[$mysql::params::server_package_name] -> Database_user  <| |> 
   Package[$mysql::params::client_package_name] -> Database_user  <| |> 
 
-
-
   if ("$hash2use" != '') {
     ensure_resource(database_user, "$db_user",
       {
@@ -143,12 +141,15 @@ class elexis::mysql_server inherits elexis::common {
     }
   }
 
-  file {'/etc/mysql/conf.d/lowercase.cnf':
+  $lowercase_conf = '/etc/mysql/conf.d/lowercase.cnf'
+  file {$lowercase_conf:
     ensure => present,
     content => "[mysqld]\nlower_case_table_names=1\n",
     owner => root,
     group => root,
     mode => 0644,
+    require  => File['/etc/mysql/conf.d/'],
+    before => File[$mysql::params::config_file],
   }
   
   file {"$mysql_dump_script":
