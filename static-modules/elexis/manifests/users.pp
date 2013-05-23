@@ -6,79 +6,14 @@ define elexis::users(
 ) {
   
   # notify{"elexis::users: $user_definition":}
-  system_users{$user_definition: }
+  elexis_add_users{$user_definition: }
 }
 
-define ensure_key_value($file, $key, $value, $delimiter = " ") {
-    # passing the values via the environment simplifies quoting.
-    Exec {
-        environment => [ "P_KEY=$key",
-                        "P_VALUE=$value",
-                        "P_DELIM=$delimiter",
-                        "P_FILE=$file" ],
-        path => "/bin:/usr/bin",
-    }
-
-    # append line if "$key" not in "$file"
-    exec { "append-$name":
-        command => 'printf "%s\n" "$P_KEY$P_DELIM$P_VALUE" >> "$P_FILE"',
-        unless  => 'grep -Pq -- "^\Q$P_KEY\E\s*\Q$P_DELIM\E" "$P_FILE"',
-    }
-
-    # update it if it already exists
-    exec { "update-$name":
-        command => 'perl -pi -e \'s{^\Q$ENV{P_KEY}\E\s*\Q$ENV{P_DELIM}\E.*}{$ENV{P_KEY}$ENV{P_DELIM}$ENV{P_VALUE}}g\' --  "$P_FILE"',
-        unless  => 'grep -Pq -- "^\Q$P_KEY\E\s*\Q$P_DELIM\E\s*\Q$P_VALUE\E$" "$P_FILE"',
-    }
-}
-
-define setpass($hash, $file='/etc/shadow') {
-  ensure_key_value{ "set_pass_$name":
-    file      => $file,
-    key       => $name,
-    value     => "$hash:0:0:99999:7:::",
-    delimiter => ':',
-    require   => User[$name],
-    }
-}
-
-define system_user(
-  $username,
-  $uid,
-  $groups  = '',
-  $comment  = '',
-  $password = '',
-  $ensure = present,
-  $shell  = '/bin/sh',
+define elexis_add_users(
 ) {
-  
-  ensure_packages(['ruby-shadow']) # needed for managing password
-  $splitted = split($homes, ',')
-  
-  if ("/home/$username" in $splitted)  {
-    user{$username:
-      managehome => true,
-      ensure     => $ensure,
-      groups     => $groups,
-      shell      => $shell,
-      uid        => $uid,
-    }
-  } else {
-    user{$username:
-      managehome => true,
-      ensure     => $ensure,
-      groups     => $groups,
-      comment    => $comment, # Motzt bei nicht US-ASCII Kommentaren wir Müller, aber nur wenn er nichts zu tun hat
-      shell      => $shell,
-      uid        => $uid,
-      password_min_age => 0, # force user to change it soon
-    } 
-    if ("$ensure" != 'absent' ) { setpass { "$username": hash => "$password",  } }
-  }    
-} 
-
-define system_users(
-) {
+  include elexis::common 
+  $elexis_main        = hiera('users_elexis_main')
+  $main_user          = $elexis_main['name']
 
   $username = $title['name']
   $expire_log = "/var/log/expire_user_$username"
@@ -86,7 +21,7 @@ define system_users(
   $ensure   = $title['ensure']
   # comment Motzt bei nicht US-ASCII Kommentaren wir Müller, aber nur wenn
   # der kommentar schon definiert wurd
-  system_user{$username: 
+  elexis::user{$username: 
     username   => $username,
     password   => $title['password'],
     uid        => $title['uid'],
@@ -94,5 +29,6 @@ define system_users(
     comment    => $comment,
     shell      => $title['shell'],
     ensure     => $title['ensure'],
+    require    => Elexis::User[$main_user], # elexis must be created first!
   }    
 }

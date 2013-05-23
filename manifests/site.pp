@@ -41,7 +41,7 @@ apt::source { 'debian_security':
   include_src       => hiera('apt::source:security:include_src', true),
 }
     
-group { "puppet": ensure => "present", gid => 7777}
+group { "puppet": ensure => "present"}
 
 # class apt_get_update {    
 #     exec{'apt_get_update':

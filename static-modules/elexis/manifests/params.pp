@@ -32,7 +32,9 @@
 #
 
 class elexis::params (
-  $create_service_script = "${elexis::binDir}/create_service.rb"
+  $create_service_script  = "${elexis::binDir}/create_service.rb",
+  $destZip                = "$elexis::downloadDir/floatflt.zip",
+  $elexisFileServer       = "http://ftp.medelexis.ch/downloads_opensource",
 ) inherits elexis {
 }
 

@@ -19,5 +19,5 @@ node "server" {
       x2go::client {"x2go-client": ensure => true }
       x2go::server {"x2go-server": ensure => true }
   }
-
+  if hiera('samba::ensure', true) {  include elexis::samba  }
 }

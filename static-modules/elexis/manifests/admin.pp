@@ -62,7 +62,7 @@ inherits elexis::common {
     mode   => 0755,
     content => template("elexis/pg_util.rb.erb"),
   }
-    
+   
   # we migth use https://forge.puppetlabs.com/rendhalver/sudo to manage
   # permissions for these commands
   file { '/usr/local/bin/reboot.sh': 
@@ -70,12 +70,14 @@ inherits elexis::common {
     owner => root,
     group => 'elexis',
     mode => 6554,
+    require => User['elexis'],
   }
   
   file { '/usr/local/bin/halt.sh': 
     content => "sudo /sbin/shutdown -h -t 30\n",
     owner => root,
     group => 'elexis',
+    require => User['elexis'],
     mode => 6554,
   }
 }

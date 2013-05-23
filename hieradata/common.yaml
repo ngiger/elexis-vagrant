@@ -34,6 +34,7 @@ server::halt_script:   '/usr/bin/sudo /sbin/shutdown -h -t 30 now'
 kde::ensure: false
 kde::server::ensure: true
 x2go::ensure: true
+samba::ensure: true
 
 # Install Elexis and/or Medelexis current versions
 elexis::install::OpenSource::ensure:     true

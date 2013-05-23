@@ -53,6 +53,7 @@ define elexis::user(
       groups     => $groups,
       shell      => $shell,
       uid        => $uid,
+#      require    => Group[$groups],
     }
   } else {
     user{$username:
@@ -62,6 +63,7 @@ define elexis::user(
       comment    => $comment, # Motzt bei nicht US-ASCII Kommentaren wir Müller, aber nur wenn er nichts zu tun hat
       shell      => $shell,
       uid        => $uid,
+#      require    => Group[$groups],
       password_min_age => 0, # force user to change it soon
     } 
     if ("$ensure" != 'absent' ) { setpass { "$username": hash => "$password",  } }

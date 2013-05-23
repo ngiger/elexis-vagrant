@@ -6,5 +6,6 @@ node "backup" {
   if hiera('elexis::mysql_server::ensure', true)       { include elexis::mysql_server }
   if hiera('elexis::praxis_wiki::ensure', true)        { include elexis::praxis_wiki }
   if hiera('elexis::postgresql_server::ensure', false)  { include elexis::postgresql_server }
+  if hiera('samba::ensure', true) {  include elexis::samba  }
 
 }
