@@ -9,8 +9,9 @@ class elexis::samba (
   include samba
   include samba::server::config
   $augeas_packages = "['augeas-lenses', 'augeas-tools', 'libaugeas-ruby']"
+  $with_x2go        = hiera('x2go::ensure')
   ensure_packages(['augeas-lenses', 'augeas-tools', 'libaugeas-ruby', 'cups-pdf', 'cups-bsd'])
-  
+
   class {'samba::server':
     workgroup => 'Praxis',
     server_string => "Samba Server for an Elexis practice",
@@ -93,5 +94,29 @@ umask=022
 sudo -u \$2 mv \$1 $sambaPdf/\$FILENAME && logger cups-pdf moved \$1 to $sambaPdf/\$FILENAME
 ",
   mode => 0755,
+  }
+  
+  if ("$with_x2go") {
+    ensure_packages(['wget'])
+    $win_version = '4.0.0.3'
+    $mac_version = '4.0.1.0'
+    $wget_x2go_win_client = "${sambaBase}/X2GoClient_latest_mswin32-setup.exe"
+    $wget_x2go_mac_client = "${sambaBase}/X2GoClient_latest_macosx.dmg"
+    
+    exec { "$wget_x2go_mac_client":
+      cwd     => "${sambaBase}",
+      command => "wget --timestamping http://code.x2go.org/releases/X2GoClient_latest_mswin32-setup.exe",
+      require => [File["$sambaBase"], Package['wget'] ],
+      path    => '/usr/bin:/bin',
+      timeout => 1800, # allow maximal 30 minutes for download
+    }
+    
+    exec { "$wget_x2go_win_client":
+      cwd     => "${sambaBase}",
+      command => "wget --timestamping http://code.x2go.org/releases/X2GoClient_latest_macosx.dmg",
+      require => [File["$sambaBase"], Package['wget'] ],
+      path    => '/usr/bin:/bin',
+      timeout => 1800, # allow maximal 30 minutes for download
+    }
   }
 }
