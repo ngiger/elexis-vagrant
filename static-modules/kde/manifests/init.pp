@@ -21,8 +21,8 @@ class kde {
 #      require => [Class['apt::update']],
     }
 
-  package { 'network-manager':
-    ensure => absent,
+  package { 'network-manager-kde':
+    ensure => present,
   }
   service{'kdm': ensure => running, require => Package['kdm'], }
   

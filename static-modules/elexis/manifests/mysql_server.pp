@@ -26,7 +26,7 @@ define elexis::mysql_dbuser(
   $db_pw_hash  = '',
   $db_password = '',
 ) {
-  include mysql
+  include mysql::server
   
   # notify{"$title: grant $db_privileges on $db_name to $db_user pw $db_password/$db_pw_hash": }
   if ($db_pw_hash != '') {
@@ -45,8 +45,8 @@ define elexis::mysql_dbuser(
   }
   
   # Ensure mysql is setup before running database/user creation
-  Package[$mysql::params::server_package_name] -> Database       <| |> 
-  Package[$mysql::params::client_package_name] -> Database       <| |> 
+  Package[$mysql::params::server_package_name] -> Mysql_Database       <| |> 
+  Package[$mysql::params::client_package_name] -> Mysql_Database       <| |> 
   Package[$mysql::params::server_package_name] -> Database_user  <| |> 
   Package[$mysql::params::client_package_name] -> Database_user  <| |> 
 
@@ -54,13 +54,13 @@ define elexis::mysql_dbuser(
     ensure_resource(database_user, "$db_user",
       {
         password_hash => $hash2use,
-        require => Class['mysql::config'],
+        require => Class['mysql::server::config'],
       }
     )
   }
   
-  if !defined(Database["$db_name"]) {
-    database{"$db_name":
+  if !defined(Mysql_database["$db_name"]) {
+    mysql_database{"$db_name":
       ensure => present,
       charset => 'de_CH.UTF-8',
     }
@@ -69,14 +69,18 @@ define elexis::mysql_dbuser(
   $grant_id = "${db_user}"
   $msg = "grantid $grant_id mit hash $hash2use"
   # if !defined(Notify[$msg]) { notify{"$msg": }  }
-  if !defined(Database_grant["$grant_id"]) {
-    database_grant {$grant_id :
+  if !defined(Mysql_grant["$grant_id"]) {
+    mysql_grant {$grant_id :
+   #   options    => ['GRANT'],
+      ensure     => 'present',
+      table      => '*.*',
+      user       => "$db_user",
       privileges => [$db_privileges] ,
       # Or specify individual privileges with columns from the mysql.db table:
       # privileges => ['Select_priv', 'Insert_priv', 'Update_priv', 'Delete_priv']
       require => [
-        Database["$db_name"],
-        Class['mysql::config'],
+        Mysql_database["$db_name"],
+        Class['mysql::server::config'],
       ]
     }
   }
@@ -100,21 +104,22 @@ define elexis::mysql_dbusers(
     db_pw_hash => "$db_pw_hash",
     db_privileges => "$db_privileges",
   }
-  database_grant {"$myName" :
+  mysql_grant {"$myName" :
+    # options    => ['GRANT'],
+    ensure     => 'present',
+    table      => '*.*',
+    user       => "$db_user",
     privileges => [$db_privileges] ,
     require => [
-      Database["$db_name"],
-      Class['mysql::config'],
+      Mysql_database["$db_name"],
+      Class['mysql::server::config'],
     ]
   }
 }
 
 class elexis::mysql_server inherits elexis::common {
-  class { 'mysql::server': 
-    config_hash => { 
-      'root_password' => hiera('mysql::server:root_password', 'elexisTest'),
-      'bind_address'  => hiera('mysql::server:bind_address','0.0.0.0'),       # listen on all network interfaces
-    } ,
+  class { '::mysql::server': 
+      root_password => hiera('mysql::server:root_password', 'elexisTest')
   }
 
   $dbs         = hiera('mysql_dbs', '')
@@ -125,7 +130,7 @@ class elexis::mysql_server inherits elexis::common {
 
   # notify{"m $mysql_main_db_name t $mysql_tst_db_name": }
   if $mysql_main_db_name {
-    database { "$mysql_main_db_name":
+    mysql_database { "$mysql_main_db_name":
       ensure  => 'present',
       charset => 'utf8',
       require => Class['mysql::server'],
@@ -134,7 +139,7 @@ class elexis::mysql_server inherits elexis::common {
   }
 
   if $mysql_tst_db_name {
-    database { "$mysql_tst_db_name":
+    mysql_database { "$mysql_tst_db_name":
       ensure  => 'present',
       charset => 'utf8',
       require => Class['mysql::server'],

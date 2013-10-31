@@ -6,8 +6,8 @@
 # with the default values you can afterward connect as follows to the DB
 # psql elexis -U elexis -h localhost --password  # pw is elexisTest
 
-class { 'postgresql':
-  charset => 'UTF8',
+class { 'postgresql::server':
+  encoding => 'UTF8',
   locale  => 'en_US',
 }
 
@@ -48,28 +48,28 @@ define elexis::pg_dbuser(
     # notify{"$title: grant uses password $db_password hash is $hash2use": }
   }
   
-  if !defined(Postgresql::Role["$db_user"]) {
-    postgresql::role{"$db_user":
+  if !defined(Postgresql::Server::Role["$db_user"]) {
+    postgresql::server::role{"$db_user":
       login => true,
       password_hash => $hash2use,
       require => Service[postgresqld],
     }
   }  
   
-  if !defined(Postgresql::Database["$db_name"]) {
-    postgresql::database{"$db_name":
+  if !defined(Postgresql::Server::Database["$db_name"]) {
+    postgresql::server::database{"$db_name":
     }
   }
   
   $grant_id = "GRANT $db_user - $db_privileges - $db_name"  
-  if !defined(Postgresql::Database_grant["$grant_id"]) {
-    postgresql::database_grant{"$grant_id":
+  if !defined(Postgresql::Server::Database_grant["$grant_id"]) {
+    postgresql::server::database_grant{"$grant_id":
       privilege   => "$db_privileges",
       db          => "$db_name",
       role        => "$db_user",
       require => [
-        Postgresql::Role["$db_user"],
-        Postgresql::Database["$db_name"],
+        Postgresql::Server::Role["$db_user"],
+        Postgresql::Server::Database["$db_name"],
         Service[postgresqld],
       ]
     }
@@ -96,7 +96,6 @@ define elexis::pg_dbusers(
 
 class elexis::postgresql_server inherits elexis::common {
   include concat::setup
-  include postgresql
   include postgresql::client
   include elexis::admin
   
@@ -164,7 +163,7 @@ class elexis::postgresql_server inherits elexis::common {
     mode   => 0744,
   }
     
-  $config_hash = hiera('pg::config_hash', '')
+  # $config_hash = hiera('pg::config_hash', '')
   $conf_dir    = $postgresql::params::confdir
   $archive_timeout = hiera('pg::pg_archive_timeout', '600') # by default every 10 minutes = 600 seconds
   # template("elexis/postgresql_puppet_extras.conf.erb"),
@@ -178,11 +177,11 @@ autovacuum =      on
   
   
   class {'postgresql::server':
-    config_hash => $config_hash,
+    # config_hash => $config_hash,
     require => [ File["$conf_dir/postgresql_puppet_extras.conf"], Package['postgresql-contrib'] ],
   }
   
-  postgresql::pg_hba_rule { "allow application network to access all database from localhost":
+  postgresql::server::pg_hba_rule { "allow application network to access all database from localhost":
     description => "Open up postgresql for access from localhost",
     type => 'host',
     database => 'all',

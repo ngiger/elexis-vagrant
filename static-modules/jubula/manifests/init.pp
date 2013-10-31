@@ -85,7 +85,7 @@ class jubula($jubulaURL = 'http://ftp.medelexis.ch/downloads_opensource/jubula/j
         case $operatingsystem {
               'Debian':  { }
               'Ubuntu': {
-                package { ['openjdk-6-jre-headless:i386']:
+                package { ['openjdk-7-jre-headless:i386']:
                   ensure => present,
                 }
               }

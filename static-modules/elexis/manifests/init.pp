@@ -54,10 +54,11 @@ class elexis (
   # notify{"elexis with java $java downloadURL $downloadURL ":}
   # class java($version = 6, $variant = 'openjdk', $hasJdk = false, $hasJre = true ) {
   class { 'java':
-    version => 6,
+    version => 7,
     variant => 'openjdk', # sun gibt es ab Debian Wheezy nicht mehr!
     hasJdk => true,
     hasJre => true,
   }
+  ensure_packages['mysql-client']
   
 }

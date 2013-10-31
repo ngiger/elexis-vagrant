@@ -4,6 +4,7 @@ include git
 class elexis::praxis_wiki(
   $vcsRoot = '/opt/src/elexis-admin.wiki'
 ) inherits elexis::common {
+  $ensure =hiera('elexis::praxis_wiki::ensure', absent)
   $initFile =  '/etc/init.d/gollum'
 
   ensure_packages(['make', 'libxslt1-dev', 'libxml2-dev'])
@@ -11,7 +12,7 @@ class elexis::praxis_wiki(
     'RedCloth',  # to support textile, but no live editing at the moment
     'wikicloth'  # to support mediawiki, but no live editing at the moment
     ]:
-    ensure => present,
+    ensure => $ensure,
     provider => gem,
     require => Package['make', 'libxslt1-dev', 'libxml2-dev'],
   }
@@ -19,7 +20,7 @@ class elexis::praxis_wiki(
 # gollum TODO: set default to .textile, see DefaultOptions  in lib/gollum/frontend/public/javascript/editor/gollum.editor.js
 # Maybe done using a config.ru file inside the wiki!
   vcsrepo {  "$vcsRoot":
-      ensure => present,
+      ensure => $ensure,
       provider => git,
       owner => 'elexis',
       group => 'elexis',
