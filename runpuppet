@@ -1,0 +1,21 @@
+#!/bin/bash
+# To be use on a vagrant machine or an machine installing
+set -e # exit whenever an error occurs
+echo "We assume that you installed vagrant-ngiger into /etc/puppet or /vagrant"
+if [ -d /vagrant ] ; then PUPPET_DIR=/vagrant; else PUPPET_DIR=/etc/puppet ; fi
+if [ -z "$*" ] ; then 
+  echo You must specify what to apply, e.g. $PUPPET_DIR/manifests/site.pp
+  exit 1
+fi
+confFile=/etc/puppet/puppet.conf
+if [ ! -f $confFile ]
+then
+echo "[main]"                            > $confFile
+echo "modulepath=${PUPPET_DIR}/modules" >> $confFile
+fi
+cd $PUPPET_DIR
+echo PUPPET_DIR ist $PUPPET_DIR
+./runlibrarian
+echo modules in $PUPPET_DIR/modules
+
+puppet apply --modulepath $PUPPET_DIR/modules --hiera_config $PUPPET_DIR/hieradata/hiera.yaml $*

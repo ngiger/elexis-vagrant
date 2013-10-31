@@ -1,0 +1,22 @@
+#!/bin/bash -v
+# Bootstrap all stuff needed for a Debian Wheezy based Jenkins-CI setup
+# Must be run as user root
+# Fastest way to run it is "wget https://raw.github.com/ngiger/elexis-vagrant/master/shell/bootstrap_wheezy && bash -v bootstrap_wheezy"
+aptitude install git etckeeper sudo
+git config --system credential.helper cache "cache --timeout=3600" # keep it in cache for 60 minutes
+git config --system  user.name "admin"
+git config --systeml user.email admin@`hostname -f`
+git add gitconfig
+echo puppet | tee --append /etc/.gitignore
+git rm -rf /etc/puppet
+cd /etc && git commit -a -m "Bootstrapping srv_elexis"
+git clone https://github.com/ngiger/elexis-vagrant.git /etc/puppet
+mkdir -p /opt/src
+ln -s /opt/src/vagrant-ngiger /etc/puppet
+aptitude update
+aptitude remove puppet facter
+apt-get  build-dep puppet
+aptitude install libaugeas-ruby augeas-tools gcc build-essential zlib1g zlib1g-dev
+gem install puppet facter librarian-puppet  --no-ri --no-rdoc
+/etc/puppet/runpuppet /etc/puppet/manifest/site.pp
+
