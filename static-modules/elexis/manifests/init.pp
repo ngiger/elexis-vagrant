@@ -59,6 +59,5 @@ class elexis (
     hasJdk => true,
     hasJre => true,
   }
-  ensure_packages['mysql-client']
   
 }
