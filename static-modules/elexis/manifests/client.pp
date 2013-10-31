@@ -2,7 +2,7 @@
 class elexis::client inherits elexis::common {
 
   include java
-  include mysql
+  include mysql::server
 
   # postgresql client # TODO:
 }

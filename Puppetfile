@@ -16,7 +16,7 @@ forge "http://forge.puppetlabs.com"
 mod "puppetlabs/apt"
 mod "puppetlabs/mysql"
 # mod 'puppetlabs/firewall'
-mod 'puppetlabs/postgresql'
+mod 'puppetlabs/postgresql', '2.1.1'
 mod 'ripienaar/concat'
 mod "puppetlabs/vcsrepo"
 mod "maestrodev/rvm"
