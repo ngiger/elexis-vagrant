@@ -21,6 +21,7 @@ class elexis::postgresql_server(
   $pg_backup_dir        = hiera('elexis::pg_backup_dir',       '/opt/backup/pg/backups'),
   $pg_group             = 'postgres',
   $pg_user              = 'postgres',
+  $pg_hba_allow_network = hiera('pg_hba::allow_network',        '192.168.1.0/24'),
 ){
   $pg_dump_script       = '/usr/local/bin/pg_dump_elexis.rb'
   $pg_load_main_script  = '/usr/local/bin/pg_load_main_db.rb'
@@ -175,12 +176,22 @@ autovacuum =      on
 ",
   }
   
-  
+
   class {'postgresql::server':
     # config_hash => $config_hash,
     require => [ File["$conf_dir/postgresql_puppet_extras.conf"], Package['postgresql-contrib'] ],
   }
   
+  if ($pg_hba_allow_network) {
+    postgresql::server::pg_hba_rule { "allow application network to access all database from the local network":
+      description => "Open up postgresql for access from localhost",
+      type => 'host',
+      database => 'all',
+      user => 'all',
+      address => "$pg_hba_allow_network",
+      auth_method => 'md5',
+    }
+  }
   postgresql::server::pg_hba_rule { "allow application network to access all database from localhost":
     description => "Open up postgresql for access from localhost",
     type => 'host',
