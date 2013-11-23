@@ -2,14 +2,11 @@
 # Bootstrap all stuff needed for a Debian Wheezy based Jenkins-CI setup
 # Must be run as user root
 # Fastest way to run it is "wget https://raw.github.com/ngiger/elexis-vagrant/master/shell/bootstrap_wheezy && bash -v bootstrap_wheezy"
-#
-# --configuration example. Checkout a hieradata/private/config.yaml file
-# git clone https://github.com/ngiger/puppet-schoebu hieradata/private
-#
 aptitude install git etckeeper sudo
 git config --system credential.helper cache "cache --timeout=3600" # keep it in cache for 60 minutes
 git config --system  user.name "admin"
-git config --systeml user.email admin@`hostname -f`
+git config --system user.email admin@`hostname -f`
+cd /etc
 git add gitconfig
 echo puppet | tee --append /etc/.gitignore
 git rm -rf /etc/puppet
@@ -22,7 +19,6 @@ aptitude remove puppet facter
 apt-get  build-dep puppet
 aptitude install libaugeas-ruby augeas-tools gcc build-essential zlib1g zlib1g-dev
 cd /etc/puppet
-gem install bundler
-bundle install 
-/etc/puppet/runpuppet /etc/puppet/manifests/site.pp 2>&1 | tee /var/log/puppet_`date +%Y-%m-%d_%H:%M:%S`.log
+gem install --no-ri --no-rdoc bundler && bundle install
+/etc/puppet/runpuppet /etc/puppet/manifests/site.pp 2>&1 | tee /var/log/puppet_`date +\"%Y-%m-%d_%H:%M:%S\"`.log
 

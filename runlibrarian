@@ -6,4 +6,4 @@ gem list --local librarian-puppet
 if [ $? -ne 0 ] ; then
   gem install --no-ri --no-rdoc librarian-puppet
 fi
-time librarian-puppet install
+time bundle exec librarian-puppet install
