@@ -41,19 +41,10 @@ define elexis::pg_dbuser(
   $db_password = '',
 ) {
   
-  # notify{"$title: grant $db_privileges on $db_name to $db_user pw $db_password/$db_pw_hash": }
-  if ($db_pw_hash != '') {
-    # notify{"$title: grant has $db_pw_hash": }
-    $hash2use = $db_pw_hash
-  } else {
-    $hash2use = postgresql_password("$db_user", "$db_password")
-    # notify{"$title: grant uses password $db_password hash is $hash2use": }
-  }
-  
   if !defined(Postgresql::Server::Role["$db_user"]) {
     postgresql::server::role{"$db_user":
       login => true,
-      password_hash => $hash2use,
+      # password_hash => $hash2use,
       require => Service[postgresqld],
     }
   }  
