@@ -11,6 +11,7 @@
 require stdlib
 
 class elexis::thin_client (
+  $boot_host = "192.168.1.222"
 ) inherits elexis::common {
 
   $useDnsmasq = hiera('elexis::useDnsmasq', false)
@@ -25,13 +26,11 @@ class elexis::thin_client (
 dhcp-option=17,/opt/ltsp/i386
 
 # Define common netboot types.
-#dhcp-vendorclass=etherboot,Etherboot
 dhcp-vendorclass=pxe,PXEClient
-#dhcp-vendorclass=ltsp,"Linux ipconfig"
 
 # Set the boot filename depending on the client vendor identifier.
 # The boot filename is relative to tftp-root.
-dhcp-boot=/ltsp/i386/pxelinux.0,server,172.25.1.88
+dhcp-boot=/ltsp/i386/pxelinux.0,server,$boot_host
 
 # Kill multicast.
 dhcp-option=vendor:pxe,6,2b
@@ -42,7 +41,7 @@ dhcp-no-override
 
 # The known types are x86PC, PC98, IA64_EFI, Alpha, Arc_x86,
 # Intel_Lean_Client, IA32_EFI, BC_EFI, Xscale_EFI and X86-64_EFI
-pxe-service=X86PC, "Boot thinclient from network", /ltsp/i386/pxelinux,172.25.1.88
+pxe-service=X86PC, 'Boot thinclient from network', /ltsp/i386/pxelinux,$boot_host
 
 # Comment the following to disable the TFTP server functionality of dnsmasq.
 #enable-tftp
@@ -69,10 +68,11 @@ TFTP_OPTIONS="--secure"
     ensure => installed,
     require => File['/etc/default/tftpd-hpa'],
   }
+  $apt_proxy_host = hiera('apt::proxy_host', 'http://198.168.1.222:3142')
  
   exec{'install-ltsp':
-    command => '/usr/sbin/ltsp-build-client --apt-key /etc/apt/trusted.gpg --arch i386 --http-proxy http://172.25.1.60:3142 \
-    --components "main contrib non-free" --late-packages "vim-nox aptitude sudo dnsutils etckeeper firmware-realtek"',
+    command => "/usr/sbin/ltsp-build-client --apt-key /etc/apt/trusted.gpg --arch i386 --http-proxy $apt_proxy_host \
+    --components 'main contrib non-free' --late-packages 'vim-nox aptitude sudo dnsutils etckeeper firmware-realtek'",
       creates => '/opt/ltsp/i386/etc/passwd',
       require => Package['ltsp-server'],
   }
