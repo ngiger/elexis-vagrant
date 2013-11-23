@@ -27,7 +27,7 @@ class elexis::postgresql_server(
   $pg_archive_wal_script= '/usr/local/bin/pg_archive_wal.sh'
 class { 'postgresql::server':
   encoding => 'UTF8',
-  locale  => 'en_US',
+  locale  => 'C',
   listen_addresses => '*',
 }
 
@@ -67,6 +67,7 @@ define elexis::pg_dbuser(
       ]
     }
   }
+  
 }
 
 define elexis::pg_dbusers(

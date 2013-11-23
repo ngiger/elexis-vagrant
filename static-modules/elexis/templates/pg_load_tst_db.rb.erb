@@ -14,7 +14,7 @@ pg_main_db_password  = '<%=  scope.function_hiera(['elexis::pg_main_db_password'
 pg_tst_db_name       = '<%=  scope.function_hiera(['elexis::pg_tst_db_name' ,     'test']) %>'
 pg_dump_dir          = '<%=  scope.function_hiera(['elexis::pg_dump_dir',         '/home/backup-pg']) %>'
 
-ENV['PGPASSWORD'] = 'elexisTest'
+ENV['PGPASSWORD'] = pg_main_db_password
 dump   = "#{pg_dump_dir}/#{pg_main_db_name}.dump.gz"
 puts ARGV.inspect
 dump = ARGV[0] if ARGV.size > 0
