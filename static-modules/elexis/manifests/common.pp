@@ -1,4 +1,4 @@
-# Here we define quite a few parameters
+
 # kate: replace-tabs on; indent-width 2; indent-mode cstyle; syntax ruby
 
 class elexis::common inherits elexis {
@@ -26,8 +26,7 @@ class elexis::common inherits elexis {
   }
 
   include apt # to force an apt::update
-  #$groups_elexis_main        = flatten(hiera('groups_elexis_main', [ 'dialout', 'cdrom', 'plugdev', 'netdev', 'adm', 'sudo', 'ssh' ]), 'postgres', 'mysql')
-  $groups_elexis_main        = [ 'dialout', 'cdrom', 'plugdev', 'netdev', 'adm', 'sudo', 'ssh', 'postgresql', 'mysql' ]
+  $groups_elexis_main        = flatten(hiera('groups_elexis_main', [ 'dialout', 'cdrom', 'plugdev', 'netdev', 'adm', 'sudo', 'ssh' ]), 'postgres', 'mysql')
   notify{ "elexis::common $groups_elexis_main": }
   group {$groups_elexis_main:  ensure => present,  }
   
