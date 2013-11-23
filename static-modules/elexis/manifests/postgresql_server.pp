@@ -9,6 +9,7 @@
 class { 'postgresql::server':
   encoding => 'UTF8',
   locale  => 'en_US',
+  listen_addresses => '*',
 }
 
 class elexis::postgresql_server(
