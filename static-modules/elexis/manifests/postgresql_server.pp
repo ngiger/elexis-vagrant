@@ -6,12 +6,6 @@
 # with the default values you can afterward connect as follows to the DB
 # psql elexis -U elexis -h localhost --password  # pw is elexisTest
 
-class { 'postgresql::server':
-  encoding => 'UTF8',
-  locale  => 'en_US',
-  listen_addresses => '*',
-}
-
 class elexis::postgresql_server(
   $pg_main_db_name      = hiera('elexis::pg_main_db_name',     'elexis'),
   $pg_main_db_user      = hiera('elexis::pg_main_db_user',     'elexis'),
@@ -31,6 +25,12 @@ class elexis::postgresql_server(
   $pg_poll_script       = '/usr/local/bin/pg_poll.rb'
   $pg_fill_script       = '/usr/local/bin/pg_fill.rb'
   $pg_archive_wal_script= '/usr/local/bin/pg_archive_wal.sh'
+class { 'postgresql::server':
+  encoding => 'UTF8',
+  locale  => 'en_US',
+  listen_addresses => '*',
+}
+
 }
 
 define elexis::pg_dbuser(
@@ -171,18 +171,13 @@ class elexis::postgresql_server inherits elexis::common {
   # template("elexis/postgresql_puppet_extras.conf.erb"),
   file {"$conf_dir/postgresql_puppet_extras.conf":
     content => "# managed by puppet. see elexis/manifests/postgresql_server.pp
-archive_command = '/usr/bin/test ! -f ${backup_dir}/wal/%f && /bin/cp %p ${reverse_backup_dir}/%f < /dev/null'
-archive_timeout = ${archive_timeout}
+#archive_command = '/usr/bin/test ! -f ${backup_dir}/wal/%f && /bin/cp %p ${reverse_backup_dir}/%f < /dev/null'
+#archive_timeout = ${archive_timeout}
 autovacuum =      on
 ",
   }
   
 
-  class {'postgresql::server':
-    # config_hash => $config_hash,
-    require => [ File["$conf_dir/postgresql_puppet_extras.conf"], Package['postgresql-contrib'] ],
-  }
-  
   if ($pg_hba_allow_network) {
     postgresql::server::pg_hba_rule { "allow application network to access all database from the local network":
       description => "Open up postgresql for access from localhost",
