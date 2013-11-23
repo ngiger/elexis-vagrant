@@ -22,7 +22,7 @@ class kde {
     }
 
   package { 'network-manager-kde':
-    ensure => present,
+    ensure => absent, # creates havoc on installation
   }
   service{'kdm': ensure => running, require => Package['kdm'], }
   
