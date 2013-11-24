@@ -27,7 +27,7 @@ class elexis::common inherits elexis {
 
   include apt # to force an apt::update
   $groups_elexis_main        = flatten([hiera('groups_elexis_main', [ 'dialout', 'cdrom', 'plugdev', 'netdev', 'adm', 'sudo', 'ssh' ]), 'mysql'] )
-  notify{ "elexis::common $groups_elexis_main": }
+  # notify{ "elexis::common $groups_elexis_main": }
   group {$groups_elexis_main:  ensure => present,  }
   
   $users_elexis_main        = hiera('users_elexis_main')

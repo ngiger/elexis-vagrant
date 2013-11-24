@@ -7,7 +7,7 @@ class { 'elexis':
 
 package {['slim', 'awesome']: }
 
-if (0==1) {
+if (false) {
   include elexis::install
   elexis::install {"elexis-Medelexis":
     programURL             => 'http://www.medelexis.ch/dl21.php?file=medelexis-linux',
@@ -17,10 +17,9 @@ if (0==1) {
 
 } else {
   # Generates Error: Puppet::Parser::AST::Resource failed with error ArgumentError: Invalid resource type elexis::install at /tmp/vagrant-puppet/modules-0/elexis/tests/install.pp:5 on node server.ngiger.dyndns.org
-  elexis::install  {"elexis-2.1.7.rc-opensource":
-    programURL             => 'http://ftp.medelexis.ch/downloads_opensource/elexis/2.1.7.rc2/elexis-2.1.7.20121007-installer.jar',
-    version                => '2.1.7.rc2',
-    installBase            => '/opt/elexis_opensource',
+  elexis::install  {"elexis-OpenSource":
+#    programURL =>  'http://srv.elexis.info/jenkins/view/2.1.7/job/elexis-2.1.7-Buildr-OpenSource/259/artifact/deploy/elexis-2.1.7.120131114-installer.jar',
+#    version =>     '2.1.7.1',
   }
 
 }

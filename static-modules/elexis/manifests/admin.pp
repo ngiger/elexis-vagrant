@@ -25,7 +25,7 @@ inherits elexis::common {
     command => "echo 'Europe/Zurich' > /etc/timezone && dpkg-reconfigure --frontend noninteractive tzdata",
     path    => "/usr/bin:/usr/sbin:/bin:/sbin",
     environment => 'LANG=C',
-    unless  => "diff /usr/share/zoneinfo/Europe/Zurich /etc/timezone"
+    unless  => "grep Europe/Zurich /etc/timezone"
   } 
 
   # see http://johnleach.co.uk/words/771/puppet-dependencies-and-run-stages

@@ -16,7 +16,7 @@ elexis::default_eclipse:      eclipse-rcp-juno-SR2
 elexis::jenkinsDir:           /opt/jenkins
 elexis::eclipseRelease:       juno
 elexis::default_eclipse:      eclipse-rcp-juno-SR2
-elexis::downloadURL:          http://ftp.medelexis.ch/downloads_opensource
+elexis::downloadURL:          http://download.elexis.info/versions/
 
 # ensure that you can send mail via an sstmp user
 # elexis::mail::user:      'put your username   into hieradata/private/config.yaml'
@@ -37,13 +37,13 @@ x2go::ensure: true
 samba::ensure: true
 
 # Install Elexis and/or Medelexis current versions
-elexis::install::OpenSource::ensure:     true
-elexis::install::OpenSource::programURL: http://ngiger.dyndns.org/jenkins/job/elexis-2.1.7-Buildr/375/artifact/deploy/elexis-2.1.7.1rc320130503-installer.jar
-elexis::install::OpenSource::version:    2.1.7.rc2
+#elexis::install::OpenSource::ensure:     true
+#elexis::install::OpenSource::programURL: http://srv.elexis.info/jenkins/view/2.1.7/job/elexis-2.1.7-Buildr-OpenSource/259/artifact/deploy/elexis-2.1.7.120131114-installer.jar
+#elexis::install::OpenSource::version:    2.1.7.1
 
 elexis::install::Medelexis::ensure:      true
 elexis::install::Medelexis::programURL:  http://www.medelexis.ch/dl21.php?file=medelexis-linux
-elexis::install::Medelexis::version:     2.1.7.0
+elexis::install::Medelexis::version:     2.1.7.1
 
 # What you prefer for your client
 X::display_manager: slim
@@ -88,7 +88,7 @@ elexis::pg_main_db_name:     elexis
 elexis::pg_tst_db_name:      test
 elexis::pg_main_db_user:     elexis
 elexis::pg_main_db_password: elexisTest
-
+elexis::pg_remote_backup:    false  # or backup_server:/path/to/backup
 # definition of postgresql database
 # unfortunately the syntax via puppet is signifcantly different so we need a different variable for mysql!
 pg_dbs:

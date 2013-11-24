@@ -36,8 +36,6 @@ ausgabe.close
 puts "installDemoDemoDB ist #{installDemoDemoDB}"
 FileUtils.makedirs(installDir) unless File.directory?(installDir)
 Dir.chdir(installDir)
-# patch <installpath>/opt/elexis_opensource/2.1.7.rc2</installpath>
-# patch <pack index="0" name="DemoDB" selected="false"/>
 cmd = "java -jar #{installer} #{tmpName}"
 puts cmd
 res = system(cmd)

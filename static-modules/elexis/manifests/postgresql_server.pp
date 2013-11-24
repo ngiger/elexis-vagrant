@@ -100,17 +100,18 @@ class elexis::postgresql_server inherits elexis::common {
     require => Package[$postgresql::params::client_package_name],
   }
   
-  file  { "/var/lib/postgresql/.ssh/":
+  file  { '/var/lib/postgresql/.ssh/':
     ensure => directory,
     owner  => $pg_user,
     group  => $pg_group,
     mode   => 0700,
-    require => Postgresql::Server,
+    require => Service[postgresqld],
   }
   exec{'/var/lib/postgresql/.ssh/id_rsa':
-    creates => '/var/lib/postgres/.ssh/id_rsa',
+    creates => '/var/lib/postgresql/.ssh/id_rsa',
     command => "/usr/bin/ssh-keygen -N '' -f /var/lib/postgresql/.ssh/id_rsa",
-    owner  => $pg_user,
+    user  => $pg_user,
+    require => File['/var/lib/postgresql/.ssh/'],
   }
   
   $dbs= hiera('pg_dbs', 'cbs')
@@ -137,7 +138,7 @@ class elexis::postgresql_server inherits elexis::common {
     $backup_dir           = "/opt/backups_from_server"  
     $reverse_backup_dir   = "/opt/backups_from_backup"
   } else  {
-    notify{"host $hostname is neither backup nor server": }
+    # notify{"host $hostname is neither backup nor server": }
   } }  
   # notify{"pg: wal $backup_dir $reverse_backup_dir": }
   if ("$backup_dir" != "")  {
@@ -267,8 +268,8 @@ autovacuum =      on
     
   cron { 'pg-backup':
       ensure  => $ensure,
-      command => "$pg_dump_script",
-      user    => 'root',
+      command => "$pg_dump_script >/var/log/pg-backup.log 2>&1",
+      user    => $pg_user,
       hour    => 23,
       minute  => 15,
       require => [
@@ -286,7 +287,7 @@ autovacuum =      on
     require => File["$pg_load_test_script"],
     content => "#!/bin/sh
 test -x ${pg_load_test_script} || exit 0
-${pg_load_test_script}
+${pg_load_test_script}  >/var/log/pg_load_test.log 2>&1
 "
   }
   

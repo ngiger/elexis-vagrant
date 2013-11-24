@@ -1,30 +1,14 @@
+* Anpassungen für spezifische Praxis, e.g. praxisunion. Wie das ins Puppetfile/Gemfile aufnehmen?
 * Initialisierung der Mandanten (kontakt, password, ESR, Taxpunkte, schoebu befragen)
 * Elexis wirklich starten (noVnc) & freigeben via Elexis-Cockpit
 * PostgreSQL hotbackup
 * Microsoft Exchange ersatz, s.a.
 ** http://www.linux.com/learn/tutorials/338482-microsoft-exchange-alternatives-for-linux
 ** http://linuxblog.darkduck.com/2012/03/8-free-open-source-alternatives-to.html
-* Crontab-Job to pull daily/weekly updates from the project
-* netboot for ZOTAC
-* libreoffice
-* all corresponding german (hyphenation, ticket)
+* Crontab-Job to pull daily/weekly updates from the project. Siehe https://github.com/ngiger/vagrant-ngiger/static-modules/ngiger/manifests/init.pp
+* netboot for ZOTAC (mit thinclient)
+* libreoffice Siehe https://github.com/ngiger/vagrant-ngiger/static-modules/ngiger/manifests/init.pp
+* all corresponding german (hyphenation, ticket)Siehe https://github.com/ngiger/vagrant-ngiger/static-modules/ngiger/manifests/init.pp
 * dito other languages
 * Alle features testen !!
 
-# von schoebu /etc/postgresql/8.1/main/pg_hba.conf
-# wie wird backup
-bc. local   all         all                               ident sameuser
-host    workingetorix   workingetorix   192.168.1.0/24  md5
-host    elexis      elexis      192.168.1.0/24        md5
-host    elexis-test elexis      192.168.1.0/24        md5
-host    elexis-new  elexis      192.168.1.0/24        md5
-host    elexis-debug elexis      192.168.1.0/24        md5
-host    elexisoldbills elexis      192.168.1.0/24        md5
-host    elexis      elexis      192.168.50.0/24       md5
-host    elexis-test elexis      192.168.50.0/24       md5
-host    elexis-debug elexis      192.168.50.0/24       md5
-host    tarmed      elexis      192.168.1.0/24        md5
-# IPv4 local connections:
-host    all         all         127.0.0.1/32          md5
-# IPv6 local connections:
-host    all         all         ::1/128               md5
