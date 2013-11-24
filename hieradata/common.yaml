@@ -54,6 +54,7 @@ elexis::cockit::vcsRoot: /opt/src/elexis-cockpit
   
 # elexis::apt_proxy_host:        172.25.1.233
 elexis::apt_proxy_port:        3142
+x2goserver: server
 elexis::db_type:   mysql
 elexis::db_server: server
 elexis::db_backup: backup
