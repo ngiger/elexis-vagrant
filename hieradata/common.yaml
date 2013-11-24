@@ -38,8 +38,9 @@ samba::ensure: true
 
 # Install Elexis and/or Medelexis current versions
 #elexis::install::OpenSource::ensure:     true
-#elexis::install::OpenSource::programURL: http://srv.elexis.info/jenkins/view/2.1.7/job/elexis-2.1.7-Buildr-OpenSource/259/artifact/deploy/elexis-2.1.7.120131114-installer.jar
+#elexis::install::OpenSource::programURL: http://download.elexis.info/versions/elexis-2.1.7.1-installer.jar
 #elexis::install::OpenSource::version:    2.1.7.1
+#elexis::install::OpenSource::installBase:   '/usr/local/elexis-2.1.7.1'
 
 elexis::install::Medelexis::ensure:      true
 elexis::install::Medelexis::programURL:  http://www.medelexis.ch/dl21.php?file=medelexis-linux

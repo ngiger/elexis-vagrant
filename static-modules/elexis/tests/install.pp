@@ -16,11 +16,10 @@ if (false) {
   }
 
 } else {
-  # Generates Error: Puppet::Parser::AST::Resource failed with error ArgumentError: Invalid resource type elexis::install at /tmp/vagrant-puppet/modules-0/elexis/tests/install.pp:5 on node server.ngiger.dyndns.org
-  elexis::install  {"elexis-OpenSource":
-#    programURL =>  'http://srv.elexis.info/jenkins/view/2.1.7/job/elexis-2.1.7-Buildr-OpenSource/259/artifact/deploy/elexis-2.1.7.120131114-installer.jar',
-#    version =>     '2.1.7.1',
+  elexis::install  {"OpenSource":
+    programURL             => hiera('elexis::install::OpenSource::programURL', 'please provide a correct URL'),
+    version                => hiera('elexis::install::OpenSource::version',    'please provide a correct version'),
+    installBase            => hiera('elexis::install::OpenSource::installBase', '/usr/local/elexis'),
   }
-
 }
 
