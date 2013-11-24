@@ -7,8 +7,14 @@
 ** http://linuxblog.darkduck.com/2012/03/8-free-open-source-alternatives-to.html
 * Crontab-Job to pull daily/weekly updates from the project. Siehe https://github.com/ngiger/vagrant-ngiger/static-modules/ngiger/manifests/init.pp
 * netboot for ZOTAC (mit thinclient)
-* libreoffice Siehe https://github.com/ngiger/vagrant-ngiger/static-modules/ngiger/manifests/init.pp
-* all corresponding german (hyphenation, ticket)Siehe https://github.com/ngiger/vagrant-ngiger/static-modules/ngiger/manifests/init.pp
+* libreoffice Siehe":https://github.com/ngiger/vagrant-ngiger/static-modules/ngiger/manifests/init.pp
+* all corresponding german (hyphenation, ticket). "Siehe":https://github.com/ngiger/vagrant-ngiger/static-modules/ngiger/manifests/init.pp
 * dito other languages
 * Alle features testen !!
+* java7 installieren, using "cookies":http://www.sysadminslife.com/linux/howto-oracle-sun-java-7-installation-unter-debian-6-squeeze/
+* thinclient based on x2go see "tce":http://wiki.x2go.org/doku.php/wiki:advanced:tce:install?s[]=thin&s[]=client
+* x2go-tce: Flickr, looses splash image, "alternatives":https://github.com/lukevers/blog.lukevers.com/blob/master/posts/Splash-Screen-on-Debian-Wheezy.md
+  or "Dicks":http://www.xpd259.co.uk/2012/09/dicks-perfect-debian-wheezy-install.html
+* x2go-tce: Cannot change password if necessary ("No tty present")
+
 
