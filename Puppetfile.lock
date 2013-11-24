@@ -4,23 +4,27 @@ FORGE
     domcleal/augeasproviders (1.0.2)
     erwbgy/ssh (0.2.1)
       domcleal/augeasproviders (>= 0.5.1)
-    maestrodev/rvm (1.1.9)
+    maestrodev/rvm (1.2.0)
+      puppetlabs/apache (>= 0.9.0)
       puppetlabs/stdlib (>= 3.2.0)
-    mthibaut/users (1.0.9)
+    mthibaut/users (1.0.11)
       puppetlabs/stdlib (>= 0.0.0)
+    puppetlabs/apache (0.9.0)
+      puppetlabs/concat (>= 1.0.0)
+      puppetlabs/stdlib (>= 2.4.0)
     puppetlabs/apt (1.4.0)
       puppetlabs/stdlib (>= 2.2.1)
-    puppetlabs/concat (1.0.0-rc1)
+    puppetlabs/concat (1.0.0)
     puppetlabs/firewall (0.4.2)
-    puppetlabs/mysql (2.0.1)
+    puppetlabs/mysql (2.1.0)
       puppetlabs/stdlib (>= 2.2.1)
     puppetlabs/postgresql (3.1.0)
       puppetlabs/apt (< 2.0.0, >= 1.1.0)
       puppetlabs/concat (< 2.0.0, >= 1.0.0)
       puppetlabs/firewall (>= 0.0.4)
       puppetlabs/stdlib (< 5.0.0, >= 3.2.0)
-    puppetlabs/stdlib (3.2.0)
-    puppetlabs/vcsrepo (0.1.2)
+    puppetlabs/stdlib (4.1.0)
+    puppetlabs/vcsrepo (0.2.0)
     ripienaar/concat (0.2.0)
     thomasvandoren/etckeeper (0.0.8)
 
@@ -43,9 +47,9 @@ GIT
 GIT
   remote: git://github.com/ngiger/puppet-x2go.git
   ref: master
-  sha: 52133b72df12f578603f4f160c8a7778c959d772
+  sha: aea04e9e1fca4071010d4465e3bb6a14060b5aa4
   specs:
-    ngiger/x2go (0.1.2)
+    ngiger/x2go (0.1.3)
       puppetlabs/apt (>= 1.0.0)
 
 PATH
@@ -107,7 +111,7 @@ DEPENDENCIES
   kde (>= 0)
   maestrodev/rvm (>= 0)
   mthibaut/users (>= 0)
-  ngiger/x2go (>= 0)
+  ngiger/x2go (>= 0.1.3)
   ntp_demo (>= 0)
   puppetlabs/apt (>= 0)
   puppetlabs/mysql (>= 0)

@@ -40,7 +40,7 @@ mod 'ajjahn/samba',   :git => 'git://github.com/ngiger/puppet-samba.git'
 mod "jenkins",    :git => "git://github.com/ngiger/puppet-jenkins.git"
 
 # Eigene module von mir
-mod "ngiger/x2go", :git => 'git://github.com/ngiger/puppet-x2go.git'
+mod "ngiger/x2go", '>=0.1.3', :git => 'git://github.com/ngiger/puppet-x2go.git'
 
 # Lokale, nicht echte Module von mir
 mod 'apache',     :path => './static-modules/apache'

@@ -1,13 +1,12 @@
 GIT
   remote: git://github.com/mitchellh/vagrant.git
-  revision: 64e360814c3ad960d810456add977fd4c7d47ce6
-  tag: v1.1.5
+  revision: a40522f5fabccb9ddabad03d836e120ff5d14093
+  tag: v1.3.5
   specs:
-    vagrant (1.1.5)
+    vagrant (1.3.5)
       childprocess (~> 0.3.7)
       erubis (~> 2.7.0)
       i18n (~> 0.6.0)
-      json (>= 1.5.1, < 1.8.0)
       log4r (~> 1.1.9)
       net-scp (~> 1.1.0)
       net-ssh (~> 2.6.6)
@@ -19,11 +18,11 @@ GEM
       ffi (~> 1.0, >= 1.0.11)
     erubis (2.7.0)
     facter (1.7.3)
-    ffi (1.7.0)
+    ffi (1.9.3)
     hiera (1.2.1)
       json_pure
     highline (1.6.20)
-    i18n (0.6.4)
+    i18n (0.6.5)
     json (1.7.7)
     json_pure (1.8.1)
     librarian (0.1.1)
@@ -33,9 +32,9 @@ GEM
       json
       librarian (>= 0.1.1)
     log4r (1.1.10)
-    net-scp (1.1.0)
+    net-scp (1.1.2)
       net-ssh (>= 2.6.5)
-    net-ssh (2.6.7)
+    net-ssh (2.6.8)
     puppet (3.3.1)
       facter (~> 1.6)
       hiera (~> 1.0)
