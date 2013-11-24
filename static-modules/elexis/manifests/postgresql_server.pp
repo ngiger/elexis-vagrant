@@ -100,6 +100,19 @@ class elexis::postgresql_server inherits elexis::common {
     require => Package[$postgresql::params::client_package_name],
   }
   
+  file  { "/var/lib/postgresql/.ssh/":
+    ensure => directory,
+    owner  => $pg_user,
+    group  => $pg_group,
+    mode   => 0700,
+    require => Postgresql::Server,
+  }
+  exec{'/var/lib/postgresql/.ssh/id_rsa':
+    creates => '/var/lib/postgres/.ssh/id_rsa',
+    command => "/usr/bin/ssh-keygen -N '' -f /var/lib/postgresql/.ssh/id_rsa",
+    owner  => $pg_user,
+  }
+  
   $dbs= hiera('pg_dbs', 'cbs')
   elexis::pg_dbusers{$dbs:   
   }
