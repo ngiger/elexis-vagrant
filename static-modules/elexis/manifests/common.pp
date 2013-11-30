@@ -44,10 +44,7 @@ class elexis::common inherits elexis {
     ensure     => $users_elexis_main['ensure'],
     require    => Group[$groups_elexis_main],
   }      
-    
-  $users_elexis        = hiera('users_elexis')
-  elexis::users  {"elexis users": user_definition       => $users_elexis}
-  
+
   package{['daemontools-run', 'anacron']:} 
   file {'/var/lib/service':
     ensure => directory,
