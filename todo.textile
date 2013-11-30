@@ -16,5 +16,10 @@
 * x2go-tce: Flickr, looses splash image, "alternatives":https://github.com/lukevers/blog.lukevers.com/blob/master/posts/Splash-Screen-on-Debian-Wheezy.md
   or "Dicks":http://www.xpd259.co.uk/2012/09/dicks-perfect-debian-wheezy-install.html
 * x2go-tce: Cannot change password if necessary ("No tty present")
+* x2go-non-free firmware: apt-get install firmware-linux-nonfree firmware-bnx2 firmware-bnx2x firmware-myricom firmware-netxen  firmware-qlogic  firmware-ralink firmware-realtek intel-microcode amd64-microcode
+* May be we could split the config.yaml up using stuff like $myhash = loadyaml('/etc/praxis/samba.yaml'), e.g
+** /etc/praxis/users.yaml
+** /etc/praxis/samba.yaml
+
 
 

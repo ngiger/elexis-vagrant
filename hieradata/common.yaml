@@ -7,6 +7,8 @@
 # Review each line carefully before modifying it. We tried hard to make it as simple
 # as possible, but changing variables without some inner knowledge risks breaking
 # the whole system.
+# May be we could split the whole thing up using stuff like $myhash = loadyaml('/etc/praxis/samba.yaml') 
+#  see also https://forge.puppetlabs.com/puppetlabs/stdlib
 
 # As per May 2013 there are still a lot of changes coming!
 

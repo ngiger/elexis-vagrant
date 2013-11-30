@@ -13,10 +13,8 @@ class elexis::samba (
   ensure_packages(['augeas-lenses', 'augeas-tools', 'libaugeas-ruby', 'cups-pdf', 'cups-bsd'])
 
   class {'samba::server':
-    workgroup => 'Praxis',
     server_string => "Samba Server for an Elexis practice",
-    interfaces => "eth0 eth2 lo",  # eth2 ist für vagrant
-    security => 'share',
+    interfaces => hiera('samba::server::interfaces', ['eth0']),
     require => [ Package['augeas-lenses', 'augeas-tools', 'libaugeas-ruby'], ],
   }
   
@@ -28,46 +26,76 @@ class elexis::samba (
     mode    => 0664,
   }
   
-  samba::server::share {'elexis':
-    comment => 'Elexis and other useful tools',
-    path => "$sambaPraxis",
-    guest_only => false,
-    guest_ok => true,
-    guest_account => "guest",
-    browsable => true,
-    create_mask => 0777,
-    force_create_mask => 0777,
-    directory_mask => 0777,
-    force_directory_mask => 0777,
-    force_group => 'elexis',
-    force_user => 'elexis',
-    require => [ User['elexis'],
-      Package['augeas-lenses', 'augeas-tools', 'libaugeas-ruby'], ],
+#  file{'/opt/ungesichert':  ensure => directory}
+#  file{'/home/ungesichert': ensure => link, target => '/opt/ungesichert'}
+
+  elexis_samba_shares{"elexis_shares": share_definition =>  hiera('samba::server::shares', 'dummy') }
+  define elexis_samba_shares($share_definition) {    
+    add_samba_share{$share_definition:}
   }
-  samba::server::share {'homes':
-    comment => 'Benutzerspezfische Verzeichnisse (Home)',
-    browsable => false,
-    force_user => '%S',
-#    valid_users => '%S',
-    guest_only => false,
-    guest_ok => false,
-    create_mask => 0600,
-    directory_mask => 0700,
+  define add_samba_share(
+  ) {
+    $share_name = $title['name']
+    $path       = $title['path']
+    samba::server::share{"$share_name":
+      browsable => $title['browsable'],
+      comment => $title['comment'],
+      copy => $title['copy'],
+      create_mask => $title['create_mask'],
+      directory_mask => $title['directory_mask'],
+      # don't pass not force_parameters which only produce errrors with samba 3
+      guest_account => $title['guest_account'],
+      guest_ok => $title['guest_ok'],
+      guest_only => $title['guest_only'],
+      path => $path,
+      public => $title['public'],
+      writable => $title['writable'],
+      printable => $title['printable'],
+#      onlyif => "/usr/bin/test -d $path",
+    }
+    if ($path) { file{"$path": ensure => directory} }
   }
-  
   samba::server::share {'pdf-ausgabe':
     comment => 'Ausgabe für Drucken in Datei via PDF',
     path => "$sambaPdf",
     browsable => true,
     read_only => true,
     force_user => '%S',
-#    valid_users => '%S',
     guest_only => false,
     guest_ok => false,
     create_mask => 0600,
     directory_mask => 0700,
   }
   
+  elexis_samba_options{"elexis_samba_options": option_definition =>  hiera('samba::server::options', 'dummy') }
+  define elexis_samba_options($option_definition = 'none') {
+    add_samba_option{$option_definition:}
+  }
+  define add_samba_option( ) {
+    $option_name = $title['name'] 
+    set_samba_option{"$option_name":
+      value => $title['value'],
+      name  => $option_name,
+    }
+  }
+  define set_samba_option ($name, $value, $signal = 'samba::server::service' ) {
+    $context = $samba::server::context # /files/etc/samba/smb.conf
+    $target = $samba::server::target #
+    $changes = $value ? {
+      default => "set \"${target}/$name\" \"$value\"",
+      '' => "rm ${target}/$name",
+    }
+    $name_for = regsubst($name, ' ', '\\ ')
+    $match_expression = "get \"$context/${target}/$name\" != \"$value\""
+    augeas { "samba_$name_for":
+      context => $context,
+      changes => $changes,
+      require => Augeas['global-section'],
+      notify => Class[$signal],
+      onlyif => "$match_expression",
+    }
+  }  
+
   file{'/etc/cups/cups-pdf.conf':
   content => '# managed by puppet! elexis/manifests/samba.pp
 Out ${HOME}/pdf
@@ -109,6 +137,7 @@ sudo -u \$2 mv \$1 $sambaPdf/\$FILENAME && logger cups-pdf moved \$1 to $sambaPd
       require => [File["$sambaBase"], Package['wget'] ],
       path    => '/usr/bin:/bin',
       timeout => 1800, # allow maximal 30 minutes for download
+      creates => $wget_x2go_mac_client,
     }
     
     exec { "$wget_x2go_win_client":
@@ -117,6 +146,7 @@ sudo -u \$2 mv \$1 $sambaPdf/\$FILENAME && logger cups-pdf moved \$1 to $sambaPd
       require => [File["$sambaBase"], Package['wget'] ],
       path    => '/usr/bin:/bin',
       timeout => 1800, # allow maximal 30 minutes for download
+      creates => $wget_x2go_mac_client,
     }
   }
 }

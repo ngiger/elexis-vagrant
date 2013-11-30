@@ -35,7 +35,7 @@ mod 'erwbgy/ssh'
 
 # Module mit patches von mir.
 mod 'ajjahn/samba',   :git => 'git://github.com/ngiger/puppet-samba.git'
-
+ 
 # jenkins forked from https://github.com/rtyler/puppet-jenkins
 mod "jenkins",    :git => "git://github.com/ngiger/puppet-jenkins.git"
 
