@@ -17,5 +17,6 @@ cd $PUPPET_DIR
 echo PUPPET_DIR ist $PUPPET_DIR
 ./runlibrarian
 echo modules in $PUPPET_DIR/modules
+mkdir -p /var/log/puppet
+puppet apply --modulepath $PUPPET_DIR/modules --hiera_config $PUPPET_DIR/hieradata/hiera.yaml $* 2>&1 | tee /var/log/puppet/`date +"%Y-%m-%d_%H:%M:%S"`.log
 
-puppet apply --modulepath $PUPPET_DIR/modules --hiera_config $PUPPET_DIR/hieradata/hiera.yaml $*

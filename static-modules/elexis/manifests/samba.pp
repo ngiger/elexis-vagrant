@@ -1,6 +1,7 @@
 #== Class: elexis::samba
 #
 # Installs and sets up a Samba server
+# TODO: Create initial password for all Samba-Users
 class elexis::samba (
   $sambaBase            = '/opt/samba',
   $sambaPraxis          = "/opt/samba/elexis",
@@ -26,15 +27,17 @@ class elexis::samba (
     mode    => 0664,
   }
   
-#  file{'/opt/ungesichert':  ensure => directory}
-#  file{'/home/ungesichert': ensure => link, target => '/opt/ungesichert'}
-
-  elexis_samba_shares{"elexis_shares": share_definition =>  hiera('samba::server::shares', 'dummy') }
-  define elexis_samba_shares($share_definition) {    
-    add_samba_share{$share_definition:}
+  $share_definition = hiera('samba::server::shares', undef)
+  if ($share_definition) {
+    notify{"samba $share_definition $share_definition": }
+    elexis_samba_shares{"elexis_shares":  share_definition => $share_definition}
   }
-  define add_samba_share(
-  ) {
+  define elexis_samba_shares($share_definition) {    
+    if ($share_definition) {
+      add_samba_share{$share_definition:}
+    }
+  }
+  define add_samba_share() {
     $share_name = $title['name']
     $path       = $title['path']
     samba::server::share{"$share_name":
@@ -67,11 +70,17 @@ class elexis::samba (
     directory_mask => 0700,
   }
   
-  elexis_samba_options{"elexis_samba_options": option_definition =>  hiera('samba::server::options', 'dummy') }
-  define elexis_samba_options($option_definition = 'none') {
-    add_samba_option{$option_definition:}
+  $server_options =  hiera('samba::server::options', 'dummy')
+  if ($server_options) {
+    elexis_samba_options{"elexis_samba_options": option_definition => $server_options}
   }
-  define add_samba_option( ) {
+  define elexis_samba_options($option_definition = undef) {
+    if ($server_options) {
+      add_samba_option{"add_samba_option $option_definition":}
+    }
+  }
+  
+  define add_samba_option() {
     $option_name = $title['name'] 
     set_samba_option{"$option_name":
       value => $title['value'],
