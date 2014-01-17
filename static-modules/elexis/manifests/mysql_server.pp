@@ -182,8 +182,8 @@ class elexis::mysql_server inherits elexis::common {
     command => "mkdir -p $mysql_backup_dir",
     path => '/usr/bin:/bin',
     creates => "$mysql_backup_dir"
-  }
-  
+   }
+
   if (0==1) { # we don't use the backup class of mysql as it creates the backupdir as root:root
     class { 'mysql::backup':
       backupuser     =>  'backup', # hiera("elexis::db_user", 'elexis'),
@@ -193,10 +193,11 @@ class elexis::mysql_server inherits elexis::common {
   }
 
   exec { "$mysql_dump_dir":
-    command => "mkdir -p ${mysql_dump_dir}",
+    command => "mkdir -p $mysql_dump_dir $mysql_dump_dir/daily $mysql_dump_dir/monthly $mysql_dump_dir/yearly",
     path => '/usr/bin:/bin',
-    creates => "$mysql_dump_dir"
+    creates => "$mysql_dump_dir/yearly"
   }
+
 
   file { [ $mysql_dump_dir, $mysql_backup_dir]: #  $mysql_backup_dir not needed as already declared in modules/mysql/manifests/backup.pp:70
     ensure => directory,
@@ -221,14 +222,38 @@ class elexis::mysql_server inherits elexis::common {
 
   file {'/etc/logrotate.d/mysql_elexis_dump':
     ensure => present,
-    content => "\n${$mysql_dump_dir}/elexis.dump.gz {
+    content => "
+$mysql_dump_dir/monthly/${mysql_main_db_name}.dump.gz.1.1 {
+    rotate 12
+    olddir $mysql_dump_dir/yearly
+    yearly
+    missingok
+    notifempty
+    create 0640 root root
+    nocompress
+    size 10M
+}
+
+$mysql_dump_dir/daily/${mysql_main_db_name}.dump.gz.1 {
+    rotate 12
+    olddir $mysql_dump_dir/monthly
+    monthly
+    missingok
+    notifempty
+    create 0640 root root
+    nocompress
+    size 10M
+}
+
+$mysql_dump_dir/${mysql_main_db_name}.dump.gz {
     rotate 10
+    olddir $mysql_dump_dir/daily
     daily
     missingok
     notifempty
-    dateext
     create 0640 root root
     nocompress
+    size 10M
 }
 ",
     owner => root,

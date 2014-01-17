@@ -149,7 +149,7 @@ class elexis::postgresql_server inherits elexis::common {
       value     => "yes",
     }
     
-    file { "$backup_dir":
+    file {["$backup_dir"]:
       ensure => directory,
     }
     
@@ -253,9 +253,9 @@ autovacuum =      on
   }
     
   exec { "$pg_dump_dir":
-    command => "mkdir -p ${pg_dump_dir}",
+    command => "mkdir -p $pg_dump_dir $pg_dump_dir/daily $pg_dump_dir/monthly $pg_dump_dir/yearly",
     path => '/usr/bin:/bin',
-    creates => "$pg_dump_dir"
+    creates => "$pg_dump_dir/yearly"
   }
 
   file { $pg_dump_dir :
@@ -293,14 +293,38 @@ ${pg_load_test_script}  >/var/log/pg_load_test.log 2>&1
   
   file {'/etc/logrotate.d/pg_elexis_dump':
     ensure => present,
-    content => "\n${$pg_dump_dir}/elexis.dump.gz {
+    content => "
+$pg_dump_dir/monthly/${pg_main_db_name}.dump.gz.1.1 {
+    rotate 12
+    olddir $pg_dump_dir/yearly
+    yearly
+    missingok
+    notifempty
+    create 0640 root root
+    nocompress
+    size 10M
+}
+
+$pg_dump_dir/daily/${pg_main_db_name}.dump.gz.1 {
+    rotate 12
+    olddir $pg_dump_dir/monthly
+    monthly
+    missingok
+    notifempty
+    create 0640 root root
+    nocompress
+    size 10M
+}
+
+$pg_dump_dir/${pg_main_db_name}.dump.gz {
     rotate 10
+    olddir $pg_dump_dir/daily
     daily
     missingok
     notifempty
-    dateext
     create 0640 root root
     nocompress
+    size 10M
 }
 ",
     owner => root,
