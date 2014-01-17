@@ -1,6 +1,0 @@
-rvm use ruby-1.9.2@elexis --create
-
-rvm use ruby-1.9.3-p392@elexis --create
-alias elexis="bundle exec elexis"
-alias irb="bundle exec irb"
-alias vagrant="bundle exec vagrant"

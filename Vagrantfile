@@ -13,11 +13,11 @@ bridgedNetworkAdapter = "eth0" # adapt it to your liking, e.g. on MacOSX it migh
 # bridgedNetworkAdapter = "en0: Wi-Fi (AirPort)" # adapt it to your liking, e.g. on MacOSX it might 
 
 # Allows you to select the VMs to boot
-# systemsToBoot = [ :server, :backup, :devel, :arzt ]
+# systemsToBoot = [ :server, :backup, :devel, :arzt, :jenkins ]
 systemsToBoot = [ :server ]
 
 # Patch the next lines if you have more than one elexis-vagrant running in your network
-firstPort       = 10000   
+firstPort       = 20000   
 macFirst2Bytes  = '0000'  
 
 #------------------------------------------------------------------------------------------------------------
@@ -92,5 +92,15 @@ Vagrant::Config.run do |config|
     arzt.vm.box_url = boxUrl
     arzt.vm.forward_port   22, firstPort + 3022    # ssh
   end if systemsToBoot.index(:arzt)
+  
+  config.vm.define :jenkins do |jenkins|  
+    jenkins.vm.host_name = "jenkins.#{`hostname -d`.chomp}"
+    jenkins.vm.network :bridged, { :mac => macFirst2Bytes + '67226F02', :bridge => bridgedNetworkAdapter }
+    jenkins.vm.box     = boxId
+    jenkins.vm.box_url = boxUrl
+    jenkins.vm.forward_port   22, firstPort +  22    # ssh
+    jenkins.vm.forward_port   80, firstPort +  80    # Apache
+    jenkins.vm.forward_port 3306, firstPort + 306    # Jenkins
+  end if systemsToBoot.index(:jenkins)
   
 end

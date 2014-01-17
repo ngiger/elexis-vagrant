@@ -53,7 +53,10 @@ X::display_manager: slim
 X::window_manager:  awesome
 
 elexis::cockit::vcsRoot: /opt/src/elexis-cockpit
-  
+
+sshd::allow_users: backup elexis
+luks_backup::backup_dir:       /opt/backup
+
 # elexis::apt_proxy_host:        172.25.1.233
 elexis::apt_proxy_port:        3142
 x2goserver: server
