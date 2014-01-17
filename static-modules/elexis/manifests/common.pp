@@ -45,7 +45,7 @@ class elexis::common inherits elexis {
     require    => Group[$groups_elexis_main],
   }      
 
-  package{['daemontools-run', 'anacron']:} 
+  ensure_packages(['daemontools-run', 'anacron'])
   file {'/var/lib/service':
     ensure => directory,
     mode  => 0644,
