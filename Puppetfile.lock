@@ -14,7 +14,8 @@ FORGE
       puppetlabs/stdlib (>= 2.4.0)
     puppetlabs/apt (1.4.0)
       puppetlabs/stdlib (>= 2.2.1)
-    puppetlabs/concat (1.0.0)
+    puppetlabs/concat (1.1.0-rc1)
+      puppetlabs/stdlib (>= 3.0.0)
     puppetlabs/firewall (0.4.2)
     puppetlabs/mysql (2.1.0)
       puppetlabs/stdlib (>= 2.2.1)
@@ -40,7 +41,7 @@ GIT
 GIT
   remote: git://github.com/ngiger/puppet-samba.git
   ref: master
-  sha: 280e37acab86c479484a07ad41912a311385eb5b
+  sha: fbe99d36b98a131df70923894896e01caae75ada
   specs:
     ajjahn/samba (0.1.2)
 

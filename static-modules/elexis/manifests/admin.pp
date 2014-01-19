@@ -48,7 +48,7 @@ inherits elexis::common {
   # etckeeper is a nice utility which will track (each day or for each apt-get run) the changes
   # in the /etc directory. Handy to know why suddenly a package does not work anymore!
   include etckeeper
-  ensure_packages['git', 'unzip', 'dlocate', 'mlocate', 'htop', 'curl', 'bzr', 'unattended-upgrades', 'mosh']
+  ensure_packages['git', 'unzip', 'dlocate', 'mlocate', 'htop', 'curl', 'bzr', 'unattended-upgrades', 'fish', 'mosh']
 
   file {'/etc/apt/apt.conf.d/50unattended-upgrades':
     content => template('elexis/unattended_upgrades.erb'),

@@ -1,3 +1,4 @@
+* PostgreSQL: crontab kann nicht mehrmals pro Tag aufgerufen werden. hour =>  [0,4,8] änderte an Crontab nichts (18.1.2014). Bug?
 * Anpassungen für spezifische Praxis, e.g. praxisunion. Wie das ins Puppetfile/Gemfile aufnehmen?
 * Initialisierung der Mandanten (kontakt, password, ESR, Taxpunkte, schoebu befragen)
 * Elexis wirklich starten (noVnc) & freigeben via Elexis-Cockpit

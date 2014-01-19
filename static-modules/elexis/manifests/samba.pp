@@ -29,7 +29,7 @@ class elexis::samba (
   
   $share_definition = hiera('samba::server::shares', undef)
   if ($share_definition) {
-    notify{"samba $share_definition $share_definition": }
+    # notify{"samba $share_definition $share_definition": }
     elexis_samba_shares{"elexis_shares":  share_definition => $share_definition}
   }
   define elexis_samba_shares($share_definition) {    
@@ -52,8 +52,16 @@ class elexis::samba (
       guest_only => $title['guest_only'],
       path => $path,
       public => $title['public'],
+      write_list => $title['write_list'],
       writable => $title['writable'],
       printable => $title['printable'],
+      valid_users => $title['valid_users'],
+      force_user => $title['force_user'],
+      force_group => $title['force_group'],
+      op_locks => $title['op_locks'],
+      veto_oplock_files =>  $title['veto_oplock_files'], 
+      level2_oplocks => $title['level2_oplocks'],
+ 
 #      onlyif => "/usr/bin/test -d $path",
     }
     if ($path) { file{"$path": ensure => directory} }
