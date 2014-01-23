@@ -14,60 +14,7 @@ class elexis::thin_client (
   $boot_host = "192.168.1.222"
 ) inherits elexis::common {
 
-  $useDnsmasq = hiera('elexis::useDnsmasq', false)
-
-  if (  $useDnsmasq) { # at the moment we don't want it
-    ensure_packages['dnsmasq']
-    file{"/etc/dnsmasq.d/thinclient.conf":
-      content => "# $managed_note
-# Minimal dnsmasq configuration for PXE client booting 
-
-# The rootpath option is used by both NFS and NBD.
-dhcp-option=17,/opt/ltsp/i386
-
-# Define common netboot types.
-dhcp-vendorclass=pxe,PXEClient
-
-# Set the boot filename depending on the client vendor identifier.
-# The boot filename is relative to tftp-root.
-dhcp-boot=/ltsp/i386/pxelinux.0,server,$boot_host
-
-# Kill multicast.
-dhcp-option=vendor:pxe,6,2b
-
-# Disable re-use of the DHCP servername and filename fields as extra
-# option space. That's to avoid confusing some old or broken DHCP clients.
-dhcp-no-override
-
-# The known types are x86PC, PC98, IA64_EFI, Alpha, Arc_x86,
-# Intel_Lean_Client, IA32_EFI, BC_EFI, Xscale_EFI and X86-64_EFI
-pxe-service=X86PC, 'Boot thinclient from network', /ltsp/i386/pxelinux,$boot_host
-
-# Comment the following to disable the TFTP server functionality of dnsmasq.
-#enable-tftp
-
-# The TFTP directory. Sometimes /srv/tftp is used instead.
-#tftp-root=/var/lib/tftpboot/
-",
-        mode => 0744,
-    }  
-  } # only if dnsmasq is required
-  
-  ensure_packages['ltsp-server', 'dnsmasq']
-  file{'/etc/default/tftpd-hpa':
-    ensure => present,
-    content => '
-TFTP_USERNAME="tftp"
-# no trailing slash for TFTP_DIRECTORY!!
-TFTP_DIRECTORY="/var/lib/tftpboot" 
-TFTP_ADDRESS="0.0.0.0:69"
-TFTP_OPTIONS="--secure"
-',
-    }
-  package{'tftpd-hpa':
-    ensure => installed,
-    require => File['/etc/default/tftpd-hpa'],
-  }
+  package{'ltsp-server': }
   $apt_proxy_host = hiera('apt::proxy_host', 'http://198.168.1.222:3142')
  
   exec{'install-ltsp':

@@ -27,6 +27,7 @@ FORGE
     puppetlabs/stdlib (4.1.0)
     puppetlabs/vcsrepo (0.2.0)
     ripienaar/concat (0.2.0)
+    thias/resolvconf (0.0.3)
     thomasvandoren/etckeeper (0.0.8)
 
 GIT
@@ -51,6 +52,14 @@ GIT
   sha: d70c82ff9376ed3be9d385aa556fd16d52215c2e
   specs:
     ngiger/x2go (0.1.3)
+      puppetlabs/apt (>= 1.0.0)
+
+GIT
+  remote: https://github.com/ngiger/puppet-dnsmasqplus.git
+  ref: master
+  sha: c5f267b1dea37c8f632f823feb95043387058471
+  specs:
+    ngiger/dnsmasqplus (0.1.0)
       puppetlabs/apt (>= 1.0.0)
 
 GIT
@@ -119,6 +128,7 @@ DEPENDENCIES
   kde (>= 0)
   maestrodev/rvm (>= 0)
   mthibaut/users (>= 0)
+  ngiger/dnsmasqplus (>= 0)
   ngiger/luks_backup (>= 0)
   ngiger/x2go (>= 0.1.3)
   ntp_demo (>= 0)
@@ -127,6 +137,7 @@ DEPENDENCIES
   puppetlabs/postgresql (= 3.1)
   puppetlabs/vcsrepo (>= 0)
   ripienaar/concat (>= 0)
+  thias/resolvconf (>= 0)
   thomasvandoren/etckeeper (>= 0)
   util (>= 0)
 

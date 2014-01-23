@@ -89,6 +89,7 @@ if hiera('x2go::ensure', false)      { include x2go }
 # stuff for the server
 if hiera('elexis::praxis_wiki::ensure', false) { include elexis::praxis_wiki }
 if hiera('apache::ensure', false) { include apache }
+if hiera('dnsmasq::ensure', false) { include dnmasqplus }
 
 # development stuff
 if hiera('eclipse::ensure', false)   { include eclipse }
