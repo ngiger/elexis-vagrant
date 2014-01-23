@@ -57,7 +57,7 @@ GIT
 GIT
   remote: https://github.com/ngiger/puppet-dnsmasqplus.git
   ref: master
-  sha: c5f267b1dea37c8f632f823feb95043387058471
+  sha: 9da20f46cc7f3c1a93d40a7895feaebbdb2722e6
   specs:
     ngiger/dnsmasqplus (0.1.0)
       puppetlabs/apt (>= 1.0.0)
