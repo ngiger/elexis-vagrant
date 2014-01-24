@@ -68,6 +68,13 @@ GIT
   specs:
     ngiger/luks_backup (0.1.0)
 
+GIT
+  remote: https://github.com/ngiger/puppet-sunjdk
+  ref: master
+  sha: 474b15cc5b2e817a51b45d30362e777d9a746199
+  specs:
+    puppet/sunjdk (0.0.1)
+
 PATH
   remote: ./static-modules/apache
   specs:
@@ -112,11 +119,6 @@ PATH
   remote: ./static-modules/util
   specs:
     util (0.0.1)
-
-PATH
-  remote: puppet-sunjdk
-  specs:
-    puppet/sunjdk (0.0.1)
 
 DEPENDENCIES
   ajjahn/samba (>= 0)

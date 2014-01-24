@@ -39,8 +39,8 @@ mod 'erwbgy/ssh'
 # mod 'puppetlabs/java'
 # mod '7terminals/java', :git => 'https://github.com/7terminals/puppet-java' tried to download from  puppet:///modules/java/jdk-6u31-linux-x64.bin 
 # mod 'puppet/sunjdk', :git => "https://github.com/erwbgy/puppet-sunjdk"
-# mod 'puppet/sunjdk', :git => 'https://github.com/ngiger/puppet-sunjdk'
-mod 'puppet/sunjdk', :path => 'puppet-sunjdk'
+mod 'puppet/sunjdk', :git => 'https://github.com/ngiger/puppet-sunjdk'
+# mod 'puppet/sunjdk', :path => 'puppet-sunjdk'
 # mod 'softek/java7' # did not download
 
 # Module mit patches von mir.
