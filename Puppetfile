@@ -29,9 +29,19 @@ mod "mthibaut/users" # has a travis.yml and specs
 # mod 'vurbia/sshauth', :git => 'https://github.com/vurbia/puppet-sshauth.git'
 # mod 'boklm/sshauth', :git => 'https://github.com/boklm/puppet-sshkeys.git'
 
+# Läuft nicht gut. Keine Tests. Sonst auch nichts für Quota gefunden
+#mod 'module/quota',   :git => 'git://puppet-modules.git.puzzle.ch/module-quota.git'
+
 # mod 'lukas/ssh_authorized_key', :git => 'https://github.com/lukas-hetzenecker/puppet-module-ssh_authorized_key'
-mod 'thias/resolvconf'
+mod 'saz/resolv_conf'
 mod 'erwbgy/ssh'
+#mod 'example42/java'
+# mod 'puppetlabs/java'
+# mod '7terminals/java', :git => 'https://github.com/7terminals/puppet-java' tried to download from  puppet:///modules/java/jdk-6u31-linux-x64.bin 
+# mod 'puppet/sunjdk', :git => "https://github.com/erwbgy/puppet-sunjdk"
+# mod 'puppet/sunjdk', :git => 'https://github.com/ngiger/puppet-sunjdk'
+mod 'puppet/sunjdk', :path => 'puppet-sunjdk'
+# mod 'softek/java7' # did not download
 
 # Module mit patches von mir.
 mod 'ajjahn/samba',   :git => 'git://github.com/ngiger/puppet-samba.git'
