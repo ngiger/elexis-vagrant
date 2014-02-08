@@ -51,13 +51,20 @@ class elexis (
   $jenkinsJobsDir       = hiera('elexis::jenkinsJobsDir',   '/opt/jenkins/jobs'),
   $elexisBaseURL        = hiera('elexis::elexisBaseURL',    'http://hg.sourceforge.net/hgweb/elexis')
 ) {
-  # notify{"elexis with java $java downloadURL $downloadURL ":}
-  # class java($version = 6, $variant = 'openjdk', $hasJdk = false, $hasJre = true ) {
-  class { 'java':
-    version => 7,
-    variant => 'openjdk', # sun gibt es ab Debian Wheezy nicht mehr!
-    hasJdk => true,
-    hasJre => true,
-  }
-  
+
+define setdefault_acl(
+  $default_acl = "",
+  $path        = "",
+       ) {
+    ensure_packages['acl']
+    exec{"set default_acl for $path":
+      command => "/usr/bin/setfacl -dm $default_acl $path",
+      onlyif  => "/usr/bin/test -e $path",
+    }
+}
+
+	file { '/usr/local/bin/set_default_facl':
+		mode => 0744,
+		content => template('elexis/set_default_facl.erb'),
+		}
 }

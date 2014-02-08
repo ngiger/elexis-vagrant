@@ -1,0 +1,5 @@
+#!/bin/bash -v
+# managed by puppet. see static-modules/elexis/manifests/set_default_facl.erb
+<% default_facls =  scope.function_hiera(['default_facls', [] ]) %>
+<% for item in default_facls do %>
+<%= "setfacl -dm #{item['rights']} #{item['directory']} " %><% end %>
