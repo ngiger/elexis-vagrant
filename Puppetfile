@@ -38,26 +38,26 @@ mod 'erwbgy/ssh'
 #mod 'example42/java'
 # mod 'puppetlabs/java'
 # mod '7terminals/java', :git => 'https://github.com/7terminals/puppet-java' tried to download from  puppet:///modules/java/jdk-6u31-linux-x64.bin 
-# mod 'puppet/sunjdk', :git => "https://github.com/erwbgy/puppet-sunjdk"
 mod 'puppet/sunjdk', :git => 'https://github.com/ngiger/puppet-sunjdk'
 # mod 'puppet/sunjdk', :path => 'puppet-sunjdk'
-# mod 'softek/java7' # did not download
 
 # Module mit patches von mir.
 mod 'ajjahn/samba',   :git => 'git://github.com/ngiger/puppet-samba.git'
-#mod 'ajjahn/samba',   :path => 'puppet-samba'
+# mod 'ajjahn/samba',   :path => 'puppet-samba'
  
 # jenkins forked from https://github.com/rtyler/puppet-jenkins
 mod "jenkins",    :git => "git://github.com/ngiger/puppet-jenkins.git"
 
 # Eigene module von mir
 mod "ngiger/x2go", '>=0.1.3', :git => 'git://github.com/ngiger/puppet-x2go.git'
+# mod "ngiger/x2go", :path => 'puppet-x2go'
 mod 'ngiger/luks_backup', :git => 'https://github.com/ngiger/puppet-luks_backup.git'
+#mod 'ngiger/luks_backup', :path => 'puppet-luks_backup'
 mod 'ngiger/dnsmasqplus',  :git => 'https://github.com/ngiger/puppet-dnsmasqplus.git'
 # mod 'ngiger/dnsmasqplus',  :path => 'puppet-dnsmasqplus'
 
 # Lokale, nicht echte Module von mir
-mod 'apache',     :path => './static-modules/apache'
+mod 'puppetlabs/apache'
 mod 'cockpit',    :path => './static-modules/cockpit'
 mod 'eclipse',    :path => './static-modules/eclipse'
 mod 'elexis',     :path => './static-modules/elexis'
