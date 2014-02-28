@@ -291,46 +291,7 @@ ${pg_load_test_script}  >/var/log/pg_load_test.log 2>&1
 "
   }
   
-  file {'/etc/logrotate.d/pg_elexis_dump':
-    ensure => present,
-    content => "
-$pg_dump_dir/monthly/${pg_main_db_name}.dump.gz.1.1 {
-    rotate 12
-    olddir $pg_dump_dir/yearly
-    yearly
-    missingok
-    notifempty
-    create 0640 root root
-    nocompress
-    size 10M
-}
-
-$pg_dump_dir/daily/${pg_main_db_name}.dump.gz.1 {
-    rotate 12
-    olddir $pg_dump_dir/monthly
-    monthly
-    missingok
-    notifempty
-    create 0640 root root
-    nocompress
-    size 10M
-}
-
-$pg_dump_dir/${pg_main_db_name}.dump.gz {
-    rotate 10
-    olddir $pg_dump_dir/daily
-    daily
-    missingok
-    notifempty
-    create 0640 root root
-    nocompress
-    size 10M
-}
-",
-    owner => root,
-    group => root,
-    mode  => 0644,
-  }
-  
+  file {'/etc/logrotate.d/pg_elexis_dump':  ensure => absent}
+ 
 }
 
