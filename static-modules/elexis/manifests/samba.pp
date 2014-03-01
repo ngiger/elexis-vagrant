@@ -14,11 +14,40 @@ class elexis::samba (
   ensure_packages(['augeas-lenses', 'augeas-tools', 'libaugeas-ruby', 'cups-pdf', 'cups-bsd'])
 
   class {'samba::server':
-    server_string => "Samba Server for an Elexis practice",
-    interfaces => hiera('samba::server::interfaces', ['eth0']),
+    server_string => hiera('samba::server::server_string', "Samba Server for an Elexis practice"),
+    interfaces => hiera('samba::server::interfaces',  'eth0 lo'),
+    security => hiera('samba::server::security', 'share'),
+    unix_password_sync => hiera('samba::server::unix_password_sync', true),
+    workgroup => hiera('samba::server::workgroup', 'Elexis-Praxis'),
+    bind_interfaces_only  => hiera('samba::server::bind_interfaces_only ', true),
+    logon_path => hiera('samba::server::logon_path', '\\%L\profile\%U'),
+    logon_home => 'Z:',
+    logon_script => 'login.bat',
+    passwd_chat => '*Enter\snew\sUNIX\spassword:* %n\n *Retype\snew\sUNIX\spassword:* %n\n .',
     require => [ Package['augeas-lenses', 'augeas-tools', 'libaugeas-ruby'], ],
   }
-  
+
+  if (hiera('samba::server::pdc', 'false')) {
+    class{'samba::server::pdc':
+      local_master               => 'Yes',
+      preferred_master           => 'Yes',
+      domain_master              => 'Yes',
+      domain_logons              => 'Yes',
+      wins_support               => Yes,
+      panic_action               => '/usr/share/samba/panic-action %d',
+      time_server => Yes,
+    }
+  }
+  $tested_smb_conf = '/etc/samba/smb.conf.tested'
+  exec{$tested_smb_conf:
+    command => "/usr/bin/testparm /etc/samba/smb.conf >$tested_smb_conf",
+    creates => "$tested_smb_conf",
+    unless  => "/usr/bin/test $tested_smb_conf -nt /etc/smb.conf",
+    # refreshonly => true,
+    require => Service['samba'],
+    subscribe => Service['samba'],
+  }
+
   file{[$sambaBase, "$sambaPraxis",  "$sambaPdf"]: 
     ensure => directory,
     group => 'elexis',
@@ -29,7 +58,6 @@ class elexis::samba (
   
   $share_definition = hiera('samba::server::shares', undef)
   if ($share_definition) {
-    # notify{"samba $share_definition $share_definition": }
     elexis_samba_shares{"elexis_shares":  share_definition => $share_definition}
   }
   define elexis_samba_shares($share_definition) {    
@@ -43,11 +71,11 @@ class elexis::samba (
     samba::server::share{"$share_name":
       browsable => $title['browsable'],
       comment => $title['comment'],
-      copy => $title['copy'],
       create_mask => $title['create_mask'],
       directory_mask => $title['directory_mask'],
+      force_create_mode => $title['$force_create_mode'],
+      force_directory_mode => $title['force_directory_mode'],
       # don't pass not force_parameters which only produce errrors with samba 3
-      guest_account => $title['guest_account'],
       guest_ok => $title['guest_ok'],
       guest_only => $title['guest_only'],
       path => $path,
@@ -58,24 +86,23 @@ class elexis::samba (
       valid_users => $title['valid_users'],
       force_user => $title['force_user'],
       force_group => $title['force_group'],
-      op_locks => $title['op_locks'],
-      veto_oplock_files =>  $title['veto_oplock_files'], 
-      level2_oplocks => $title['level2_oplocks'],
- 
-#      onlyif => "/usr/bin/test -d $path",
+      require => Package['samba'],
+      notify  => Exec["$elexis::samba::tested_smb_conf"],
     }
     if ($path) { file{"$path": ensure => directory} }
   }
-  samba::server::share {'pdf-ausgabe':
-    comment => 'Ausgabe für Drucken in Datei via PDF',
-    path => "$sambaPdf",
-    browsable => true,
-    read_only => true,
-    force_user => '%S',
-    guest_only => false,
-    guest_ok => false,
-    create_mask => 0600,
-    directory_mask => 0700,
+  if (hiera('samba::server::pdf-ausgabe', false)) {
+    samba::server::share {'pdf-ausgabe':
+      comment => 'Ausgabe für Drucken in Datei via PDF',
+      path => "$sambaPdf",
+      browsable => true,
+      read_only => true,
+      force_user => '%S',
+      guest_only => false,
+      guest_ok => false,
+      create_mask => 0600,
+      directory_mask => 0700,
+    }
   }
   
   $server_options =  hiera('samba::server::options', 'dummy')
@@ -112,7 +139,6 @@ class elexis::samba (
       onlyif => "$match_expression",
     }
   }  
-
   file{'/etc/cups/cups-pdf.conf':
   content => '# managed by puppet! elexis/manifests/samba.pp
 Out ${HOME}/pdf
