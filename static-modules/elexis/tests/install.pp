@@ -1,6 +1,3 @@
-class { 'elexis':
-  java               => 'openjdk-7-jdk'
-}
 # we need also an x-display-manager, e.g. slim
 # an x-window-manager, e.g. awesome
 # demoDB is not getting installed!
