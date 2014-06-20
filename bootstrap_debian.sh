@@ -37,6 +37,8 @@ else
   fi
 fi
 
+echo "(Re)installing needed packets for RVM and ruby"
+apt-get --no-install-recommends install sudo curl
 RVM_MULTI_PATH='/usr/local/rvm/bin/rvm'
 if [[ -e $RVM_MULTI_PATH ]]
 then
