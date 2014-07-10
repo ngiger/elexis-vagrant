@@ -2,11 +2,12 @@
 :backends: 
   - yaml
 :yaml:
-  :datadir: /etc/puppet
+  :datadir: "/vagrant/hieradata/"
+# :datadir: /etc/puppet
 :hierarchy:
 #  - %{::environment}
 #  - %{::hostname}
 #  - private/%{::hostname}
   - private/config
-  - hiera/common
+  - common
 :logger: console

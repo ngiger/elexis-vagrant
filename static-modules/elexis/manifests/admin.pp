@@ -13,11 +13,11 @@ inherits elexis::common {
     package{ [ $editor_package ]: ensure => present, }
     
     exec {'set_default_editor':
-      command => "update-alternatives --set editor ${editor_default}",
+      command => "/usr/bin/update-alternatives --set editor ${editor_default}",
       require => Package[$editor_package],
       path    => "/usr/bin:/usr/sbin:/bin:/sbin",
       environment => 'LANG=C',
-      unless  => "update-alternatives --display editor --quiet | grep currently | grep ${editor_default}"
+      unless  => "/usr/bin/update-alternatives --display editor --quiet | grep currently | grep ${editor_default}"
     }  
   }
   
@@ -25,7 +25,7 @@ inherits elexis::common {
     command => "echo 'Europe/Zurich' > /etc/timezone && dpkg-reconfigure --frontend noninteractive tzdata",
     path    => "/usr/bin:/usr/sbin:/bin:/sbin",
     environment => 'LANG=C',
-    unless  => "grep Europe/Zurich /etc/timezone"
+    unless  => "/bin/grep Europe/Zurich /etc/timezone"
   } 
 
   # see http://johnleach.co.uk/words/771/puppet-dependencies-and-run-stages

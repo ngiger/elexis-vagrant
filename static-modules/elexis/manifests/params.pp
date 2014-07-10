@@ -11,11 +11,6 @@
 # `/pg_server.pp`.
 #
 #
-# [*java*]
-#    The java version to install. If not specified, the
-#    module will use whatever version is the default for your
-#    OS distro.
-#
 # [*eclipse*]
 #    The eclipse version to install. If not specified, the
 #    module will use whatever version is the default for your

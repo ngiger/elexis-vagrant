@@ -86,10 +86,16 @@ class elexis::samba (
       valid_users => $title['valid_users'],
       force_user => $title['force_user'],
       force_group => $title['force_group'],
-      require => Package['samba'],
+      require => [ Package['samba'], Exec["$path"]],
       notify  => Exec["$elexis::samba::tested_smb_conf"],
     }
-    if ($path) { file{"$path": ensure => directory} }
+    if ($path) { 
+      # file{"$path": ensure => directory} 
+      exec { "$path":
+        command => "/bin/mkdir -p $path",
+        unless  => "/usr/bin/test -e $path",
+      }      
+    }
   }
   if (hiera('samba::server::pdf-ausgabe', false)) {
     samba::server::share {'pdf-ausgabe':

@@ -1,3 +1,12 @@
+h1. New Docker
+
+Installation under Debian wheezy
+
+bq. echo deb http://get.docker.io/ubuntu docker main | sudo tee /etc/apt/sources.list.d/docker.list
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9
+sudo apt-get update
+sudo apt-get install -y lxc-docker
+
 h1. Bootstrapping an Elexis development and testing environment made easy!
 
 Bootstrapping and testing Elexis took me (Niklaus) many hours when I started working on Elexis.

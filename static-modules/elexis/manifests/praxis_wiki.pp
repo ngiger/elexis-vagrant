@@ -1,13 +1,15 @@
 # Here we define all needed stuff to bring up a Wiki for an Elexis practice
 include git
 
+# Some user prefer pmwiki, s.a. https://github.com/rstrobl/pmwiki-deb
+
 class elexis::praxis_wiki(
   $vcsRoot = '/opt/src/elexis-admin.wiki'
 ) inherits elexis::common {
   $ensure =hiera('elexis::praxis_wiki::ensure', absent)
   $initFile =  '/etc/init.d/gollum'
 
-  ensure_packages(['make', 'libxslt1-dev', 'libxml2-dev'])
+  ensure_packages(['make', 'libxslt1-dev', 'libxml2-dev', 'daemontools'])
   package{  ['gollum', # markdowns is currently well supported, including live editing
     'RedCloth',  # to support textile, but no live editing at the moment
     'wikicloth'  # to support mediawiki, but no live editing at the moment
@@ -65,7 +67,7 @@ sudo -iHu elexis gollum $vcsRoot &> $vcsRoot/gollum.log
     path    => "$service_path",
     hasrestart => true,
     subscribe  => Exec["$gollum_run"],
-    require    => Exec["$gollum_run"], 
+    require    => [Exec["$gollum_run"], Package['daemontools']], 
   }
  
 }

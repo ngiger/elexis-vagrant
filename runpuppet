@@ -3,6 +3,7 @@
 set -e # exit whenever an error occurs
 echo "We assume that you installed vagrant-ngiger into /etc/puppet or /vagrant"
 if [ -d /vagrant ] ; then PUPPET_DIR=/vagrant; else PUPPET_DIR=/etc/puppet ; fi
+if [ ! -e /etc/puppet/hieradata ] ; then ln -s $PUPPET_DIR/hieradata/ /etc/puppet; fi
 if [ -z "$*" ] ; then 
   echo You must specify what to apply, e.g. $PUPPET_DIR/manifests/site.pp
   exit 1
@@ -18,5 +19,5 @@ echo PUPPET_DIR ist $PUPPET_DIR
 ./runlibrarian
 echo modules in $PUPPET_DIR/modules
 mkdir -p /var/log/puppet
-puppet apply --modulepath $PUPPET_DIR/modules --hiera_config $PUPPET_DIR/hieradata/hiera.yaml $* 2>&1 | tee /var/log/puppet/`date +"%Y-%m-%d_%H:%M:%S"`.log
+puppet apply --modulepath $PUPPET_DIR/modules --hiera_config $PUPPET_DIR/hieradata/hiera.yaml $* 2>&1 | tee `date +"%Y-%m-%d_%H:%M:%S"`.log
 

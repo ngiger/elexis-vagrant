@@ -43,7 +43,7 @@ define elexis::install (
     command => "wget '$programURL' --output-document=$installer",
     require => [ User['elexis'], File[ "$installBase" ], Package['wget'] ],
     path    => '/usr/bin:/bin',
-    unless => "test -s $installer",
+    unless => "/usr/bin/test -s $installer",
   }
   
   $installer_script = '/usr/local/bin/install_elexis.rb'
