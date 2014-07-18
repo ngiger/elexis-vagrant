@@ -1,7 +1,12 @@
 
 # kate: replace-tabs on; indent-width 2; indent-mode cstyle; syntax ruby
 
-class elexis::common inherits elexis {
+class elexis::common(
+  $backup_dir = '',
+  $export_options = [rw, insecure, no_subtree_check, async, no_root_squash],
+  $export_clients = '172.25.0.0/16',
+)
+inherits elexis {
   include elexis::params
   
   if !defined(User["jenkins"]) {
@@ -14,6 +19,24 @@ class elexis::common inherits elexis {
     }    
   }
   
+  if ( $backup_dir) {
+    include nfs
+    class { 'nfs::server':
+        package => latest,
+        service => running,
+        enable  => true,
+    }
+    nfs::export {"$backup_dir":
+        options =>  [ $export_options ],
+        clients =>  [ $export_clients ],
+    }
+
+    nfs::export {"/home":
+        options =>  [ $export_options ],
+        clients =>  [ $export_clients ],
+    }
+  }
+
   file {"$jenkinsRoot":
     owner => 'jenkins',
     mode => '644',
@@ -50,12 +73,10 @@ class elexis::common inherits elexis {
     elexis::user{'elexis': 
       username   => 'elexis',
       password   => 'elexisTest',
-      uid        => '1111',
-      gid        => '1111',
-      group      => 'elexis',
+      uid        => '1300',
       groups     => [],
       comment    => 'Default Elexis User',
-      shell      => '',
+      shell      => '/bin/bash',
       ensure     => present,
     }
   }

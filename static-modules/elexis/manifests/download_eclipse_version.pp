@@ -47,7 +47,7 @@ define elexis::download_eclipse_version(
     creates => "${downloadDir}/${title}-$macosx64",
   }
   }
-  
+
   # install elexis for the current OS/arch
   case downcase("${kernel}.${architecture}") {
     /linux.i386/:	{ $ext = $linux32 }
