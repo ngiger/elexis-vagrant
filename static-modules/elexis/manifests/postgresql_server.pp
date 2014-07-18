@@ -161,8 +161,10 @@ class elexis::postgresql_server inherits elexis::common {
       ensure => directory,
     }
     
-    file { "$reverse_backup_dir":
-      ensure => directory,
+    if $reverse_backup_dir {
+      file { "$reverse_backup_dir":
+        ensure => directory,
+      }
     }
     
     file { "$backup_dir/wal":

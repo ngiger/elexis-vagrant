@@ -5,7 +5,7 @@ class elexis::admin (
   $pg_util_rb = '/usr/local/bin/pg_util.rb'
 )
 inherits elexis::common {
-  
+
   # The config writer personal choice
   if hiera('editor::default', false) {
     $editor_default = hiera('editor::default', '/usr/bin/vim.nox')  
