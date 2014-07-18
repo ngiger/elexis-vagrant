@@ -1,22 +1,130 @@
-#!/bin/bash
-# To be use on a vagrant machine or an machine installing
-set -e # exit whenever an error occurs
-echo "We assume that you installed vagrant-ngiger into /etc/puppet or /vagrant"
-if [ -d /vagrant ] ; then PUPPET_DIR=/vagrant; else PUPPET_DIR=/etc/puppet ; fi
-if [ -z "$*" ] ; then 
-  echo You must specify what to apply, e.g. $PUPPET_DIR/manifests/site.pp
-  exit 1
-fi
-confFile=/etc/puppet/puppet.conf
-if [ ! -f $confFile ]
-then
-echo "[main]"                            > $confFile
-echo "modulepath=${PUPPET_DIR}/modules" >> $confFile
-fi
-cd $PUPPET_DIR
-echo PUPPET_DIR ist $PUPPET_DIR
-./runlibrarian
-echo modules in $PUPPET_DIR/modules
-mkdir -p /var/log/puppet
-puppet apply --modulepath $PUPPET_DIR/modules --hiera_config $PUPPET_DIR/hieradata/hiera.yaml $* 2>&1 | tee /var/log/puppet/`date +"%Y-%m-%d_%H:%M:%S"`.log
+#!/usr/bin/env ruby
+require 'fileutils'
+
+class RunPuppet
+LOG_DIR = '/var/log/puppet'
+PUPPET_DIR=File.expand_path(File.dirname(__FILE__))
+DEFAULT_HIERA = "[main]
+modulepath=#{PUPPET_DIR}/modules
+"
+  def system(cmd)
+    puts cmd
+    unless Kernel.system(cmd)
+      puts "Running cmd #{cmd} failed"
+      exit 2
+    end
+  end
+
+  def init
+    puts "PUPPET_DIR is #{PUPPET_DIR}"
+  end
+
+  def checkVersionsOfNeededStuff
+    gem_version = `gem --version`.chomp
+    unless /^2/.match(gem_version) or /^1\.8/.match(gem_version)
+      puts "Must install at least gem >= 1.8 (is #{gem_version})"
+      exit 2
+    end
+
+    # verify some stuff which must be installed before launching
+    info = `gem list puppet`
+    unless res= /(puppet).*[^\d\.]([34]\.\d)/.match(info)
+      # we need augeas >= 1.0 for smb.conf read only to work correctly
+      puts "Must install first puppet >= 3.6"
+      puts "probably the following cmds will do it. Either apt-get install ruby-2.1 ruby-2.1.dev -t backports-wheezy"
+      puts "sudo gem install --no-ri --no-rdoc rubygems-update"
+      puts "sudo update_rubygems"
+      puts "sudo gem update --system"
+      exit 2
+      system('gem install --no-ri --no-rdoc puppet')
+    else
+      puts "Found puppet with version #{res[2]}"
+    end
+
+    info = `dpkg -l augeas-lenses`
+    res= /ii\W+augeas-lenses\W+(1[\d\.]+)/.match(info)
+    unless res
+      puts "Must install first augeas-lenses >= 1.0"
+      exit 2
+      system('apt-get install augeas-lenses')
+    else
+      # we need augeas >= 1.0 for smb.conf read only to work correctly
+      puts "Found augeas-lenses with version #{res[1]}"
+    end if false
+
+    info = `gem list librarian-puppet`
+    unless res= /(librarian-puppet).*[^\d\.]([12]\.\d)/.match(info)
+      # we need augeas >= 1.0 for smb.conf read only to work correctly
+      puts "Must install librarian-puppet >= 1.0"
+      exit 2
+      system('gem install --no-ri --no-rdoc librarian-puppet')
+    else
+      puts "Found librarian-puppet with version #{res[2]}"
+    end
+  end
+
+  def checkPuppetConfiguration
+    confFile = File.join(PUPPET_DIR, 'puppet.conf')
+    puts "Creating default confFile #{confFile}"
+    File.open(confFile, 'w+') {|f| f.write DEFAULT_HIERA }
+  end
+  
+  def checkHieraConfiguration
+    @defaultHieraConfig =
+%(# default configuration written by #{File.expand_path(__FILE__)} with default values for demo of elexis-vagrant
+# http://www.glennposton.com/posts/puppet_best_practices__environment_specific_configs
+---
+:backends:
+  - yaml
+:yaml:
+  :datadir: #{PUPPET_DIR}/hieradata
+:hierarchy:
+  - '%{::environment}/%{::fqdn}'
+  - '%{::environment}/%{calling_module}'
+  - '%{::environment}'
+  - 'common/%{calling_module}'
+  - common
+)
+
+    @hiera_default_file = File.join(PUPPET_DIR, 'hiera.yaml')
+    unless File.exists?(@hiera_default_file)
+      puts "Creating #{@hiera_default_file} with default values for demo of elexis-vagrant"
+      File.open(@hiera_default_file, 'w+') { |f| f.write @defaultHieraConfig }
+    end
+    ['/etc/hiera.yaml', 
+      @hiera_default_file,
+    ].each { |candidate|
+              if File.exists?(candidate)
+              @hiera_config = candidate
+              puts "Using hieraFile #{@hiera_config}"
+              break
+            end
+      }
+  end
+
+  public
+  def run
+    startTime = Time.now
+    Dir.chdir(PUPPET_DIR)
+    checkPuppetConfiguration
+    checkHieraConfiguration
+    checkVersionsOfNeededStuff
+    if File.writable?("#{PUPPET_DIR}/modules") and PUPPET_DIR != '/vagrant'
+      system('librarian-puppet install')
+    else
+      puts "As we cannot write to #{PUPPET_DIR}/modules we assume that you have updated it via another mechanism"
+    end
+    FileUtils.makedirs(LOG_DIR, :verbose => true) unless File.directory?(LOG_DIR)
+
+    logFile = File.join(LOG_DIR, Time.now.strftime('%Y-%m-%d_%H:%M:%S')+ '.log')
+    cmd = "puppet apply --modulepath #{PUPPET_DIR}/modules --hiera_config #{@hiera_default_file} #{ARGV.join(' ')} 2>&1 | tee #{logFile}"
+    system(cmd)
+    endTime = Time.now
+    diff = (endTime-startTime).to_i
+    puts "Running #{__FILE__} #{ARGV.join(' ')} took #{diff} seconds. Details see #{logFile}"
+  end
+end
+
+runner = RunPuppet.new
+runner.run
 

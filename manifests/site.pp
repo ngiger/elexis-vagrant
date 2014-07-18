@@ -6,6 +6,10 @@
 # main:  Install packages, gems, configure files, etc
 # last:  Start services (e.g. apache, gollum, jenkins, x2go)
 
+# tips for
+# http://de.slideshare.net/DECK36/20140327-guugpuppetstory
+# http://github.com/gini/puppet-git-hooks
+
 # I am not sure, whether I still need them
 # I think, using puppetlabs-apt, make some lines obsolete (TODO: before 0.2)
 stage { 'initial': before => Stage['first'] }
@@ -13,6 +17,13 @@ stage { 'first': before => Stage['second'] }
 stage { 'second': before => Stage['main'] }
 stage { 'last': require => Stage['main'] }
 
+node "basenode-vagrant" {
+  notify{"XXXX: node basenode-vagrant inside site.pp": }
+}
+
+node "serverx" inherits "basenode-vagrant" {
+  notify{"XXXX: node server inside site.pp": }
+}
 class { 'apt': 
   always_apt_update    => true,
   proxy_host           => hiera('elexis::apt_proxy_host', ''),
@@ -23,13 +34,35 @@ class { 'apt':
 #  stage => first,
 }
 
+# http://docs.puppetlabs.com/hiera/1/complete_example.html
+# replace inheritance with
+# http://docs.puppetlabs.com/hiera/1/puppet.html#assigning-classes-to-nodes-with-hiera-hierainclude
+# http://www.glennposton.com/posts/puppet_best_practices__environment_specific_configs
+#   ---
+#   :backends: - yaml
+#   :hierarchy: - %{environment}/%{fqdn}
+#               - %{environment}/%{calling_module}
+#               - %{environment}
+#               - common/%{calling_module}
+#               - common
+#   :yaml:
+#     :datadir: /mnt/puppetmanifests/configuration
+# securing data https://ask.puppetlabs.com/question/476/securely-storing-passwords-and-keys/ (eyaml) hiera-gpg
+# https://github.com/gtmtechltd/hiera-eyaml-plaintext
+# https://help.github.com/articles/remove-sensitive-data
+# https://help.ubuntu.com/community/UnityLaunchersAndDesktopFiles#Adding_shortcuts_to_a_launcher
+if $node =~ /ubuntu/ {
+  notify{"apt-sources for ubuntu missing": }
+} else {
+  notify{"apt-sources for debian missing": }
+  
 apt::source { 'debian_wheezy':
   location          => hiera('apt::source:location', 'http://mirror.switch.ch/ftp/mirror/debian/'),
   release           => hiera('apt::source:release', 'wheezy'),
   repos             => hiera('apt::source:repos', 'main contrib non-free'),
-  required_packages => hiera('apt::source:required_packages', 'debian-keyring debian-archive-keyring'),
-  key               => hiera('apt::source:key', '55BE302B'),
-  key_server        => hiera('apt::source:key_server', 'subkeys.pgp.net'),
+#  required_packages => hiera('apt::source:required_packages', 'debian-keyring debian-archive-keyring'),
+#  key               => hiera('apt::source:key', '55BE302B'),
+#  key_server        => hiera('apt::source:key_server', 'subkeys.pgp.net'),
 #  pin               => hiera('apt::source:pin', '-10'),
   include_src       => hiera('apt::source:include_src', true),
 }
@@ -40,7 +73,8 @@ apt::source { 'debian_security':
   repos             => hiera('apt::source:security:repos', 'main contrib non-free'),
   include_src       => hiera('apt::source:security:include_src', true),
 }
-    
+}
+
 group { "puppet": ensure => "present"}
 
 # class apt_get_update {    
@@ -70,7 +104,7 @@ class ensureLibShadow{
   }
 }
 
-$users_elexis        = hiera('users_elexis')
+$users_elexis        = hiera('users_elexis', [])
 if ($users_elexis) { elexis::users  {"users_elexis": user_definition       => $users_elexis} }
 
 node /default/ {
@@ -89,13 +123,14 @@ if hiera('x2go::ensure', false)      { include x2go }
 # stuff for the server
 if hiera('elexis::praxis_wiki::ensure', false) { include elexis::praxis_wiki }
 if hiera('apache::ensure', false) { include apache }
-if hiera('dnsmasq::ensure', false) { include dnsmasqplus }
+if hiera('dnsmasq::ensure', false) { include dnsmasq }
 
 # development stuff
 if hiera('eclipse::ensure', false)   { include eclipse }
-if hiera('buildr::ensure', false)    { include buildr }
+#if hiera('buildr::ensure', false)    { include buildr }
 if hiera('jubula::ensure', false)    { include jubula }
 
+if false {
 if hiera('elexis::install::OpenSource::ensure', false)  
 { 
   elexis::install  {"OpenSource":
@@ -112,6 +147,7 @@ if hiera('elexis::install::Medelexis::ensure', false)
     version                => 'current',
     installBase            => '/usr/local/medelexis',
   }
+}
 }
 
 $display_manager =  hiera('X::display_manager', false)
@@ -137,5 +173,17 @@ include hiera('private_modules', [])
 # medelexis::app via http://www.medelexis.ch/dl21.php?file=medelexis-linux
 
 import "nodes/*.pp"
-# import "../private/nodes/*.pp";
 
+node "ubuntu" {
+#  include unity and x2go server, java7 for Elexis Desktop
+  include elexis::admin
+  x2go::server {"x2go-server": ensure => true }
+  include mysql::client
+  include postgresql::client
+  ensure_packages['gnome-session', 'gdm3', 
+    'openjdk-7-jre',
+    'libreoffice-gtk3', 'libreoffice', 'libreoffice-l10n-de', 'libreoffice-l10n-fr',
+    'iceweasel', 'iceweasel-l10n-de',
+    'icedove',   'icedove-l10n-de',
+  ]
+}

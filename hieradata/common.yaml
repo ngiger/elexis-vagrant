@@ -1,6 +1,7 @@
 ---
 # encoding: utf-8
 # Copyright 2013 by Niklaus Giger <niklaus.giger@member.fsf.org>
+managed_note: "# (c) copyright 2014 by Niklaus Giger. Managed by puppet. Variables come from hieradata/common.yaml"
 
 # Here you find the default values for a medical practice using Elexis
 # You should create a folder private and copy this file to private/config.yml
@@ -26,9 +27,7 @@ elexis::downloadURL:          http://download.elexis.info/versions/
 # elexis::mail::smtp_host: 'put your smtp_host  into hieradata/private/config.yaml'
 
 elexis::bin_dir:  /usr/local/bin
-elexis::java:     'openjdk-6-jdk'
-elexis::service_path: /var/lib/service
-# This script must be normal bash scripts or we will have problem
+elexis::java:     'openjdk-7-jdk'
 elexis::install_script: /usr/local/bin/install_elexis.rb
 server::reboot_script: '/usr/bin/sudo /sbin/shutdown -r -t 30 now'
 server::halt_script:   '/usr/bin/sudo /sbin/shutdown -h -t 30 now'
@@ -175,15 +174,7 @@ pg::config_hash:
   postgres_password:          postgres
 
 dnsmasq::network_info:
-#  - { mac: '', ip: '192.168.1.1',   name: 'router'}
-
-# next line(s) go into /etc/postgresql/9.1/main/postgresql_puppet_extras.conf
-pg::archive_timeout: 20s
-
-pg::puppet_extras: "archive_command = '/usr/bin/test ! -f /home/backup-pg/wal/%f && /bin/cp %p /home/backup-pg/wal/%f < /dev/null'\n
-archive_timeout = 20s\n
-autovacuum =      on
-"
+  - { mac: '22:22:22:22:22:22', ip: '192.168.1.1',   name: 'router'}
 
 
 # On debian passwordhash can be generate using mkpasswd -m sha-512 yourPassword
@@ -202,8 +193,8 @@ users_elexis_main:
   uid: 1300
   gid: 1300
   group:   elexis
-  groups:  [ dialout, cdrom, plugdev, netdev, adm, sudo, ssh, mysql, postgres ]
-  comment: "Elexis User for Database and backup"
+  groups:  [ dialout, cdrom, plugdev, netdev, adm, sudo, ssh ]
+  comment: 'Elexis User for Database and backup'
   managehome: true
   # password is elexisTest
   password: '$6$4OQ1nIYTLfXE$xFV/8f6MIAo6XKZg8fYbF//w1lhFrCJ60JMcptwESgbHaH52c2UZbUUAAlydCRQy9wDYEgt5dUpTyHjFhCy5E.'
@@ -211,13 +202,24 @@ users_elexis_main:
 
 users_elexis:
   - 
+    name:  arzt2
+    mandant:  true
+    ensure: absent # will remove /home/arzt! (possible values absent, present, role)
+    uid: 1502
+    # mandanten sollen im Normalfall diversen privilegierten Gruppen angehören
+    groups:  [ dialout, cdrom, elexis, plugdev, netdev, adm, sudo, ssh ]
+    managehome: true
+    # password is elexisTest
+    password: '$6$4OQ1nIYTLfXE$xFV/8f6MIAo6XKZg8fYbF//w1lhFrCJ60JMcptwESgbHaH52c2UZbUUAAlydCRQy9wDYEgt5dUpTyHjFhCy5E.'
+    shell: /bin/bash
+  - 
     name:  arzt
     mandant:  true
     ensure: present
     uid: 1501
     # mandanten sollen im Normalfall diversen privilegierten Gruppen angehören
-    groups:  [ dialout, cdrom, elexis, plugdev, netdev, adm, sudo, ssh, mysql, postgres ]
-    comment: "Dr. Max Müller"
+    groups:  [ dialout, cdrom, elexis, plugdev, netdev, adm, sudo, ssh ]
+#    comment: Dr. Max Müller
     managehome: true
     # password is elexisTest
     password: '$6$4OQ1nIYTLfXE$xFV/8f6MIAo6XKZg8fYbF//w1lhFrCJ60JMcptwESgbHaH52c2UZbUUAAlydCRQy9wDYEgt5dUpTyHjFhCy5E.'
@@ -349,3 +351,80 @@ ssh::users:
     allow: [ 'elexis' ] 
 #    deny:  [ 'mallory' ]
 
+
+
+
+samba::server::interfaces: eth0
+samba::server::workgroup: 'Praxis Elexis'
+samba::server::server_string: '%h'
+
+samba::server::security: 'user'
+
+samba::server::passwd_chat: '*Enter\snew\sUNIX\spassword:* %n\n *Retype\snew\sUNIX\spassword:* %n\n .'
+samba::server::passwd_program: '/usr/bin/passwd %u'
+samba::server::pdc: true
+samba::server::shares:
+  -
+    name: profile
+    comment: Benutzerprofile
+    path: /home/samba/profile
+    read_only: false
+    force_create mode: 0600
+    force_directory mode: '0700'
+    browsable: false
+  -
+    name:    homes
+    path:    /home
+    comment: Home Directories
+    valid_users: '%S'
+    read_only: false
+    create_mask: '0600'
+    browsable: false
+    directory_mask: '0700'
+    force_create_mode: '0600'
+    directory mask: '0700'
+    force_directory_mode: '0700'
+    browsable: No
+
+  -
+    name: praxis
+    path: /home/samba/daten/praxis
+    read_only: true
+    comment: Praxisbereich
+    valid_users: '@elexis'
+    write_list:  '@elexis'
+    force_user: elexis
+    force_group: elexis
+
+  -
+    name: AustauschReadOnly
+    path: /home/samba/daten/Austausch
+    # chmod 0777 /home/samba/daten/Austausch/
+    # needed 
+    read_only: true
+    guest_ok: yes
+    comment: Hier dürfen all schreiben
+    force_create_mode: '0444'
+  -
+    name: AustauschWritable
+    path: /home/samba/daten/Austausch2
+    # chmod 0777 /home/samba/daten/Austausch/
+    # needed 
+    read_only: false
+    guest_ok: yes
+    comment: Hier dürfen all schreiben
+    force_create_mode: '0444'
+  -
+    name: Lesestoff
+    path: /home/samba/daten/reader
+    # chmod 0777 /home/samba/daten/reader/
+    guest_ok: yes
+    comment: Hier dürfen alle lesen
+
+# https://wiki.debian.org/SystemPrinting#Debian_Printing_.28CUPS.29
+
+
+# next line(s) go into /etc/postgresql/9.1/main/postgresql_puppet_extras.conf
+pg::archive_timeout: 20s
+
+pg::puppet_extras: "archive_command = '/usr/bin/test ! -f /home/backup-pg/wal/%f && /bin/cp %p /home/backup-pg/wal/%f < /dev/null'\narchive_timeout = 20s\nautovacuum =      on"

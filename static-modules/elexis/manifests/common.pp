@@ -30,40 +30,58 @@ class elexis::common inherits elexis {
   # notify{ "elexis::common $groups_elexis_main": }
   group {$groups_elexis_main:  ensure => present,  }
   
-  $users_elexis_main        = hiera('users_elexis_main')
+  $users_elexis_main        = hiera('users_elexis_main', {})
+  notify{"users_elexis_main is $users_elexis_main":}
   $username = $users_elexis_main['name']
-  Elexis::User[$username] -> Elexis::Users       <| |> 
+  if ($username) {
+    Elexis::User[$username] -> Elexis::Users       <| |>
 
-  elexis::user{$username: 
-    username   => $username,
-    password   => $users_elexis_main['password'],
-    uid        => $users_elexis_main['uid'],
-    groups     => $users_elexis_main['groups'],
-    comment    => $users_elexis_main['comment'],
-    shell      => $users_elexis_main['shell'],
-    ensure     => $users_elexis_main['ensure'],
-    require    => Group[$groups_elexis_main],
-  }      
-
-  ensure_packages(['daemontools-run', 'anacron'])
-  file {'/var/lib/service':
-    ensure => directory,
-    mode  => 0644,
+    elexis::user{$username: 
+      username   => $username,
+      password   => $users_elexis_main['password'],
+      uid        => $users_elexis_main['uid'],
+      groups     => $users_elexis_main['groups'],
+      comment    => $users_elexis_main['comment'],
+      shell      => $users_elexis_main['shell'],
+      ensure     => $users_elexis_main['ensure'],
+#      require    => Group[$groups_elexis_main],
+    }
+  } else {
+    elexis::user{'elexis': 
+      username   => 'elexis',
+      password   => 'elexisTest',
+      uid        => '1111',
+      gid        => '1111',
+      group      => 'elexis',
+      groups     => [],
+      comment    => 'Default Elexis User',
+      shell      => '',
+      ensure     => present,
+    }
   }
-  
+
+  if (false)  { # must be moved to a separate class to be included only when needed
+    ensure_packages(['daemontools-run'])
+    file {'/var/lib/service':
+      ensure => directory,
+      mode  => 0644,
+    }
+    
+    file { "$elexis::params::create_service_script":
+      source => "puppet:///modules/elexis/create_service.rb",
+      mode  => 0774,
+      require =>         [
+        File['/var/lib/service'],
+        Package['daemontools-run'],
+      ],
+    }
+  }
+  ensure_packages(['anacron'])
   file {'/etc/sudoers.d/elexis':
     ensure => present,
     content => "elexis ALL=NOPASSWD:ALL\n",
-    mode  => 0644,
+    mode  => 0440,
   }
 
-  file { "$elexis::params::create_service_script":
-    source => "puppet:///modules/elexis/create_service.rb",
-    mode  => 0774,
-    require =>         [
-      File['/var/lib/service'],
-      Package['daemontools-run'],
-    ],
-  }
   
 }

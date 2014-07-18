@@ -45,7 +45,7 @@ class cockpit(
     'zlib1g-dev', 'libssl-dev', 'libyaml-dev', 'libsqlite3-dev', 'sqlite3', 'libxml2-dev', 
     'libxslt-dev', 'autoconf', 'libc6-dev', 'libgdbm-dev', 'ncurses-dev', 'automake', 
     'libtool', 'bison', 'libffi-dev', 'libvirt-dev', 'ruby1.9.1', 
-    'libaugeas-ruby'
+    'libaugeas-ruby', 'rake',
   ])   
 
   # TODO: Install correct ruby 

@@ -6,7 +6,7 @@
 class elexis::jenkins_commons(
 ) inherits elexis::common {
   require jenkins
-  $neededUsers    = User['jenkins','elexis']
+  $neededUsers    = User['jenkins'] # ,'elexis'
 
   file { [$jenkinsJobsDir]:
     owner => 'jenkins',

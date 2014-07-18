@@ -38,7 +38,7 @@ define setpass($hash, $file='/etc/shadow') {
 define elexis::user(
   $username,
   $uid,
-  $groups  = '',
+  $groups  = [$username],
   $comment  = '',
   $password = '',
   $ensure = present,
@@ -56,6 +56,7 @@ define elexis::user(
 #      require    => Group[$groups],
     }
   } else {
+    notify{"craet $username":}
     user{$username:
       managehome => true,
       ensure     => $ensure,

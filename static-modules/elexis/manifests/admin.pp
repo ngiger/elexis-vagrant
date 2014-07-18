@@ -28,15 +28,6 @@ inherits elexis::common {
     unless  => "grep Europe/Zurich /etc/timezone"
   } 
 
-  # see http://johnleach.co.uk/words/771/puppet-dependencies-and-run-stages
-  # The following two dependencies should in my opinion be handled in module apt
-  include apt
-  # Ensure apt is setup before running apt-get update
-  Apt::Key <| |> -> Exec["apt_update"]
-
-  # Ensure apt-get update has been run before installing any packages
-  Exec["apt_update"] -> Package <| |>
-  
   # needed to install via elexis-cockpit
   $installBase = 'dummy'
   file {'/etc/auto_install_elexis.xml':

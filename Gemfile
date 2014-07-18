@@ -1,11 +1,27 @@
+# We want Ruby 1.9.3 or 2.1.2
 source "http://rubygems.org"
-ruby '1.9.3'
-# gem "vagrant"
-# If you want a version newer than 1.0.7 you must add a line like
-gem "vagrant", github: "mitchellh/vagrant", tag: "v1.3.5"
-gem 'puppet'
+if RUBY_VERSION == '1.9.3'
+  ruby '1.9.3'
+else
+  ruby '2.1.2'
+end
 
-# See https://github.com/rodjek/librarian-puppet/pull/87
-# Until this commit is available via a version > 0.9.8 we need to use the git repo
-# gem 'librarian-puppet', :git => "git://github.com/rodjek/librarian-puppet.git"
-gem 'librarian-puppet-maestrodev'
+gem_version = `gem --version`
+unless /^2/.match(gem_version) or /1\.8/.match(gem_version)
+  puts "We need gem in a version >= 1.8 is  #{gem_version}"
+  exit 2
+end
+
+if false
+  # we now use vagrant installed from deb package
+  gem "vagrant"
+  gem "vagrant-docker"
+  group :plugins do
+    gem "vagrant-docker"
+  end
+end
+
+gem 'bundler',            '>=1.6.0'
+gem 'puppet',             '3.5.1' # I don't like the deprecation warning for environments
+gem 'librarian-puppet',   '1.1.1'
+#gem 'librarian-puppet',   '1.0.3'

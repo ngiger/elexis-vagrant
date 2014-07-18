@@ -20,13 +20,43 @@
 #   user          => 'root',
 # }
 
-class java($version) {
+class java {
   package { "python-software-properties": }
 
-  exec { "add-apt-repository-oracle":
-    command => "/usr/bin/add-apt-repository -y ppa:webupd8team/java",
-    notify => Exec["apt_update"]
+        $installer =  'oracle-java7-installer'
+
+  case $operatingsystem {
+      'Debian':  {
+      class { 'apt': always_apt_update    => true, }
+  apt::source { 'webupd8team':
+  location          => 'http://ppa.launchpad.net/webupd8team/java/ubuntu',
+  release           => 'precise',
+  repos             => 'main',
+#  required_packages => 'debian-keyring debian-archive-keyring',
+  key               => 'EEA14886',
+#  key_server        => 'keyserver.ubuntu.com',
+  pin               => '-10',
+  include_src       => true
+}
+  $dependencies = [ Apt::Source['webupd8team'], Exec['apt_update']]
   }
+      'Ubuntu': {
+  include apt
+  apt::ppa { "ppa:webupd8team/java": }
+  $dependencies = Apt::Ppa['ppa:webupd8team/java']
+      } # apply the redhat class
+      default:  { fail("\nx2go not (yet?) supported under $operatingsystem!!")
+  $dependencies = []
+          file {"$x2go_dpkg_list":
+            ensure => present,
+            owner   => root,
+            content => "deb http://packages.x2go.org/debian $dist main
+deb src http://packages.x2go.org/debian $dist main
+",
+          }
+        
+      }
+    }
 
   exec {
     'set-licence-selected':
@@ -36,8 +66,10 @@ class java($version) {
       command => '/bin/echo debconf shared/accepted-oracle-license-v1-1 seen true | /usr/bin/debconf-set-selections';
   }
 
-  package { 'oracle-java7-installer':
-    ensure => "${version}",
-    require => [Exec['add-apt-repository-oracle'], Exec['set-licence-selected'], Exec['set-licence-seen']],
+  package {$installer:
+    ensure => "latest",
+    require => [ $dependencies, Exec['set-licence-selected'], Exec['set-licence-seen']],
   }
 }
+
+include java

@@ -25,11 +25,17 @@ class elexis::postgresql_server(
   $pg_poll_script       = '/usr/local/bin/pg_poll.rb'
   $pg_fill_script       = '/usr/local/bin/pg_fill.rb'
   $pg_archive_wal_script= '/usr/local/bin/pg_archive_wal.sh'
-class { 'postgresql::server':
-  encoding => 'UTF8',
-  locale  => 'C',
-  listen_addresses => '*',
-}
+  
+  class { 'postgresql::globals':
+    locale  => 'C',
+    version => '9.1',
+  }
+  class { 'postgresql::params':
+#    encoding => 'UTF8',
+  }
+  class { 'postgresql::server':
+    listen_addresses => '*',
+  }
 
 }
 
@@ -114,8 +120,10 @@ class elexis::postgresql_server inherits elexis::common {
     require => File['/var/lib/postgresql/.ssh/'],
   }
   
-  $dbs= hiera('pg_dbs', 'cbs')
-  elexis::pg_dbusers{$dbs:   
+  $dbs = hiera('pg_dbs', false)
+  if $dbs {
+    elexis::pg_dbusers{$dbs:   
+    }
   }
     
   file  { "${pg_backup_dir}/wal/":

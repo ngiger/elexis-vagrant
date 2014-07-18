@@ -35,7 +35,7 @@ define elexis::id_rsa_users(
     
     exec {"private_rsa_$user":
       command => "$elexis::trusted_hosts::copy_ssh $user",
-      require => [ User[$user], Group[$user], File[$elexis::trusted_hosts::copy_ssh] 
+      require => [ User[$user],File[$elexis::trusted_hosts::copy_ssh],  #  Group[$user], 
       ],
       unless  => "$elexis::trusted_hosts::copy_ssh $user",
     }

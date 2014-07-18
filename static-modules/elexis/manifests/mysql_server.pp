@@ -1,10 +1,11 @@
 # Here we define all needed stuff to bring up a complete
 # encoding: utf-8
 # mysql-server environment for Elexis
-
+# as per version 2.3 we can specify almost anything as parameter to the mysql::server class
+# 
 class elexis::mysql_server(
   $mysql_main_db_name      = hiera('elexis::mysql_main_db_name',     'elexis'),
-  $mysql_main_db_user      = hiera('elexis::mysql_main_db_user',     'elexis'),
+  $mysql_main_db_user      = hiera('elexis::mysql_main_db_user',     ''),
   $mysql_main_db_password  = hiera('elexis::mysql_main_db_password', 'elexisTest'),
   $mysql_tst_db_name       = hiera('elexis::mysql_tst_db_name',      'test'),
   $mysql_dump_dir          = hiera('elexis::mysql_dump_dir',         '/opt/backup/mysql/dumps'),
@@ -17,118 +18,15 @@ class elexis::mysql_server(
   $mysql_dump_script       = '/usr/local/bin/mysql_dump_elexis.rb'
   $mysql_load_main_script  = '/usr/local/bin/mysql_load_main_db.rb'
   $mysql_load_test_script  = '/usr/local/bin/mysql_load_test_db.rb'
-}
-
-define elexis::mysql_dbuser(
-  $db_user,
-  $db_name,
-  $db_privileges  = 'ALL',
-  $db_pw_hash  = '',
-  $db_password = '',
-) {
-  include mysql::server
-  
-  # notify{"$title: grant $db_privileges on $db_name to $db_user pw $db_password/$db_pw_hash": }
-  if ($db_pw_hash != '') {
-    # notify{"$title: $db_user grant $db_privileges has $db_pw_hash": }
-    $hash2use = $db_pw_hash
-  } else 
-  {
-    if ("$db_password" == '') {
-      $hash2use = ''
-      # notify{"$title:  empty hash":}
-    } else
-    {
-      $hash2use = mysql_password("$db_password")
-      # notify{"$title:  $db_user grant $db_privileges uses password $db_password hash is $hash2use": }
-    }
-  }
-  
-  # Ensure mysql is setup before running database/user creation
-  Package[$mysql::params::server_package_name] -> Mysql_Database       <| |> 
-  Package[$mysql::params::client_package_name] -> Mysql_Database       <| |> 
-  Package[$mysql::params::server_package_name] -> Database_user  <| |> 
-  Package[$mysql::params::client_package_name] -> Database_user  <| |> 
-
-  if ("$hash2use" != '') {
-    ensure_resource(database_user, "$db_user",
-      {
-        password_hash => $hash2use,
-        require => Class['mysql::server::config'],
-      }
-    )
-  }
-  
-  if !defined(Mysql_database["$db_name"]) {
-    mysql_database{"$db_name":
-      ensure => present,
-      charset => 'de_CH.UTF-8',
-    }
-  }
-  
-  $grant_id = "${db_user}"
-  $msg = "grantid $grant_id mit hash $hash2use"
-  # if !defined(Notify[$msg]) { notify{"$msg": }  }
-  if !defined(Mysql_grant["$grant_id"]) {
-    mysql_grant {$grant_id :
-   #   options    => ['GRANT'],
-      ensure     => 'present',
-      table      => '*.*',
-      user       => "$db_user",
-      privileges => [$db_privileges] ,
-      # Or specify individual privileges with columns from the mysql.db table:
-      # privileges => ['Select_priv', 'Insert_priv', 'Update_priv', 'Delete_priv']
-      require => [
-        Mysql_database["$db_name"],
-        Class['mysql::server::config'],
-      ]
-    }
-  }
-  
 
 }
 
-define elexis::mysql_dbusers(
-) {
-  $db_name =  $title[db_name]
-  $db_pw_hash =  $title[db_pw_hash]
-  $db_user =  $title[db_user]
-  $db_password =  $title[db_password]
-  $db_privileges = $title[db_privileges]
-  $myName = "${db_name}_${db_user}"
-  # notify{"mysql_dbusers $myName mit $db_name priv $db_privileges": }
-  elexis::mysql_dbuser{"$myName":
-    db_name => "$db_name",
-    db_user => "$db_user",
-    db_password => "$db_password",
-    db_pw_hash => "$db_pw_hash",
-    db_privileges => "$db_privileges",
-  }
-  mysql_grant {"$myName" :
-    # options    => ['GRANT'],
-    ensure     => 'present',
-    table      => '*.*',
-    user       => "$db_user",
-    privileges => [$db_privileges] ,
-    require => [
-      Mysql_database["$db_name"],
-      Class['mysql::server::config'],
-    ]
-  }
-}
 
 class elexis::mysql_server inherits elexis::common {
   class { '::mysql::server': 
       root_password => hiera('mysql::server:root_password', 'elexisTest')
   }
 
-  $dbs         = hiera('mysql_dbs', '')
-  # notify{"nmysql dbs are $dbs": }
-  if ($dbs != '') {  elexis::mysql_dbusers{$dbs: } }
-  $mainUser = hiera("elexis::db_user", 'elexis')
-  $mainPw   = hiera("elexis::db_password", 'elexisTest')
-
-  # notify{"m $mysql_main_db_name t $mysql_tst_db_name": }
   if $mysql_main_db_name {
     mysql_database { "$mysql_main_db_name":
       ensure  => 'present',

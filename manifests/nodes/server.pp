@@ -6,7 +6,7 @@ node "server" {
 #  if hiera('elexis::praxis_wiki::ensure', true)        { include elexis::praxis_wiki }
   if hiera('elexis::postgresql_server::ensure', true)  { include elexis::postgresql_server }
   if hiera('elexis::mysql_server::ensure', true)       { include elexis::mysql_server }
-  if hiera('elexis::cockpit::ensure', true)            { include cockpit::service}
+  if hiera('elexis::cockpit::ensure', false)            { include cockpit::service}
   if hiera('luks_backup::ensure', true)       { include luks_backup }
 
     # Default values can be overridden by setting value in your private/config.yaml

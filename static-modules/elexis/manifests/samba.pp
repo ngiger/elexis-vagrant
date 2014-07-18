@@ -10,7 +10,7 @@ class elexis::samba (
   include samba
   include samba::server::config
   $augeas_packages = "['augeas-lenses', 'augeas-tools', 'libaugeas-ruby']"
-  $with_x2go        = hiera('x2go::ensure')
+  $with_x2go        = hiera('x2go::ensure', false)
   ensure_packages(['augeas-lenses', 'augeas-tools', 'libaugeas-ruby', 'cups-pdf', 'cups-bsd'])
 
   class {'samba::server':
@@ -81,7 +81,6 @@ class elexis::samba (
       path => $path,
       public => $title['public'],
       write_list => $title['write_list'],
-      writable => $title['writable'],
       printable => $title['printable'],
       valid_users => $title['valid_users'],
       force_user => $title['force_user'],
@@ -89,7 +88,11 @@ class elexis::samba (
       require => Package['samba'],
       notify  => Exec["$elexis::samba::tested_smb_conf"],
     }
-    if ($path) { file{"$path": ensure => directory} }
+    if ($path) { exec{"$path": 
+        command => "/bin/mkdir -p $path",
+        unless  => "/usr/bin/test -d $path",
+      }       
+    }
   }
   if (hiera('samba::server::pdf-ausgabe', false)) {
     samba::server::share {'pdf-ausgabe':
