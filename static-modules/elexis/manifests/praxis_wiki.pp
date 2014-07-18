@@ -61,11 +61,8 @@ sudo -iHu elexis gollum $vcsRoot &> $vcsRoot/gollum.log
     user => 'root',
   }        
   
-  service{"$gollum_name":
+  daemontools::service{"$gollum_name":
     ensure => $service_status,
-    provider => "daemontools",
-    path    => "$service_path",
-    hasrestart => true,
     subscribe  => Exec["$gollum_run"],
     require    => [Exec["$gollum_run"], Package['daemontools']], 
   }

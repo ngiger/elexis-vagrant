@@ -7,7 +7,9 @@
 # We use dnsmasq to provide the tftpboot and setting the DHCP boot-options
 # Look at https://github.com:ngiger/vagrant-ngiger on how to setup DNS-Masq
 # At praxis-union Luzern the dhcp-service come from a server not controlled by puppet
-
+# 2014 Jul 10 17:03:44 net_server setting capabilities failed: Operation not permitted
+# https://github.com/dotcloud/docker/issues/1951
+# To fix add user=root to /etc/dnsmasq.conf
 require stdlib
 
 class elexis::thin_client (

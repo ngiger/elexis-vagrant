@@ -40,7 +40,6 @@ class elexis (
   
   $java                = hiera('elexis::java_version',      'openjdk-6-jdk'),
   $binDir              = hiera('elexis::bin_dir',           '/usr/local/bin'),          # where we will put our binary helper scripts
-  $service_path         = hiera('elexis::service',          '/var/lib/service'),
   $jenkinsRoot          = hiera('elexis::jenkinsDir',       '/opt/jenkins'),
   $eclipseRelease       = hiera('elexis::eclipseRelease',   'juno'),
   $defaultEclipse       = hiera('elexis::default_eclipse',  'eclipse-rcp-juno-SR2'),
