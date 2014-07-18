@@ -30,8 +30,8 @@ mod 'erwbgy/ssh'
 mod 'puppetlabs/java'
 
 # Module mit patches von mir.
-# mod 'ajjahn/samba',   :git => 'git://github.com/ngiger/puppet-samba.git'
-mod 'ajjahn/samba',   :path => 'puppet-samba'
+mod 'ajjahn/samba',   :git => 'git://github.com/ngiger/puppet-samba.git'
+# mod 'ajjahn/samba',   :path => 'puppet-samba'
 # https://github.com/thias/puppet-samba his much simpler!
  
 # jenkins forked from https://github.com/rtyler/puppet-jenkins
@@ -39,9 +39,13 @@ mod 'ajjahn/samba',   :path => 'puppet-samba'
 # mod 'rtyler/jenkins'
 
 # Eigene module von mir zu finden unter https://github.com/ngiger/puppet-<module> name
-mod "ngiger/x2go",        :path => './puppet-x2go'         # >=0.1.3', :git => 'git://github.com/ngiger/puppet-x2go.git'
-mod 'ngiger/luks_backup', :path => './puppet-luks_backup'  # :git => 'https://github.com/ngiger/puppet-luks_backup.git'
-mod 'ngiger/dnsmasq',     :path => './puppet-dnsmasq'  # :git => 'https://github.com/ngiger/puppet-dnsmasq.git'
+#mod "ngiger/x2go",        :path => './puppet-x2go'    
+#mod 'ngiger/luks_backup', :path => './puppet-luks_backup'
+#mod 'ngiger/dnsmasq',     :path => './puppet-dnsmasq'
+
+mod "ngiger/x2go",        :git => 'git://github.com/ngiger/puppet-x2go.git'
+mod 'ngiger/luks_backup', :git => 'https://github.com/ngiger/puppet-luks_backup.git'
+mod 'ngiger/dnsmasq',     :git => 'https://github.com/ngiger/puppet-dnsmasq.git'
 
 # Lokale, nicht echte Module von mir
 mod 'puppetlabs/apache'
