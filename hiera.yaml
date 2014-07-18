@@ -1,13 +1,13 @@
+# default configuration written by /opt/src/elexis-vagrant/runpuppet.rb with default values for demo of elexis-vagrant
+# http://www.glennposton.com/posts/puppet_best_practices__environment_specific_configs
 ---
-:backends: 
+:backends:
   - yaml
 :yaml:
-  :datadir: "/vagrant/hieradata/"
-# :datadir: /etc/puppet
+  :datadir: /opt/src/elexis-vagrant/hieradata
 :hierarchy:
-#  - %{::environment}
-#  - %{::hostname}
-#  - private/%{::hostname}
-  - private/config
+  - '%{::environment}/%{::fqdn}'
+  - '%{::environment}/%{calling_module}'
+  - '%{::environment}'
+  - 'common/%{calling_module}'
   - common
-:logger: console

@@ -5,7 +5,7 @@
 apt-get update && apt-get  upgrade -y
 
 # Install stuff needed for vagrant and conveniences
-apt-get install -y --no-install-recommends augeas-tools curl git htop libaugeas-ruby lsb net-tools sudo vim ruby
+apt-get install -y --no-install-recommends augeas-tools curl git htop libaugeas-ruby lsb net-tools sudo vim ruby ruby1.9.1-dev rubygems build-essential
 
 # Add user vagrant to the image
 adduser --quiet vagrant
@@ -24,4 +24,5 @@ gem install puppet --version 3.6.2
 gem install librarian-puppet --version 1.1.2
   
 # Clean up APT when done.
-apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* 
+apt-get clean 
+# && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* 

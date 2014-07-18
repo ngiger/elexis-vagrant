@@ -54,5 +54,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  librarian-puppet
-  puppet
+  bundler (>= 1.6.0)
+  librarian-puppet (>= 1.0.0)
+  puppet (>= 3.6.0)

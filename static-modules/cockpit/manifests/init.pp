@@ -74,7 +74,6 @@ class cockpit(
       path => "$local_bin:/usr/bin:/bin",
       require =>  [ Vcsrepo[$vcsRoot], 
                     File["$local_bin"],
-                    Package['rake'],
                     Exec['bundle_trust_cockpit'], ],
     }
     vcsrepo {  "$vcsRoot":

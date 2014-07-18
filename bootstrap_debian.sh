@@ -70,7 +70,7 @@ cat <<EOF
 :yaml:
   :datadir: ${dest}
 :hierarchy:
-  - %{::clientcert}
+  - %{::environment}/%{::fqdn}
   - %{::environment}
   - private_hiera/config
   - hiera/common
@@ -90,4 +90,5 @@ fi
 ln -s ${HIERA_PUPPET_YAML} ${HIERA_YAML}
 ls -l ${HIERA_PUPPET_YAML} ${HIERA_YAML}
 
+# for ruby 2.1.2 on jessie I needed sudo apt-get install ruby-augeas ruby2.1 -t jessie
 echo "Cloned ${origin} into ${dest} and created default hiera configuration in ${HIERA_PUPPET_YAML}"

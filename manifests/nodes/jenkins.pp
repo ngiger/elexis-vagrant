@@ -1,15 +1,13 @@
 # encoding: utf-8
-node "serverx" {
-  # notify{"Adding node server": }
+node "jenkins" {
+  # notify{"Adding node jenkins": }
   file{'/etc/system_role': content => "server\n" }
   # These are the defaults for the node called server
-#  if hiera('elexis::praxis_wiki::ensure', true)        { include elexis::praxis_wiki }
+  if hiera('elexis::praxis_wiki::ensure', true)        { include elexis::praxis_wiki }
   if hiera('elexis::postgresql_server::ensure', true)  { include elexis::postgresql_server }
-# TODO: fix the next two lines
-#  if hiera('elexis::mysql_server::ensure', true)       { include elexis::mysql_server }
-#  if hiera('elexis::cockpit::ensure', true)            { include cockpit::service}
-  if hiera('luks_backup::ensure', true)       { include luks_backup }
-
+  if hiera('elexis::mysql_server::ensure', true)       { include elexis::mysql_server }
+  if hiera('elexis::cockpit::ensure', true)            { include cockpit::service}
+  
     # Default values can be overridden by setting value in your private/config.yaml
 
   # This medical doctor uses KDE as his/her GUI

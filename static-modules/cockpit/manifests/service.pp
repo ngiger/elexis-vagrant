@@ -67,13 +67,4 @@ ruby elexis-cockpit.rb >> elexis-cockpit.log 2>&1
     user => 'root',
   }        
   
-  service{"$cockpit_name":
-    ensure => $service_status,
-    provider => "daemontools",
-    path    => "$service_path",
-    hasrestart => true,
-    subscribe  => Exec["$cockpit_run"],
-    require    => Exec["$cockpit_run"], 
-  }
-  
 }
