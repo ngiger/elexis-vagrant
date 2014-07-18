@@ -38,22 +38,35 @@ FORGE
     ripienaar/concat (0.2.0)
     thomasvandoren/etckeeper (0.0.8)
 
-PATH
-  remote: ./puppet-dnsmasq
+GIT
+  remote: git://github.com/ngiger/puppet-samba.git
+  ref: master
+  sha: 98491a3d14c3de4951a1fe0c5521dea0302d84b2
+  specs:
+    ajjahn/samba (0.1.2)
+
+GIT
+  remote: git://github.com/ngiger/puppet-x2go.git
+  ref: master
+  sha: 9ee7c6e428f85dda1bc26355ad8fd1d460db0667
+  specs:
+    ngiger/x2go (0.1.3)
+      puppetlabs/apt (>= 1.0.0)
+
+GIT
+  remote: https://github.com/ngiger/puppet-dnsmasq.git
+  ref: master
+  sha: eb5be045a14665586330d8ebbbffee740676c00b
   specs:
     ngiger/dnsmasq (0.1.0)
       puppetlabs/apt (>= 1.0.0)
 
-PATH
-  remote: ./puppet-luks_backup
+GIT
+  remote: https://github.com/ngiger/puppet-luks_backup.git
+  ref: master
+  sha: 41c8b22c37a9e03a5b638aa241949b1c4d15595d
   specs:
     ngiger/luks_backup (0.1.0)
-
-PATH
-  remote: ./puppet-x2go
-  specs:
-    ngiger/x2go (0.1.3)
-      puppetlabs/apt (>= 1.0.0)
 
 PATH
   remote: ./static-modules/cockpit
@@ -84,11 +97,6 @@ PATH
   remote: ./static-modules/ntp_demo
   specs:
     ngiger/ntp_demo (0.0.1)
-
-PATH
-  remote: puppet-samba
-  specs:
-    ajjahn/samba (0.1.2)
 
 DEPENDENCIES
   ajjahn/samba (>= 0)

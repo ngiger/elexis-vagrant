@@ -96,10 +96,11 @@ modulepath=#{PUPPET_DIR}/modules
     ].each { |candidate|
               if File.exists?(candidate)
               @hiera_config = candidate
-              puts "Using hieraFile #{@hiera_config}"
               break
             end
       }
+    @hiera = ARGV.index("-e") || ARGV.index('--environment') ? "--hiera_config #{@hiera_default_file} " : ''
+    puts "Using hieraFile #{@hiera}"
   end
 
   public
@@ -117,7 +118,7 @@ modulepath=#{PUPPET_DIR}/modules
     FileUtils.makedirs(LOG_DIR, :verbose => true) unless File.directory?(LOG_DIR)
 
     logFile = File.join(LOG_DIR, Time.now.strftime('%Y-%m-%d_%H:%M:%S')+ '.log')
-    cmd = "puppet apply --modulepath #{PUPPET_DIR}/modules --hiera_config #{@hiera_default_file} #{ARGV.join(' ')} 2>&1 | tee #{logFile}"
+    cmd = "puppet apply --modulepath #{PUPPET_DIR}/modules #{@hiera} #{ARGV.join(' ')} 2>&1 | tee #{logFile}"
     system(cmd)
     endTime = Time.now
     diff = (endTime-startTime).to_i
