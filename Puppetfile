@@ -7,7 +7,7 @@ forge "https://forge.puppetlabs.com"
 
 # mod 'ghoneycutt/nfs'
 mod 'jbeard/nfs' #, :git => 'https://github.com/jbeard6/jbeard-nfs'
-
+# mod 'jbeard/nfs', :path => 'puppet-nfs'
 
 #forge "https://forgeapi.puppetlabs.com"
 
@@ -39,7 +39,7 @@ mod 'ajjahn/samba',   :git => 'git://github.com/ngiger/puppet-samba.git'
 # mod 'rtyler/jenkins'
 
 # Eigene module von mir zu finden unter https://github.com/ngiger/puppet-<module> name
-#mod "ngiger/x2go",        :path => './puppet-x2go'    
+#mod "ngiger/x2go",        :path => './puppet-x2go'
 #mod 'ngiger/luks_backup', :path => './puppet-luks_backup'
 #mod 'ngiger/dnsmasq',     :path => './puppet-dnsmasq'
 
