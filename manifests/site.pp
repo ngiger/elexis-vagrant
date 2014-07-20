@@ -178,6 +178,7 @@ node "ubuntu" {
 #  include unity and x2go server, java7 for Elexis Desktop
   include elexis::admin
   x2go::server {"x2go-server": ensure => true }
+  include nfs::client
   include mysql::client
   include postgresql::client
   ensure_packages['gnome-session', 'gdm3', 
@@ -186,4 +187,26 @@ node "ubuntu" {
     'iceweasel', 'iceweasel-l10n-de',
     'icedove',   'icedove-l10n-de',
   ]
+  $nfs_server = hiera('nfs_server', '')
+  if ("$nfs_server") {
+    file{'/home.prxserver':  ensure => directory, }
+    mount { '/home.prxserver':
+      device  => "$nfs_server:/home",
+      fstype => 'nfs',
+      ensure  => "mounted",
+      options => "defaults",
+      atboot  => true,
+      require => File['/home.prxserver'],
+    }
+    file{'/etc/puppet':  ensure => directory, }
+    mount { '/etc/puppet':
+      device  => "$nfs_server:/etc/puppet",
+      fstype => 'nfs',
+      ensure  => "mounted",
+      options => "defaults",
+      atboot  => true,
+      require => File['/etc/puppet'],
+    }
+  }
 }
+node "ubuntu12" inherits "ubuntu" { }

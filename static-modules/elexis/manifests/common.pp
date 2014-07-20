@@ -54,7 +54,7 @@ inherits elexis {
   group {$groups_elexis_main:  ensure => present,  }
   
   $users_elexis_main        = hiera('users_elexis_main', {})
-  notify{"users_elexis_main is $users_elexis_main":}
+  # notify{"users_elexis_main is $users_elexis_main":}
   $username = $users_elexis_main['name']
   if ($username) {
     Elexis::User[$username] -> Elexis::Users       <| |>

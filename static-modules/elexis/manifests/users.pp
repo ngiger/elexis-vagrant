@@ -5,7 +5,7 @@ define elexis::users(
   $user_definition
 ) {
   
-  notify{"elexis::users: $user_definition":}
+  # notify{"elexis::users: $user_definition":}
   elexis_add_users{$user_definition: }
 }
 

@@ -46,6 +46,7 @@ define elexis::user(
 ) {
   ensure_packages(['ruby-shadow']) # needed for managing password
   $splitted = split($homes, ',')
+  if (! $gid ) { $gid = $uid }
   if ("/home/$username" in $splitted)  {
     user{$username:
       managehome => true,
@@ -56,7 +57,6 @@ define elexis::user(
 #      require    => Group[$groups],
     }
   } else {
-    notify{"craet $username":}
     user{$username:
       managehome => true,
       ensure     => $ensure,
@@ -66,8 +66,17 @@ define elexis::user(
       uid        => $uid,
 #      require    => Group[$groups],
       password_min_age => 0, # force user to change it soon
-    } 
+    }
     if ("$ensure" != 'absent' ) { setpass { "$username": hash => "$password",  } }
-  }    
+  }
+  group {$username: ensure => $ensure }
+  if (!defined(Group['backup'])) {   group {'backup': ensure => present,  }  }
+
+  if ("$ensure" != 'absent' and defined(Group[$username])) {
+    exec{"/usr/sbin/adduser backup $username":
+      require => [ Group[$username, 'backup']],
+      unless => "/bin/grep ${username}: /etc/group  | /bin/grep backup",
+    }
+  }
 } 
 
