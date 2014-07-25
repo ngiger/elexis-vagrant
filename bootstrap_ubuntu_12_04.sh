@@ -3,6 +3,13 @@
 # Just download it using wget/curl https://raw.github.com/ngiger/elexis-vagrant/master/bootstrap_ubuntu_12_04.sh
 # and execute it afterwards. E.g sudo -i $PWD/bootstrap_ubuntu_12_04.sh
 
+# For Peter Schönbucher I needed to install an ubuntu 12.04 desktop 
+# To share the the puppet with it master I add the following two lines to /etc/fstat
+#   192.168.1.222:/etc/puppet       /etc/puppet     nfs     defaults        0       2
+#  192.168.1.222:/etc/hiera        /etc/hiera      nfs     defaults        0       2
+# then ran sudo mount -a
+
+
 debInst()
 {
     dpkg-query -Wf'${db:Status-abbrev}' "${1}" 2>/dev/null | grep -q '^i'
@@ -27,12 +34,16 @@ else
   echo "Installing into ${dest}"
   if ! [[ -d /etc/puppet/ ]]
   then
+    operation='Cloned'
     git clone ${origin} ${dest}
-  else [[ -d /etc/puppet/.git ]]
+  elif [[ -d /etc/puppet/.git ]]
+  then
+    operation='Pulled'
     cd  ${dest}
     git pull
   else
     # move it out of the way
+    operation='Cloned after moving it out of the way'
     tempDir=`mktemp -d`
     mv ${dest} ${tempDir}
     git clone ${origin} ${dest}
@@ -41,11 +52,15 @@ else
 fi
 
 echo "(Re)installing needed packets for ruby1.9"
-apt-get -qqy --no-install-recommends install bash curl git patch bzip2 ruby1.9.1 \
+apt-get -qqy --no-install-recommends install bash curl git patch bzip2  \
   build-essential openssl libreadline6 libreadline6-dev curl git-core zlib1g zlib1g-dev \
   libssl-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf \
-  libc6-dev libgdbm-dev ncurses-dev automake libtool bison subversion libffi-dev libvirt-dev
+  libc6-dev libgdbm-dev ncurses-dev automake libtool bison subversion libffi-dev libvirt-dev \
+  ruby1.9.1 ruby1.9.1-dev augeas-tools libaugeas-ruby1.9.1
+apt-get -qqy --no-install-recommends build-dep ruby1.9.1
 
 gem install --no-ri --no-rdoc bundle
+gem install --no-ri --no-rdoc puppet --version 3.5.1
+gem install --no-ri --no-rdoc librarian-puppet --version 1.0.3
 
-echo "Cloned ${origin} into ${dest}"
+echo "${operation} ${origin} into ${dest}"
