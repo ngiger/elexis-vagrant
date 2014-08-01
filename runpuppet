@@ -4,7 +4,7 @@ require 'fileutils'
 class RunPuppet
 LOG_DIR = '/var/log/puppet'
 PUPPET_DIR=File.expand_path(File.dirname(__FILE__))
-DEFAULT_HIERA = "[main]
+DEFAULT_PUPPET_CONF = "[main]
 modulepath=#{PUPPET_DIR}/modules
 "
   def system(cmd)
@@ -30,8 +30,9 @@ modulepath=#{PUPPET_DIR}/modules
     info = `gem list puppet`
     unless res= /(puppet).*[^\d\.]([34]\.\d)/.match(info)
       # we need augeas >= 1.0 for smb.conf read only to work correctly
-      puts "Must install first puppet >= 3.6"
+      puts "Must install first puppet >= 3.5.1"
       puts "probably the following cmds will do it. Either apt-get install ruby-2.1 ruby-2.1.dev -t backports-wheezy"
+      puts "sudo gem install --no-ri --no-rdoc puppet --version=3.5.1"
       puts "sudo gem install --no-ri --no-rdoc rubygems-update"
       puts "sudo update_rubygems"
       puts "sudo gem update --system"
@@ -66,9 +67,17 @@ modulepath=#{PUPPET_DIR}/modules
   def checkPuppetConfiguration
     confFile = File.join(PUPPET_DIR, 'puppet.conf')
     puts "Creating default confFile #{confFile}"
-    File.open(confFile, 'w+') {|f| f.write DEFAULT_HIERA }
+    File.open(confFile, 'w+') {|f| f.write DEFAULT_PUPPET_CONF }
   end
   
+  # default configuration for hiera.yaml
+  # This is not easy and querying the standalone hiera tool for a value will often result in a different value as e.g. you use by default /etc/hiera.yaml and 
+  # not /etc/puppet/hiera.yaml when calling from puppet
+  # Also it is important that we can use different environments for testing and production (default)
+  # it is recommended to generate a link for your different environments to something outside this git clone
+  # e.g ln -s /etc/puppet/hieradata/production /etc/hieradata/production and leave your stuff there
+  # not using http://docs.puppetlabs.com/puppet/latest/reference/environments.html (as per 17.07.2014 till puppet 4 is out and the problems with hiera are resolved
+
   def checkHieraConfiguration
     @defaultHieraConfig =
 %(# default configuration written by #{File.expand_path(__FILE__)} with default values for demo of elexis-vagrant
@@ -81,7 +90,7 @@ modulepath=#{PUPPET_DIR}/modules
 :hierarchy:
   - '%{::environment}/%{::fqdn}'
   - '%{::environment}/%{calling_module}'
-  - '%{::environment}'
+  - '%{::environment}/%{::environment}'
   - 'common/%{calling_module}'
   - common
 )

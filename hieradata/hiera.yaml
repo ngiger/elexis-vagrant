@@ -1,28 +1,13 @@
-# For storing secrets see
-# see http://information-technology.web.cern.ch/book/cern-puppet-development-user-guide/puppet-development-work-flow-git/hiera-hierarchical-databa-1
-# http://www.craigdunn.org/2011/10/secret-variables-in-puppet-with-hiera-and-gpg/
-# From https://github.com/crayfishx/hiera-gpg
-# Hiera is often used by configuration management systems such as Puppet with all the configuration 
-# stored in a VCS. Often you want to store sensitive information such as database root passwords in the 
-# same place as the rest of your configuration so Puppet can read it. 
-# hiera-gpg allows you to place your YAML in a gpg encoded file which can be read by Hiera on the command line 
-# or via Puppet on any machine that has a valid secret key.
+# default configuration written by /opt/src/elexis-vagrant/runpuppet with default values for demo of elexis-vagrant
+# http://www.glennposton.com/posts/puppet_best_practices__environment_specific_configs
 ---
-:backends: 
+:backends:
   - yaml
-#  - gpg
 :yaml:
-  :datadir: /etc/puppet/hieradata
+  :datadir: /vagrant/hieradata
 :hierarchy:
-  - private/%{::environment}
-# we use here hostname as we don't have a valid clientcert  
-  - private/%{::hostname}
-  - private/config
+  - '%{::environment}/%{::fqdn}'
+  - '%{::environment}/%{calling_module}'
+  - '%{::environment}/%{::environment}'
+  - 'common/%{calling_module}'
   - common
-:logger: console
-:gpg:
-   :datadir: /etc/puppet/hieradata
-   # Optional, defaults to ~/.gnupg
-   :key_dir: /etc/puppet/hieradata/gpg
-
-

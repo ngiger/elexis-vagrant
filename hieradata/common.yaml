@@ -2,6 +2,7 @@
 # encoding: utf-8
 # Copyright 2013 by Niklaus Giger <niklaus.giger@member.fsf.org>
 managed_note: "# (c) copyright 2014 by Niklaus Giger. Managed by puppet. Variables come from hieradata/common.yaml"
+nfs_server: 172.25.1.70
 
 # Here you find the default values for a medical practice using Elexis
 # You should create a folder private and copy this file to private/config.yml
@@ -229,7 +230,7 @@ users_elexis:
     ensure: present
     uid: 1601
     # möglichst wenig privilegierte Gruppen für die MPA
-    groups:  [ dialout, cdrom, elexis, plugdev, netdev ]
+    groups:  [ dialout, cdrom, elexis, plugdev, netdev, backup ]
     comment: Maria Bernasconi
     managehome: true
     # password is elexisTest

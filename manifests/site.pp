@@ -181,7 +181,7 @@ node "ubuntu" {
   include nfs::client
   include mysql::client
   include postgresql::client
-  ensure_packages['gnome-session', 'gdm3', 
+  ensure_packages['gnome-session', 'gdm3', # gnome-control-center
     'openjdk-7-jre',
     'libreoffice-gtk3', 'libreoffice', 'libreoffice-l10n-de', 'libreoffice-l10n-fr',
     'iceweasel', 'iceweasel-l10n-de',

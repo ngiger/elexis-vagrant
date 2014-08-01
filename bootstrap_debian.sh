@@ -8,86 +8,55 @@ debInst()
     dpkg-query -Wf'${db:Status-abbrev}' "${1}" 2>/dev/null | grep -q '^i'
 }
 
-packets_needed="curl git virtualbox virtualbox-dkms"
-for j in $packets_needed
-do
-  if debInst $j; then
-      echo $j seems to be already installed
-  else
-      apt-get -qqy install  $j
-  fi
-done
-
-origin='git://github.com/ngiger/elexis-vagrant.git'
-dest='/etc/puppet'
-if [[ -d ${dest}/.git ]]
+if [[ -d /vagrant ]]
 then
-  echo "${dest} has already a .git directory. Therefore we don't reinstall it"
+  echo "We seem to be running inside a vagrant VM"
 else
-  echo "Installing into ${dest}"
-  if ! [[ -d /etc/puppet/ ]]
+  packets_needed="curl git virtualbox virtualbox-dkms"
+  for j in $packets_needed
+  do
+    if debInst $j; then
+        echo $j seems to be already installed
+    else
+        apt-get -qqy install  $j
+    fi
+  done
+
+  origin='git://github.com/ngiger/elexis-vagrant.git'
+  dest='/etc/puppet'
+  if [[ -d ${dest}/.git ]]
   then
-    git clone ${origin} ${dest}
+    echo "${dest} has already a .git directory. Therefore we don't reinstall it"
   else
-    # move it out of the way
-    tempDir=`mktemp -d`
-    mv ${dest} ${tempDir}
-    git clone ${origin} ${dest}
-    mv --no-clobber ${tempDir}/* ${dest}
+    echo "Installing into ${dest}"
+    if ! [[ -d /etc/puppet/ ]]
+    then
+      git clone ${origin} ${dest}
+    else
+      # move it out of the way
+      tempDir=`mktemp -d`
+      mv ${dest} ${tempDir}
+      git clone ${origin} ${dest}
+      mv --no-clobber ${tempDir}/* ${dest}
+    fi
   fi
 fi
 
-echo "(Re)installing needed packets for RVM and ruby"
-apt-get -qqy install sudo curl
-RVM_MULTI_PATH='/usr/local/rvm/bin/rvm'
-if [[ -e $RVM_MULTI_PATH ]]
-then
-  echo "$RVM_MULTI_PATH already installed"
-else
-  echo "Installing rvm as multi user into $RVM_MULTI_PATH"
-  curl -L https://get.rvm.io | sudo bash -s stable
-fi
+echo "(Re)installing needed packets for ruby1.9"
+# openssl
+# here we should stop the services without asking
+# and we should not reinstall grub!
+# sudo apt-get upgrade --yes
+INST="sudo apt-get install --yes --quiet --no-install-recommends"
+$INST  bash curl git patch bzip2  
+$INST   build-essential libreadline6 libreadline6-dev curl git-core
+# zlib1g zlib1g-dev  libssl-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf \
+#  libc6-dev libgdbm-dev ncurses-dev automake libtool bison subversion libffi-dev libvirt-dev \
+$INST ruby1.9.1 ruby1.9.1-dev augeas-tools libaugeas-ruby1.9.1
+sudo apt-get -qqy --no-install-recommends build-dep ruby1.9.1
 
-echo "(Re)installing needed packets for RVM and ruby"
-apt-get -qqy --no-install-recommends install bash curl git patch bzip2 \
-  build-essential openssl libreadline6 libreadline6-dev curl git-core zlib1g zlib1g-dev \
-  libssl-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf \
-  libc6-dev libgdbm-dev ncurses-dev automake libtool bison subversion libffi-dev libvirt-dev
+sudo gem install --no-ri --no-rdoc bundler
+sudo gem install --no-ri --no-rdoc puppet --version 3.5.1
+sudo gem install --no-ri --no-rdoc librarian-puppet --version 1.0.3
 
-rvm install 1.9.2
-gem install --no-ri --no-rdoc puppet
-
-HIERA_PUPPET_YAML='/etc/puppet/hiera.yaml'
-if [[ -f ${HIERA_PUPPET_YAML} ]]
-then
-  echo "${HIERA_PUPPET_YAML} already present"
-else
-  echo "Adding default configuration into ${HIERA_PUPPET_YAML}"
-(
-cat <<EOF
----
-:backends: yaml
-:yaml:
-  :datadir: ${dest}
-:hierarchy:
-  - %{::clientcert}
-  - %{::environment}
-  - private_hiera/config
-  - hiera/common
-:logger: console
-EOF
-) > $HIERA_PUPPET_YAML
-fi
-
-HIERA_YAML='/etc/hiera.yaml'
-if [[ ${HIERA_YAML} ]]
-then
-  echo "${HIERA_YAML} already present"
-else
-  echo "Creating logical link from ${HIERA_PUPPET_YAML} -> ${HIERA_YAML}"
-  ln -s ${HIERA_PUPPET_YAML} ${HIERA_YAML}
-fi
-ln -s ${HIERA_PUPPET_YAML} ${HIERA_YAML}
-ls -l ${HIERA_PUPPET_YAML} ${HIERA_YAML}
-
-echo "Cloned ${origin} into ${dest} and created default hiera configuration in ${HIERA_PUPPET_YAML}"
+echo "${operation} ${origin} into ${dest}"

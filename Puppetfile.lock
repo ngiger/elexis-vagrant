@@ -1,4 +1,13 @@
 FORGE
+  remote: http://forge.puppetlabs.com
+  specs:
+    jbeard/portmap (0.1.6)
+      puppetlabs/stdlib (>= 4.0.0)
+    puppetlabs/concat (1.1.0)
+      puppetlabs/stdlib (>= 4.0.0)
+    puppetlabs/stdlib (4.3.2)
+
+FORGE
   remote: https://forge.puppetlabs.com
   specs:
     domcleal/augeasproviders (1.2.0)
@@ -6,37 +15,28 @@ FORGE
     erwbgy/runit (0.4.2)
     erwbgy/ssh (0.2.1)
       domcleal/augeasproviders (>= 0.5.1)
-    jbeard/nfs (0.1.6)
-      jbeard/portmap (>= 0.1.6)
-      puppetlabs/concat (>= 1.0.0)
-      puppetlabs/stdlib (>= 4.0.0)
-    jbeard/portmap (0.1.6)
-      puppetlabs/stdlib (>= 4.0.0)
-    maestrodev/rvm (1.5.9)
+    maestrodev/rvm (1.6.2)
       puppetlabs/stdlib (>= 3.2.0)
     mthibaut/users (1.0.11)
       puppetlabs/stdlib (>= 0.0.0)
-    puppetlabs/apache (1.1.0)
+    puppetlabs/apache (1.1.1)
       puppetlabs/concat (>= 1.0.0)
       puppetlabs/stdlib (>= 2.4.0)
-    puppetlabs/apt (1.5.1)
+    puppetlabs/apt (1.5.2)
       puppetlabs/stdlib (>= 2.2.1)
-    puppetlabs/concat (1.1.0)
-      puppetlabs/stdlib (>= 4.0.0)
     puppetlabs/firewall (1.1.3)
     puppetlabs/java (1.1.1)
       puppetlabs/stdlib (>= 0.1.6)
-    puppetlabs/mysql (2.3.0)
+    puppetlabs/mysql (2.3.1)
       puppetlabs/stdlib (>= 3.2.0)
-    puppetlabs/postgresql (3.4.0)
+    puppetlabs/postgresql (3.4.1)
       puppetlabs/apt (< 2.0.0, >= 1.1.0)
       puppetlabs/concat (< 2.0.0, >= 1.0.0)
       puppetlabs/firewall (>= 0.0.4)
       puppetlabs/stdlib (< 5.0.0, >= 3.2.0)
-    puppetlabs/stdlib (4.3.2)
     puppetlabs/vcsrepo (1.1.0)
     ripienaar/concat (0.2.0)
-    thomasvandoren/etckeeper (0.0.8)
+    thomasvandoren/etckeeper (0.0.9)
 
 GIT
   remote: git://github.com/ngiger/puppet-samba.git
@@ -48,7 +48,7 @@ GIT
 GIT
   remote: git://github.com/ngiger/puppet-x2go.git
   ref: master
-  sha: e4d8130e827df105d3a200f7c516ab65542237e4
+  sha: e0c8fefb7bf0006901058322ebef5859aa6dcd2c
   specs:
     ngiger/x2go (0.1.3)
       puppetlabs/apt (>= 1.0.0)
@@ -64,7 +64,7 @@ GIT
 GIT
   remote: https://github.com/ngiger/puppet-luks_backup.git
   ref: master
-  sha: 41c8b22c37a9e03a5b638aa241949b1c4d15595d
+  sha: 914059988a9a8136735e3c91b557c525e9d42e11
   specs:
     ngiger/luks_backup (0.1.0)
 
@@ -97,6 +97,14 @@ PATH
   remote: ./static-modules/ntp_demo
   specs:
     ngiger/ntp_demo (0.0.1)
+
+PATH
+  remote: puppet-nfs
+  specs:
+    jbeard/nfs (0.1.6)
+      jbeard/portmap (>= 0.1.6)
+      puppetlabs/concat (>= 1.0.0)
+      puppetlabs/stdlib (>= 4.0.0)
 
 DEPENDENCIES
   ajjahn/samba (>= 0)
