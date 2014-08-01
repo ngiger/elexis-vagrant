@@ -6,8 +6,7 @@ forge "https://forge.puppetlabs.com"
 # mod 'arusso/nfs'
 
 # mod 'ghoneycutt/nfs'
-# mod 'jbeard/nfs' #, :git => 'https://github.com/jbeard6/jbeard-nfs'
-mod 'jbeard/nfs', :path => 'puppet-nfs'
+mod 'jbeard/nfs' #, :git => 'https://github.com/jbeard6/jbeard-nfs'
 
 #forge "https://forgeapi.puppetlabs.com"
 

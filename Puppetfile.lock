@@ -1,8 +1,6 @@
 FORGE
   remote: http://forge.puppetlabs.com
   specs:
-    jbeard/portmap (0.1.6)
-      puppetlabs/stdlib (>= 4.0.0)
     puppetlabs/concat (1.1.0)
       puppetlabs/stdlib (>= 4.0.0)
     puppetlabs/stdlib (4.3.2)
@@ -15,6 +13,12 @@ FORGE
     erwbgy/runit (0.4.2)
     erwbgy/ssh (0.2.1)
       domcleal/augeasproviders (>= 0.5.1)
+    jbeard/nfs (0.1.7)
+      jbeard/portmap (>= 0.1.6)
+      puppetlabs/concat (>= 1.0.0)
+      puppetlabs/stdlib (>= 4.0.0)
+    jbeard/portmap (0.1.6)
+      puppetlabs/stdlib (>= 4.0.0)
     maestrodev/rvm (1.6.2)
       puppetlabs/stdlib (>= 3.2.0)
     mthibaut/users (1.0.11)
@@ -97,14 +101,6 @@ PATH
   remote: ./static-modules/ntp_demo
   specs:
     ngiger/ntp_demo (0.0.1)
-
-PATH
-  remote: puppet-nfs
-  specs:
-    jbeard/nfs (0.1.6)
-      jbeard/portmap (>= 0.1.6)
-      puppetlabs/concat (>= 1.0.0)
-      puppetlabs/stdlib (>= 4.0.0)
 
 DEPENDENCIES
   ajjahn/samba (>= 0)
