@@ -8,7 +8,5 @@ class elexis::devel inherits elexis::common {
   include eclipse
   include jenkins
   include elexis::jenkins_commons
-#  elexis::jenkins_elexis{'2.1.6': branch => '2.1.6'} # Adds Jenkins and jubula tests for Elexis 2.1.6
-  elexis::jenkins_elexis{'2.1.7': branch => '2.1.7'} # Adds Jenkins and jubula tests for Elexis 2.1.6
 
 }
