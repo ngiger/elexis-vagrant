@@ -5,8 +5,6 @@ class elexis::devel inherits elexis::common {
   include elexis::client
   include elexis::mysql_server
   include elexis::postgresql_server
-  include eclipse
   include jenkins
   include elexis::jenkins_commons
-
 }

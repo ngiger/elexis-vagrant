@@ -11,22 +11,11 @@
 # `/pg_server.pp`.
 #
 #
-# [*java*]
-#    The java version to install. If not specified, the
-#    module will use whatever version is the default for your
-#    OS distro.
-#
-# [*eclipse*]
-#    The eclipse version to install. If not specified, the
-#    module will use whatever version is the default for your
-#    OS distro. Otherwise it will download it from the medelexis-Opensource
-#    and install a link into the /usr/local/bin
 #
 # === Examples:
 #
 #   class { 'elexis':
 #     java               => 'openjdk-6,
-#     eclipse            => 'juno-rcp-SR2',
 #   }
 #
 #
@@ -42,8 +31,6 @@ class elexis (
   $binDir              = hiera('elexis::bin_dir',           '/usr/local/bin'),          # where we will put our binary helper scripts
   $service_path         = hiera('elexis::service',          '/var/lib/service'),
   $jenkinsRoot          = hiera('elexis::jenkinsDir',       '/opt/jenkins'),
-  $eclipseRelease       = hiera('elexis::eclipseRelease',   'juno'),
-  $defaultEclipse       = hiera('elexis::default_eclipse',  'eclipse-rcp-juno-SR2'),
   $downloadDir          = hiera('elexis::downloadDir',      '/opt/downloads'),
   $downloadURL          = hiera('elexis::downloadURL',      'http://ftp.medelexis.ch/downloads_opensource'),
   $jenkinsRoot          = hiera('elexis::jenkinsRoot',      '/opt/jenkins'),

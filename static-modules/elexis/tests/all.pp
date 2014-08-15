@@ -6,12 +6,9 @@ include elexis::awesome
 include elexis::client                    
 include elexis::common                    
 include elexis::devel                     
-# include elexis::download_eclipse_version  
-# include elexis::eclipse_plugins           
 include elexis::elexis_bootstrap          
 # include elexis::install          
 include elexis::jenkins_commons  
-# include elexis::jenkins_elexis   
 include elexis::jenkins_slave    
 include elexis::latex            
 include elexis::mail
