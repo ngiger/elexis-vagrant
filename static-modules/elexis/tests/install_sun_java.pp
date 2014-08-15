@@ -1,1 +1,0 @@
-require elexis::install_sun_java
