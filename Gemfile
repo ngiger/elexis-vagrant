@@ -21,7 +21,3 @@ if false
   end
 end
 
-gem 'bundler',            '>=1.6.0'
-gem 'puppet',             '3.5.1' # I don't like the deprecation warning for environments
-#gem 'librarian-puppet',   '1.1.1'
-gem 'librarian-puppet',   '1.0.3'

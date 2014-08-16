@@ -3,6 +3,12 @@
 # Copyright 2013 by Niklaus Giger <niklaus.giger@member.fsf.org>
 managed_note: "# (c) copyright 2014 by Niklaus Giger. Managed by puppet. Variables come from hieradata/common.yaml"
 nfs_server: 172.25.1.70
+classes_for_server:
+  - apt
+  - x2go::common
+packages_for_server:
+  - fish
+  - inetutils-tools
 
 # Here you find the default values for a medical practice using Elexis
 # You should create a folder private and copy this file to private/config.yml
@@ -33,8 +39,6 @@ elexis::install_script: /usr/local/bin/install_elexis.rb
 server::reboot_script: '/usr/bin/sudo /sbin/shutdown -r -t 30 now'
 server::halt_script:   '/usr/bin/sudo /sbin/shutdown -h -t 30 now'
 
-kde::ensure: false
-kde::server::ensure: true
 x2go::ensure: true
 samba::ensure: true
 

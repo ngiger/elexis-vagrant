@@ -55,8 +55,7 @@ $INST   build-essential libreadline6 libreadline6-dev curl git-core
 $INST ruby1.9.1 ruby1.9.1-dev augeas-tools libaugeas-ruby1.9.1
 sudo apt-get -qqy --no-install-recommends build-dep ruby1.9.1
 
+shell/install_puppet.sh
 sudo gem install --no-ri --no-rdoc bundler
-sudo gem install --no-ri --no-rdoc puppet --version 3.5.1
-sudo gem install --no-ri --no-rdoc librarian-puppet --version 1.0.3
 
 echo "${operation} ${origin} into ${dest}"

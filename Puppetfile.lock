@@ -1,130 +1,113 @@
 FORGE
-  remote: http://forge.puppetlabs.com
+  remote: https://forgeapi.puppetlabs.com
   specs:
-    puppetlabs/concat (1.1.0)
-      puppetlabs/stdlib (>= 4.0.0)
-    puppetlabs/stdlib (4.3.2)
-
-FORGE
-  remote: https://forge.puppetlabs.com
-  specs:
-    domcleal/augeasproviders (1.2.0)
-      puppetlabs/stdlib (< 5.0.0, >= 3.2.0)
-    erwbgy/runit (0.4.2)
-    erwbgy/ssh (0.2.1)
-      domcleal/augeasproviders (>= 0.5.1)
-    jbeard/nfs (0.1.7)
-      jbeard/portmap (>= 0.1.6)
-      puppetlabs/concat (>= 1.0.0)
-      puppetlabs/stdlib (>= 4.0.0)
-    jbeard/portmap (0.1.6)
-      puppetlabs/stdlib (>= 4.0.0)
-    maestrodev/rvm (1.6.2)
-      puppetlabs/stdlib (>= 3.2.0)
-    mthibaut/users (1.0.11)
-      puppetlabs/stdlib (>= 0.0.0)
-    puppetlabs/apache (1.1.1)
-      puppetlabs/concat (>= 1.0.0)
-      puppetlabs/stdlib (>= 2.4.0)
-    puppetlabs/apt (1.5.2)
-      puppetlabs/stdlib (>= 2.2.1)
-    puppetlabs/firewall (1.1.3)
-    puppetlabs/java (1.1.1)
-      puppetlabs/stdlib (>= 0.1.6)
-    puppetlabs/mysql (2.3.1)
-      puppetlabs/stdlib (>= 3.2.0)
-    puppetlabs/postgresql (3.4.1)
-      puppetlabs/apt (< 2.0.0, >= 1.1.0)
-      puppetlabs/concat (< 2.0.0, >= 1.0.0)
-      puppetlabs/firewall (>= 0.0.4)
-      puppetlabs/stdlib (< 5.0.0, >= 3.2.0)
-    puppetlabs/vcsrepo (1.1.0)
-    ripienaar/concat (0.2.0)
-    thomasvandoren/etckeeper (0.0.9)
+    alup-rbenv (1.2.0)
+    domcleal-augeasproviders (1.2.0)
+      puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
+    erwbgy-ssh (0.2.1)
+      domcleal-augeasproviders (>= 0.5.1)
+    jbeard-nfs (0.1.7)
+      jbeard-portmap (>= 0.1.6)
+      puppetlabs-concat (>= 1.0.0)
+      puppetlabs-stdlib (>= 4.0.0)
+    jbeard-portmap (0.1.6)
+      puppetlabs-stdlib (>= 4.0.0)
+    mthibaut-users (1.0.11)
+      puppetlabs-stdlib (>= 0)
+    puppetlabs-apache (1.1.1)
+      puppetlabs-concat (>= 1.0.0)
+      puppetlabs-stdlib (>= 2.4.0)
+    puppetlabs-apt (1.6.0)
+      puppetlabs-stdlib (>= 2.2.1)
+    puppetlabs-concat (1.1.0)
+      puppetlabs-stdlib (>= 4.0.0)
+    puppetlabs-firewall (1.1.3)
+    puppetlabs-java (1.1.1)
+      puppetlabs-stdlib (>= 0.1.6)
+    puppetlabs-mysql (2.3.1)
+      puppetlabs-stdlib (>= 3.2.0)
+    puppetlabs-postgresql (3.4.2)
+      puppetlabs-apt (< 2.0.0, >= 1.1.0)
+      puppetlabs-concat (< 2.0.0, >= 1.0.0)
+      puppetlabs-firewall (>= 0.0.4)
+      puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
+    puppetlabs-stdlib (4.3.2)
+    puppetlabs-vcsrepo (1.1.0)
+    ripienaar-concat (0.2.0)
+    thomasvandoren-etckeeper (0.0.9)
 
 GIT
   remote: git://github.com/ngiger/puppet-samba.git
   ref: master
   sha: 98491a3d14c3de4951a1fe0c5521dea0302d84b2
   specs:
-    ajjahn/samba (0.1.2)
+    ajjahn-samba (0.1.2)
 
 GIT
-  remote: git://github.com/ngiger/puppet-x2go.git
+  remote: https://github.com/ngiger/puppet-cockpit.git
   ref: master
-  sha: e0c8fefb7bf0006901058322ebef5859aa6dcd2c
+  sha: 44bebfea553cc192372dd041edecbed8a38fe2f3
   specs:
-    ngiger/x2go (0.1.3)
-      puppetlabs/apt (>= 1.0.0)
+    ngiger-cockpit (0.1.0)
+      alup-rbenv (>= 1.2)
+      puppetlabs-vcsrepo (>= 1.0.0)
+
+GIT
+  remote: https://github.com/ngiger/puppet-desktop.git
+  ref: master
+  sha: cadd516528e36e11d555c4c0c0676241429023ad
+  specs:
+    ngiger-desktop (0.1.0)
+      puppetlabs-stdlib (>= 0)
 
 GIT
   remote: https://github.com/ngiger/puppet-dnsmasq.git
   ref: master
   sha: eb5be045a14665586330d8ebbbffee740676c00b
   specs:
-    ngiger/dnsmasq (0.1.0)
-      puppetlabs/apt (>= 1.0.0)
+    ngiger-dnsmasq (0.1.0)
+      puppetlabs-apt (>= 1.0.0)
+
+GIT
+  remote: https://github.com/ngiger/puppet-elexis.git
+  ref: master
+  sha: f32feb586685f4482b040fe9b50a28c44feec3f8
+  specs:
+    ngiger-elexis (0.1.0)
+      puppetlabs-apt (>= 1.0.0)
 
 GIT
   remote: https://github.com/ngiger/puppet-luks_backup.git
   ref: master
   sha: 914059988a9a8136735e3c91b557c525e9d42e11
   specs:
-    ngiger/luks_backup (0.1.0)
+    ngiger-luks_backup (0.1.0)
 
-PATH
-  remote: ./static-modules/cockpit
+GIT
+  remote: https://github.com/ngiger/puppet-x2go.git
+  ref: master
+  sha: e0c8fefb7bf0006901058322ebef5859aa6dcd2c
   specs:
-    ngiger/cockpit (0.0.1)
-
-PATH
-  remote: ./static-modules/eclipse
-  specs:
-    ngiger/eclipse (0.0.1)
-
-PATH
-  remote: ./static-modules/elexis
-  specs:
-    ngiger/elexis (0.0.1)
-
-PATH
-  remote: ./static-modules/jubula
-  specs:
-    ngiger/jubula (0.0.1)
-
-PATH
-  remote: ./static-modules/kde
-  specs:
-    ngiger/kde (0.0.1)
-
-PATH
-  remote: ./static-modules/ntp_demo
-  specs:
-    ngiger/ntp_demo (0.0.1)
+    ngiger-x2go (0.1.3)
+      puppetlabs-apt (>= 1.0.0)
 
 DEPENDENCIES
-  ajjahn/samba (>= 0)
-  domcleal/augeasproviders (>= 0)
-  erwbgy/runit (>= 0)
-  erwbgy/ssh (>= 0)
-  jbeard/nfs (>= 0)
-  maestrodev/rvm (>= 0)
-  mthibaut/users (>= 0)
-  ngiger/cockpit (>= 0)
-  ngiger/dnsmasq (>= 0)
-  ngiger/eclipse (>= 0)
-  ngiger/elexis (>= 0)
-  ngiger/jubula (>= 0)
-  ngiger/kde (>= 0)
-  ngiger/luks_backup (>= 0)
-  ngiger/ntp_demo (>= 0)
-  ngiger/x2go (>= 0)
-  puppetlabs/apache (>= 0)
-  puppetlabs/apt (>= 0)
-  puppetlabs/java (>= 0)
-  puppetlabs/mysql (>= 0)
-  puppetlabs/postgresql (>= 0)
-  puppetlabs/vcsrepo (>= 0)
-  ripienaar/concat (>= 0)
-  thomasvandoren/etckeeper (>= 0)
+  ajjahn-samba (>= 0)
+  domcleal-augeasproviders (>= 0)
+  erwbgy-ssh (>= 0)
+  jbeard-nfs (>= 0)
+  mthibaut-users (>= 0)
+  ngiger-cockpit (>= 0)
+  ngiger-desktop (>= 0)
+  ngiger-dnsmasq (>= 0)
+  ngiger-elexis (>= 0)
+  ngiger-luks_backup (>= 0)
+  ngiger-x2go (>= 0)
+  puppetlabs-apache (>= 0)
+  puppetlabs-apt (>= 0)
+  puppetlabs-java (>= 0)
+  puppetlabs-mysql (>= 0)
+  puppetlabs-postgresql (>= 0)
+  ripienaar-concat (>= 0)
+  thomasvandoren-etckeeper (>= 0)
 

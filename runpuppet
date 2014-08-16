@@ -2,6 +2,9 @@
 require 'fileutils'
 
 class RunPuppet
+PUPPET_MIN_VERSION = '3.5.1'
+LIBRARIAN_MIN_VERSION= '1.3.1'
+
 LOG_DIR = '/var/log/puppet'
 PUPPET_DIR=File.expand_path(File.dirname(__FILE__))
 DEFAULT_PUPPET_CONF = "[main]
@@ -27,40 +30,26 @@ modulepath=#{PUPPET_DIR}/modules
     end
 
     # verify some stuff which must be installed before launching
-    info = `gem list puppet`
-    unless res= /(puppet).*[^\d\.]([34]\.\d)/.match(info)
+    info = `puppet --version`
+    version = Gem::Version.new(info)
+    puts version
+    unless version >= Gem::Version.new(PUPPET_MIN_VERSION)
       # we need augeas >= 1.0 for smb.conf read only to work correctly
-      puts "Must install first puppet >= 3.5.1"
-      puts "probably the following cmds will do it. Either apt-get install ruby-2.1 ruby-2.1.dev -t backports-wheezy"
-      puts "sudo gem install --no-ri --no-rdoc puppet --version=3.5.1"
-      puts "sudo gem install --no-ri --no-rdoc rubygems-update"
-      puts "sudo update_rubygems"
-      puts "sudo gem update --system"
-      exit 2
-      system('gem install --no-ri --no-rdoc puppet')
+      puts "Must install first puppet >= #{PUPPET_MIN_VERSION}"
+      puts "look at shell/install_puppet.sh to see how"
     else
-      puts "Found puppet with version #{res[2]}"
+      puts "Found puppet with version #{version}"
     end
 
-    info = `dpkg -l augeas-lenses`
-    res= /ii\W+augeas-lenses\W+(1[\d\.]+)/.match(info)
-    unless res
-      puts "Must install first augeas-lenses >= 1.0"
+    version = `librarian-puppet version`.chomp
+    version = version.gsub(/[A-Z\-\s]+/i,'')
+    version = Gem::Version.new(version)
+    unless version >= Gem::Version.new(LIBRARIAN_MIN_VERSION)
+      puts "Must install librarian-puppet >= #{LIBRARIAN_MIN_VERSION}"
+      puts('gem install --no-ri --no-rdoc librarian-puppet')
       exit 2
-      system('apt-get install augeas-lenses')
     else
-      # we need augeas >= 1.0 for smb.conf read only to work correctly
-      puts "Found augeas-lenses with version #{res[1]}"
-    end if false
-
-    info = `gem list librarian-puppet`
-    unless res= /(librarian-puppet).*[^\d\.]([12]\.\d)/.match(info)
-      # we need augeas >= 1.0 for smb.conf read only to work correctly
-      puts "Must install librarian-puppet >= 1.0"
-      exit 2
-      system('gem install --no-ri --no-rdoc librarian-puppet')
-    else
-      puts "Found librarian-puppet with version #{res[2]}"
+      puts "Found librarian-puppet with version #{version}"
     end
   end
 
@@ -108,8 +97,9 @@ modulepath=#{PUPPET_DIR}/modules
               break
             end
       }
-    @hiera = ARGV.index("-e") || ARGV.index('--environment') ? "--hiera_config #{@hiera_default_file} " : ''
-    puts "Using hieraFile #{@hiera}"
+    @hiera = ARGV.index("-e")
+    @hiera ||= " --hiera_config #{@hiera_default_file}"
+    puts "Using hieraFile #{@hiera} @hiera_default_file #{@hiera_default_file}"
   end
 
   public
@@ -119,7 +109,10 @@ modulepath=#{PUPPET_DIR}/modules
     checkPuppetConfiguration
     checkHieraConfiguration
     checkVersionsOfNeededStuff
-    if File.writable?("#{PUPPET_DIR}/modules") and PUPPET_DIR != '/vagrant'
+    system('bundle install')
+    puts ("#{PUPPET_DIR}/modules")
+          puts File.writable?("#{PUPPET_DIR}/modules")
+    if File.writable?("#{PUPPET_DIR}/modules") # and PUPPET_DIR != '/vagrant'
       system('librarian-puppet install')
     else
       puts "As we cannot write to #{PUPPET_DIR}/modules we assume that you have updated it via another mechanism"
@@ -127,6 +120,7 @@ modulepath=#{PUPPET_DIR}/modules
     FileUtils.makedirs(LOG_DIR, :verbose => true) unless File.directory?(LOG_DIR)
 
     logFile = File.join(LOG_DIR, Time.now.strftime('%Y-%m-%d_%H:%M:%S')+ '.log')
+    system("apt-get upgrade --quiet --yes")
     cmd = "puppet apply --modulepath #{PUPPET_DIR}/modules #{@hiera} #{ARGV.join(' ')} 2>&1 | tee #{logFile}"
     system(cmd)
     endTime = Time.now
