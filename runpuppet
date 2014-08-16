@@ -109,10 +109,7 @@ modulepath=#{PUPPET_DIR}/modules
     checkPuppetConfiguration
     checkHieraConfiguration
     checkVersionsOfNeededStuff
-    system('bundle install')
-    puts ("#{PUPPET_DIR}/modules")
-          puts File.writable?("#{PUPPET_DIR}/modules")
-    if File.writable?("#{PUPPET_DIR}/modules") # and PUPPET_DIR != '/vagrant'
+    if File.writable?("#{PUPPET_DIR}/modules") and PUPPET_DIR != '/vagrant' and Dir.pwd != '/vagrant'
       system('librarian-puppet install')
     else
       puts "As we cannot write to #{PUPPET_DIR}/modules we assume that you have updated it via another mechanism"
@@ -120,7 +117,7 @@ modulepath=#{PUPPET_DIR}/modules
     FileUtils.makedirs(LOG_DIR, :verbose => true) unless File.directory?(LOG_DIR)
 
     logFile = File.join(LOG_DIR, Time.now.strftime('%Y-%m-%d_%H:%M:%S')+ '.log')
-    system("apt-get upgrade --quiet --yes")
+#    system("apt-get upgrade --quiet --yes")
     cmd = "puppet apply --modulepath #{PUPPET_DIR}/modules #{@hiera} #{ARGV.join(' ')} 2>&1 | tee #{logFile}"
     system(cmd)
     endTime = Time.now

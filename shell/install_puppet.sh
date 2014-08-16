@@ -11,6 +11,12 @@ if [ $? -ne 0  ] ; then
   echo puppet/ >> /etc/.gitignore
 fi
 
+version=`puppet --version | grep 3.6.1`
+if [ "$version" == "3.6.1" ] ; then echo "Puppet 3.6.1 already installed"; exit; 
+else
+  echo "Must install as xxversion is $version"
+fi
+
 code_name=`lsb_release -c | cut -f2`
 wget https://apt.puppetlabs.com/puppetlabs-release-${code_name}.deb
 sudo dpkg -i puppetlabs-release-${code_name}.deb

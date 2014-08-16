@@ -10,6 +10,51 @@ packages_for_server:
   - fish
   - inetutils-tools
 
+client_names: [ ubuntu, arzt, mpa ]
+server_names: [ prxserver, server ]
+packages_for_admin: [vim-nox, fish, mosh, screen, lm-sensors, git, unzip, dlocate, mlocate, htop, curl, bzr, unattended-upgrades]
+
+etckeeper::ensure: true
+elexis::admin::ensure: true
+
+apt::sources:
+ 'debian_security':
+     location: 'http://security.debian.org/'
+     release: 'wheezy/updates'
+     repos: 'main contrib non-free'
+     required_packages: 'debian-keyring debian-archive-keyring'
+     key: '46925553'
+     key_server: 'subkeys.pgp.net'
+     pin: '-10'
+     include_src: 'true'
+     include_deb: 'true'
+ 'debian_wheezy':
+     location: 'http://mirror.switch.ch/ftp/mirror/debian/'
+     release: 'wheezy'
+     repos: 'main contrib non-free'
+     required_packages: 'debian-keyring debian-archive-keyring'
+     key: '46925553'
+     key_server: 'subkeys.pgp.net'
+     pin: '-10'
+     include_src: 'true'
+     include_deb: 'true'
+ 'debian_jessie':
+     location: 'http://mirror.switch.ch/ftp/mirror/debian/'
+     release: 'jessie'
+     repos: 'main contrib non-free'
+     required_packages: 'debian-keyring debian-archive-keyring'
+     key: '46925553'
+     key_server: 'subkeys.pgp.net'
+     pin: '-10'
+     include_src: 'true'
+     include_deb: 'true'
+ 'puppetlabs':
+     location: 'http://apt.puppetlabs.com'
+     repos: 'main'
+     key: '4BD6EC30'
+     key_server: 'pgp.mit.edu'
+
+
 # Here you find the default values for a medical practice using Elexis
 # You should create a folder private and copy this file to private/config.yml
 # Review each line carefully before modifying it. We tried hard to make it as simple

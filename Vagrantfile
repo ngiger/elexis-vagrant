@@ -1,5 +1,20 @@
+#!/usr/bin/env ruby
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
+
+todo = %(
+  +# https://forge.puppetlabs.com/puppetlabs/stdlib
++# file_line: This resource ensures that a given line is contained within a file. You can also use "match" to replace existing lines.
++# loadyaml Load a YAML file containing an array, string, or hash, and return the data in the corresponding native data type.
++#  str2saltedsha512 This converts a string to a salted-SHA512 password hash (which is used for OS X versions >= 10.7). Given any simple string, you will get a hex ve
++# unix chpasswd [options] DESCRIPTION     The chpasswd command reads a list of user name and password pairs from standard input and uses this information to update a
++# Each line is of the format:
++# user_name:password
+)
+if ARGV.index('provision')
+  ENV['RUBYOPT']=''
+#  system("librarian-puppet install --verbose") 
+end
 
 #------------------------------------------------------------------------------------------------------------
 # Some simple customization below
@@ -42,11 +57,15 @@ Vagrant::Config.run do |config|
   config.vm.share_folder "hieradata", "/etc/puppet/hieradata", File.join(Dir.pwd, 'hieradata')
   config.vm.customize  ["modifyvm", :id, "--memory", 1024, "--cpus", 2,  ]
 
-  config.vm.provision :shell, :path => "bootstrap_debian.sh"
+  config.vm.provision :shell, :path => "shell/install_puppet.sh"
+#    ubuntu.vm.provision :shell, :path => "shell/install_puppet.sh" # as we get only a puppet 3.4 which has problems with UTF-8
   config.vm.provision :puppet do |puppet|
-    puppet.manifests_path = "manifests"
+    puppet.options = ['--environment', 'development'] # , '--debug']
+    puppet.manifests_path = 'manifests'
     puppet.manifest_file = "site.pp"
     puppet.module_path = "modules"
+    puppet.hiera_config_path = "hiera.yaml"
+    puppet.working_directory = "/vagrant"
   end
   config.vm.define :server do |server|  
     server.vm.host_name = "server.#{`hostname -d`.chomp}"
@@ -103,11 +122,13 @@ Vagrant::Config.run do |config|
   end if systemsToBoot.index(:jenkins)
   
   config.vm.define :ubuntu do |ubuntu|
-    ubuntu.vm.provision :shell, :path => "shell/install_puppet.sh"
     ubuntu.vm.host_name = "ubuntu.#{`hostname -d`.chomp}"
     ubuntu.vm.network :bridged, { :mac => macFirst2Bytes + '27228F02', :bridge => bridgedNetworkAdapter }
-    ubuntu.vm.box = 'ubuntu/trusty32'
-    ubuntu.vm.box_url = 'http://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-i386-vagrant-disk1.box'
+    
+    ubuntu.vm.box = 'ubuntu-14.04-desktop-i386'
+    ubuntu.vm.box_url = 'http://ngiger.dyndns.org/downloads/ubuntu-14.04-desktop-i386.box'
+#    ubuntu.vm.box = 'ubuntu/trusty32'
+#    ubuntu.vm.box_url = 'http://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-i386-vagrant-disk1.box'
 #    ubuntu.vm.box = "precise-ubuntu-cloudimg-i386-vagrant-disk1"
 #    ubuntu.vm.box_url = 'https://cloud-images.ubuntu.com/vagrant/precise/current/precise-ubuntu-cloudimg-i386-vagrant-disk1.box'
     ubuntu.vm.forward_port    22, firstPort + 8022    # ssh
