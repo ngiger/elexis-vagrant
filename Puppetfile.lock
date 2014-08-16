@@ -43,50 +43,38 @@ GIT
   specs:
     ajjahn-samba (0.1.2)
 
-GIT
-  remote: https://github.com/ngiger/puppet-cockpit.git
-  ref: master
-  sha: 44bebfea553cc192372dd041edecbed8a38fe2f3
+PATH
+  remote: puppet-cockpit
   specs:
     ngiger-cockpit (0.1.0)
       alup-rbenv (>= 1.2)
       puppetlabs-vcsrepo (>= 1.0.0)
 
-GIT
-  remote: https://github.com/ngiger/puppet-desktop.git
-  ref: master
-  sha: cadd516528e36e11d555c4c0c0676241429023ad
+PATH
+  remote: puppet-desktop
   specs:
     ngiger-desktop (0.1.0)
       puppetlabs-stdlib (>= 0)
 
-GIT
-  remote: https://github.com/ngiger/puppet-dnsmasq.git
-  ref: master
-  sha: eb5be045a14665586330d8ebbbffee740676c00b
+PATH
+  remote: puppet-dnsmasq
   specs:
     ngiger-dnsmasq (0.1.0)
       puppetlabs-apt (>= 1.0.0)
 
-GIT
-  remote: https://github.com/ngiger/puppet-elexis.git
-  ref: master
-  sha: f32feb586685f4482b040fe9b50a28c44feec3f8
+PATH
+  remote: puppet-elexis
   specs:
     ngiger-elexis (0.1.0)
       puppetlabs-apt (>= 1.0.0)
 
-GIT
-  remote: https://github.com/ngiger/puppet-luks_backup.git
-  ref: master
-  sha: 914059988a9a8136735e3c91b557c525e9d42e11
+PATH
+  remote: puppet-luks_backup
   specs:
     ngiger-luks_backup (0.1.0)
 
-GIT
-  remote: https://github.com/ngiger/puppet-x2go.git
-  ref: master
-  sha: e0c8fefb7bf0006901058322ebef5859aa6dcd2c
+PATH
+  remote: puppet-x2go
   specs:
     ngiger-x2go (0.1.3)
       puppetlabs-apt (>= 1.0.0)
