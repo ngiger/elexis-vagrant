@@ -41,46 +41,62 @@ FORGE
     ripienaar-concat (0.2.0)
     thomasvandoren-etckeeper (0.0.9)
 
-PATH
-  remote: puppet-cockpit
+GIT
+  remote: https://github.com/ngiger/puppet-cockpit.git
+  ref: master
+  sha: 504cd67723ba8292f19ce0e2aa4d9859cbbf0086
   specs:
     ngiger-cockpit (0.1.0)
+      jbussdieker-daemontools (>= 0.0.3)
       jdowning-rbenv (>= 1.3)
+      puppetlabs-apt (>= 1.0.0)
       puppetlabs-vcsrepo (>= 1.0.0)
 
-PATH
-  remote: puppet-desktop
+GIT
+  remote: https://github.com/ngiger/puppet-desktop.git
+  ref: master
+  sha: eb86df99cd4ae0d7946dd9378d4c2a5e906a6b45
   specs:
     ngiger-desktop (0.1.0)
       puppetlabs-stdlib (>= 0)
 
-PATH
-  remote: puppet-dnsmasq
+GIT
+  remote: https://github.com/ngiger/puppet-dnsmasq.git
+  ref: master
+  sha: eb5be045a14665586330d8ebbbffee740676c00b
   specs:
     ngiger-dnsmasq (0.1.0)
       puppetlabs-apt (>= 1.0.0)
 
-PATH
-  remote: puppet-elexis
+GIT
+  remote: https://github.com/ngiger/puppet-elexis.git
+  ref: master
+  sha: f2590cf57aed08d184d094bd277e67588ed1f064
   specs:
     ngiger-elexis (0.1.0)
       puppetlabs-apt (>= 1.0.0)
 
-PATH
-  remote: puppet-hinmail
+GIT
+  remote: https://github.com/ngiger/puppet-hinmail.git
+  ref: master
+  sha: 071ae7bb9d572b61046b864af103700458fec1ad
   specs:
     ngiger-hinmail (0.1.0)
       puppetlabs-apache (>= 1.0.0)
       puppetlabs-concat (>= 1.0.0)
       puppetlabs-stdlib (>= 2.4.0)
 
-PATH
-  remote: puppet-luks_backup
+GIT
+  remote: https://github.com/ngiger/puppet-luks_backup.git
+  ref: master
+  sha: caf9119a00746eb6e8dcd0bee11f2906a9449069
   specs:
     ngiger-luks_backup (0.1.0)
 
-PATH
-  remote: puppet-x2go
+GIT
+  remote: https://github.com/ngiger/puppet-x2go.git
+  ref: master
+  sha: 63663e364366f798d757bf1db9dedc5d8f1d89fb
   specs:
     ngiger-x2go (0.1.3)
       puppetlabs-apt (>= 1.0.0)

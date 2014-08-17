@@ -3,8 +3,10 @@
 #forge 'https://forge.puppetlabs.com'
 forge 'https://forgeapi.puppetlabs.com'
 
+FORCE_FORGE ||= ENV['FORCE_FORGE']
+puts "FORCE_FORGE ist #{FORCE_FORGE}"
 def localOrRemote(name, path)
-  if File.directory?(path) 
+  if File.directory?(path) and not FORCE_FORGE
     mod(name, :path => path)
     savedDir = Dir.pwd
     if false
