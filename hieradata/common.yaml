@@ -13,6 +13,18 @@ packages_for_server:
 client_names: [ ubuntu, arzt, mpa ]
 server_names: [ prxserver, server ]
 packages_for_admin: [vim-nox, fish, mosh, screen, lm-sensors, git, unzip, dlocate, mlocate, htop, curl, bzr, unattended-upgrades]
+hinmail:
+  fetchmailrc_lines:
+    - "# Just to show that you can place"
+    - # an empty line
+    - "# lines for your fetchmailrc here"
+    - # an empty line
+
+exim:
+  connection_type: internet # local or internet
+  other_hostnames: praxis.giger.dyndns.org    
+  local_interfaces: "127.0.0.1 ; ::1" # only local
+  relay_nets: '172.25.0.0/16'
 
 etckeeper::ensure: true
 elexis::admin::ensure: true

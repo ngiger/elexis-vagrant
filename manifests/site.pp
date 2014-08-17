@@ -61,6 +61,11 @@ if ("packages_for_$admin" != "") {
 $users_elexis        = hiera('users_elexis', [])
 if ($users_elexis) { elexis::users  {"users_elexis": user_definition => $users_elexis} }
 
+$servers        = hiera('server_names', [])
+if (member($servers, $hostname)) {
+  include hinmail
+}
+  
 # Some common stuff for the admin
 if hiera('elexis::admin::ensure', false) { include elexis::admin }
 

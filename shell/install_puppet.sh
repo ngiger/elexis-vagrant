@@ -14,7 +14,7 @@ fi
 version=`puppet --version | grep 3.6.1`
 if [ "$version" == "3.6.1" ] ; then echo "Puppet 3.6.1 already installed"; exit; 
 else
-  echo "Must install as xxversion is $version"
+  echo "Must install as version is $version"
 fi
 
 code_name=`lsb_release -c | cut -f2`
