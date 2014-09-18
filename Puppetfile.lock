@@ -9,7 +9,7 @@ FORGE
       jbeard-portmap (>= 0.1.6)
       puppetlabs-concat (>= 1.0.0)
       puppetlabs-stdlib (>= 4.0.0)
-    jbeard-portmap (0.1.6)
+    jbeard-portmap (0.1.7)
       puppetlabs-stdlib (>= 4.0.0)
     jbussdieker-daemontools (0.0.3)
     jdowning-rbenv (1.3.0)
@@ -22,20 +22,18 @@ FORGE
       puppetlabs-stdlib (>= 2.4.0)
     puppetlabs-apt (1.6.0)
       puppetlabs-stdlib (>= 2.2.1)
-    puppetlabs-concat (1.1.0)
-      puppetlabs-stdlib (>= 4.0.0)
-    puppetlabs-firewall (1.1.3)
+    puppetlabs-concat (1.1.1)
+      puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
     puppetlabs-git (0.2.0)
       puppetlabs-vcsrepo (>= 0.1.0)
-    puppetlabs-java (1.1.1)
-      puppetlabs-stdlib (>= 0.1.6)
+    puppetlabs-java (1.1.2)
+      puppetlabs-stdlib (>= 2.4.0)
     puppetlabs-mysql (2.3.1)
       puppetlabs-stdlib (>= 3.2.0)
-    puppetlabs-postgresql (3.4.2)
+    puppetlabs-postgresql (4.0.0)
       puppetlabs-apt (< 2.0.0, >= 1.1.0)
-      puppetlabs-concat (< 2.0.0, >= 1.0.0)
-      puppetlabs-firewall (>= 0.0.4)
-      puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
+      puppetlabs-concat (< 2.0.0, >= 1.1.0)
+      puppetlabs-stdlib (~> 4.0)
     puppetlabs-stdlib (4.3.2)
     puppetlabs-vcsrepo (1.1.0)
     ripienaar-concat (0.2.0)
@@ -87,6 +85,14 @@ GIT
       puppetlabs-stdlib (>= 2.4.0)
 
 GIT
+  remote: https://github.com/ngiger/puppet-hylafax.git
+  ref: master
+  sha: 704f14adf8f4185941211ac37b4400bf2bc63199
+  specs:
+    ngiger-hylafax (0.1.0)
+      puppetlabs-stdlib (>= 0)
+
+GIT
   remote: https://github.com/ngiger/puppet-luks_backup.git
   ref: master
   sha: caf9119a00746eb6e8dcd0bee11f2906a9449069
@@ -114,6 +120,7 @@ DEPENDENCIES
   ngiger-dnsmasq (>= 0)
   ngiger-elexis (>= 0)
   ngiger-hinmail (>= 0)
+  ngiger-hylafax (>= 0)
   ngiger-luks_backup (>= 0)
   ngiger-x2go (>= 0)
   puppetlabs-apache (>= 0)

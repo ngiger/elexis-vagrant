@@ -38,14 +38,7 @@ mod 'puppetlabs/vcsrepo'
 mod 'jdowning/rbenv'
 mod 'jbussdieker/daemontools'
 
-if false
-mod "puppetlabs/apt", :git => 'https://github.com/puppetlabs/puppetlabs-apt'
-mod "puppetlabs/stdlib", :git => 'https://github.com/puppetlabs/puppetlabs-stdlib'
-mod "puppetlabs/git", :git => 'https://github.com/puppetlabs/puppetlabs-git'
-mod 'puppetlabs/vcsrepo', :git => 'https://github.com/puppetlabs/puppetlabs-vcsrepo'
-mod 'jdowning/rbenv', :git => "https://github.com/justindowning/puppet-rbenv"
-mod 'jbussdieker/daemontools', :git => 'https://github.com/jbussdieker/puppet-daemontools'
-end
+localOrRemote("ngiger/hylafax",     'puppet-hylafax')
 localOrRemote("ngiger/cockpit",     'puppet-cockpit')
 localOrRemote("ngiger/desktop",     'puppet-desktop')
 localOrRemote("ngiger/dnsmasq",     'puppet-dnsmasq')
