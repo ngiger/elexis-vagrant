@@ -87,7 +87,7 @@ GIT
 GIT
   remote: https://github.com/ngiger/puppet-hylafax.git
   ref: master
-  sha: 704f14adf8f4185941211ac37b4400bf2bc63199
+  sha: 6a4ddebbbb2b865db6120c237146fc6af9f4986a
   specs:
     ngiger-hylafax (0.1.0)
       puppetlabs-stdlib (>= 0)
