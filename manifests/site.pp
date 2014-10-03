@@ -19,10 +19,6 @@ stage { 'last': require => Stage['main'] }
 
 # require apt::ppa
 # require apt::sources
-require apt
-
-if hiera('etckeeper::ensure', false) { include etckeeper }
-
 $hostname_classes = hiera("classes_for_${hostname}", '')
 
 if ("classes_for_$hostname" != "") {
@@ -58,30 +54,29 @@ if ("packages_for_$admin" != "") {
   ensure_packages[$admin_packages]
 }
 
-$users_elexis        = hiera('users_elexis', [])
-if ($users_elexis) { elexis::users  {"users_elexis": user_definition => $users_elexis} }
 
-$servers        = hiera('server_names', [])
-if (member($servers, $hostname)) {
-  include hinmail
-}
-  
-# Some common stuff for the admin
-if hiera('elexis::admin::ensure', false) { include elexis::admin }
-
-# User setup. Choose between KDE and (gnome, unity: both not yet supported)
-if hiera('kde::ensure', false)       { include kde }
-
-# ensure_resource('class', 'x2go',  {version => 'baikal', } )
-
-if hiera('x2go::ensure', false)      { include x2go }
- 
-# stuff for the server
-if hiera('elexis::praxis_wiki::ensure', false) { include elexis::praxis_wiki }
-if hiera('apache::ensure', false) { include apache }
-if hiera('dnsmasq::ensure', false) { include dnsmasq }
+# require apache
+require apt
+require cockpit
+require dnsmasq
+require elexis::admin
+require elexis::mysql_server
+require elexis::postgresql_server
+require elexis::praxis_wiki
+require elexis::samba
+require elexis::users
+require etckeeper
+# require hinmail
+require hylafax
+require hylafax::server
+# require desktop # lubuntu??
+# require kde
+# require kde::server
+require x2go
+require x2go::client
+require x2go::server
 
 # development stuff not active at this moment
-# if hiera('eclipse::ensure', false)   { include eclipse }
-# if hiera('jubula::ensure', false)    { include jubula }
+# require eclipse
+# require jubula
 

@@ -4,7 +4,6 @@
 # Don't use git-submodule or we will have problems when pushing/createing tags
 require 'pp'
 root = File.expand_path(File.dirname(__FILE__))
-@user = 'ngiger'
 
 unless ARGV.size >= 1
   puts "You must specify a cmd to execute"
@@ -15,16 +14,17 @@ userCmd = ARGV.join(' ')
 
 puts "Will execute the following cmd in all reposrs:\n#{userCmd}"
 
-repos = Dir.glob('*/.git')
+puts Dir.glob("*/.git/config")
+repos = []
+Dir.glob("*/.git/config").each{ |cfg| repos << File.join(Dir.pwd, File.dirname(File.dirname(cfg))) }
+# puts repos
+# exit 3
 repos.each{ 
   |repo|
-  
-  dir = File.dirname(repo)
-  next if /modules/.match(dir)
+  dir = File.basename(repo).sub('.git','')
   cmd = "cd #{File.join(root, dir)} && #{userCmd}"
-  Dir.chdir(File.join(root, dir))
-  puts "\n\n#{Dir.pwd}"
-  unless system(userCmd)
+  puts cmd
+  unless system(cmd)
     puts "Running #{cmd} failed!"
     exit 1
   end

@@ -1,3 +1,12 @@
+* Missing/non working specs for
+** puppet-cockpit
+** puppet-desktop
+** puppet-dnsmasq
+** puppet-luks_backup
+** puppet-x2go
+
+* compare puppet-luks_backup.pi2 and puppet-luks_backup
+
 * PostgreSQL: crontab kann nicht mehrmals pro Tag aufgerufen werden. hour =>  [0,4,8] änderte an Crontab nichts (18.1.2014). Bug?
 * Anpassungen für spezifische Praxis, e.g. praxisunion. Wie das ins Puppetfile/Gemfile aufnehmen?
 * Initialisierung der Mandanten (kontakt, password, ESR, Taxpunkte, schoebu befragen)

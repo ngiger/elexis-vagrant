@@ -80,6 +80,22 @@ h2. create a base box
 See the readme.texile in the subfolder definitions. This was used to create the Elexis-Wheezy-amd64.box which can be downloaded
 via http://ngiger.dyndns.org/downloads/Elexis-Wheezy-amd64-20130423.box
 
+h2. Adapt for a new client
+
+To distinguish between the various scenarios we use puppet environemnts. The following environemnts are predefined here
+* empty # minimal build
+* demoDB # create an elexis OpenSource installation with a demo database for playing
+* developer # create a developer environment (eclipse-IDE, mysql, postgres DB-Servers)
+* mustermann # a typical scenario for a medical practice
+
+The configuration of each of these scenarios is kept as a hiera yaml file named hieradata/<scenario>/<scenario>.yaml. To made it usable for the production scenario I add usually a soft link from <scenario>.yaml to production.yaml.
+
+The mustermann scenarios has some additional configuration for its main server under hieradata/mustermann/server.mustermann.com.yaml.
+
+When I have a new client client a usually create a configuration directory (e.g. a git repository /opt/clients/musterfrau/configuration) and create a logical link to it as hieradata/mustefrau.
+On each of the machines to provision of my client I will create a clone of the configuration and link hieradata/production to it.
+
+Using such a scenario is done add --environement=scenario to the puppet command line argument.
 
 h2. TODO/Goals
 
@@ -115,6 +131,13 @@ To be determined
 * Have at least 2 additional developpers using at least a part of the puppet stuff
 * Have at least 5 beta installation in medical practices
 * Specify specific version of jenkins and its plugins
+
+h3. Move stuff to docker containers
+
+The following services should be moved to docker containers
+* elexis-cockpit
+* mysql/postgresql server
+* wiki
 
 h3. Feature that might be in 1.0 or later
 
