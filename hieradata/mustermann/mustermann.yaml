@@ -1,0 +1,449 @@
+---
+# encoding: utf-8
+# Copyright 2013 by Niklaus Giger <niklaus.giger@member.fsf.org>
+managed_note: "# (c) copyright 2014 by Niklaus Giger. Managed by puppet. Variables come from hieradata/mustermann/mustermann.yaml"
+nfs_server: 172.25.1.70
+client_names: [ ubuntu, arzt, mpa ]
+server_names: [ prxserver, server ]
+hinmail:
+  fetchmailrc_lines:
+    - "# Just to show that you can place"
+    - # an empty line
+    - "# lines for your fetchmailrc here"
+    - # an empty line
+
+exim:
+  connection_type: internet # local or internet
+  other_hostnames: praxis.giger.dyndns.org    
+  local_interfaces: "127.0.0.1 ; ::1" # only local
+  relay_nets: '172.25.0.0/16'
+
+# Here you find the default values for a medical practice using Elexis
+# You should create a folder private and copy this file to private/config.yml
+# Review each line carefully before modifying it. We tried hard to make it as simple
+# as possible, but changing variables without some inner knowledge risks breaking
+# the whole system.
+# May be we could split the whole thing up using stuff like $myhash = loadyaml('/etc/praxis/samba.yaml') 
+#  see also https://forge.puppetlabs.com/puppetlabs/stdlib
+
+# As per May 2013 there are still a lot of changes coming!
+
+editor::default:              /usr/bin/vim.nox
+editor::package:              vim-nox
+elexis::default_eclipse:      eclipse-rcp-juno-SR2
+elexis::jenkinsDir:           /opt/jenkins
+elexis::eclipseRelease:       juno
+elexis::default_eclipse:      eclipse-rcp-juno-SR2
+elexis::downloadURL:          http://download.elexis.info/versions/
+
+# ensure that you can send mail via an sstmp user
+# elexis::mail::user:      'put your username   into hieradata/private/config.yaml'
+# elexis::mail::password:  'put your password   into hieradata/private/config.yaml'
+# elexis::mail::smtp_host: 'put your smtp_host  into hieradata/private/config.yaml'
+
+elexis::bin_dir:  /usr/local/bin
+elexis::java:     'openjdk-7-jdk'
+elexis::install_script: /usr/local/bin/install_elexis.rb
+server::reboot_script: '/usr/bin/sudo /sbin/shutdown -r -t 30 now'
+server::halt_script:   '/usr/bin/sudo /sbin/shutdown -h -t 30 now'
+
+x2go::ensure: true
+samba::ensure: true
+
+# Install Elexis and/or Medelexis current versions
+#elexis::install::OpenSource::ensure:     true
+#elexis::install::OpenSource::programURL: http://download.elexis.info/versions/elexis-2.1.7.1-installer.jar
+#elexis::install::OpenSource::version:    2.1.7.1
+#elexis::install::OpenSource::installBase:   '/usr/local/elexis-2.1.7.1'
+
+elexis::install::Medelexis::ensure:      true
+elexis::install::Medelexis::programURL:  http://www.medelexis.ch/dl21.php?file=medelexis-linux
+elexis::install::Medelexis::version:     2.1.7.1
+
+# What you prefer for your client
+X::display_manager: slim
+X::window_manager:  awesome
+
+elexis::cockit::vcsRoot: /opt/src/elexis-cockpit
+
+luks_backup::backup_dir:       /opt/backup
+sshd::allow_users: backup elexis
+elexis::mysql_backup_dir:       /opt/backup/mysql/backups
+
+# elexis::apt_proxy_host:        172.25.1.233
+elexis::apt_proxy_port:        3142
+x2goserver: server
+elexis::params::db_type:   mysql
+elexis::params::db_server: server
+elexis::params::db_backup: backup
+elexis::params::db_server::backup_server_is: backup
+elexis::params::db_port:   3306
+elexis::params::db_user:   elexis
+elexis::params::db_password:   elexisTest # password of main DB user
+# elexis::params::db_pw_hash:    elexisTest # or better and used if present password hash of main DB user
+elexis::params::db_main:   elexis   # Name of DB to use for production
+elexis::params::db_test:   test     # Name of test DB to use for production
+
+# some parameters for MySQL users. We assume that we want 
+mysql::server:root_password: elexisTest
+# These are the default values for MySQL
+elexis::mysql_main_db_name:     elexis
+elexis::mysql_tst_db_name:      test
+elexis::mysql_main_db_user:     elexis
+elexis::mysql_main_db_password: elexisTest
+# here goes the dump of mysql DB
+elexis::mysql_dump_dir:         /opt/backup/mysql/dumps
+# here goes the backups of the dumps of mysql DB
+elexis::mysql_backup_dir:       /opt/backup/mysql/backups
+elexis::mysql_backup_files:     "/opt/backup/mysql/*/elexis.dump*.gz"
+
+# These are the default values for PostgreSQL
+# here goes the dump of postres DB
+elexis::pg_dump_dir:            /opt/backup/pg/dumps/
+# here goes the backups of the dumps of postres DB
+elexis::pg_backup_dir:          /opt/backup/pg/backups/
+elexis::pg_backup_files:        /opt/backup/pg/*/pg_backup_*.sql
+# next lines must be in sync with dbs
+elexis::pg_main_db_name:     elexis
+elexis::pg_tst_db_name:      test
+elexis::pg_main_db_user:     elexis
+elexis::pg_main_db_password: elexisTest
+elexis::pg_remote_backup:    false  # or backup_server:/path/to/backup
+# definition of postgresql database
+# unfortunately the syntax via puppet is signifcantly different so we need a different variable for mysql!
+pg_dbs:
+  -
+    db_name: elexis
+    db_user: elexis
+    # specify either db_password or db_pw_hash
+    # puppet apply --execute 'notify { "test": message => postgresql_password("elexis", "elexisTest") }' --modulepath /vagrant/modules/  
+    db_password: "thisPasswordOverrideBy db_pw_hash"
+    db_pw_hash: md5e0925320617bda379cf9db294f07caf2
+    # SELECT or UPDATE are not supported, only worked with ALL
+    db_privileges: ALL
+  -
+    db_name: test
+    db_user: elexis
+    db_pw_hash: md5e0925320617bda379cf9db294f07caf2
+    db_privileges: ALL
+  -
+    db_name: elexis
+    db_user: reader
+    db_password: elexisTest
+    db_privileges: 'ALL'
+  -
+    db_name: test
+    db_user: reader
+    db_password: elexisTest
+    db_privileges: ALL
+
+# At the moment (May 2013) you have to add each user as user@% and user@localhost
+# to give him/her access to the database. I have no time fix the mysql module!
+
+mysql_dbs:
+  -
+    db_name: elexis
+    db_user: elexis@%
+    # specify either db_password or db_pw_hash
+#     # puppet apply --execute 'notify { "test": message => mysql_password("elexisTest") }' --modulepath /vagrant/modules/  
+    db_password: "thisPasswordOverrideBy db_pw_hash"
+    db_pw_hash: "*0B9FC6091D135BD4050DDBCA19FC9F73D7527C8B"
+    # Or specify individual privileges with columns from the mysql.db table:
+    # privileges => ['Select_priv', 'Insert_priv', 'Update_priv', 'Delete_priv']
+    db_privileges: ALL
+  -
+    db_name: elexis
+    db_user: elexis@localhost
+    db_pw_hash: "*0B9FC6091D135BD4050DDBCA19FC9F73D7527C8B"
+    db_privileges: ALL    
+  -
+    db_name: elexis
+    db_user: reader@%
+    db_password: elexisTest
+    db_privileges: 'Select_priv'
+  -
+    db_name: elexis
+    db_user: reader@localhost
+    db_privileges: 'Select_priv'
+    db_pw_hash: "*0B9FC6091D135BD4050DDBCA19FC9F73D7527C8B"
+  -
+    db_name: test
+    db_user: elexis@%
+    db_pw_hash: "*0B9FC6091D135BD4050DDBCA19FC9F73D7527C8B"
+    db_privileges: ALL
+  -
+    db_name: test
+    db_user: reader@%
+    db_password: elexisTest
+    db_privileges: Select_priv
+
+# some parameters for PostgreSQL users. We assume that we want it
+# Allows you to set parameters in pg_hba.conf    
+pg::config_hash:
+  ip_mask_deny_postgres_user: '0.0.0.0/32'
+  ip_mask_allow_all_users:    '10.0.2.0/24'
+  listen_addresses:           '*'
+  manage_redhat_firewall:     false
+  postgres_password:          postgres
+
+dnsmasq::network_info:
+  - { mac: '22:22:22:22:22:22', ip: '192.168.1.1',   name: 'router'}
+
+
+# On debian passwordhash can be generate using mkpasswd -m sha-512 yourPassword
+passwords:
+  rgw:
+    password: '$6$y.DmNxI9ibt$u656hqnBunFDHZaOmO/VM60ENoVLxoTC9pyfofAcwbfef4sV39hXN/jYAM4V/SPbKbpYCuVZE743.ZDjFEVpC0' # was 8200
+  thomashu:
+    password: '$6$XfboSHLp$2dbGluTUvur1WlGY3jcskxN/4iMp2m95C97PRyVxU1wsITkM45lkqjvz1nJRk.ujOJlvPdJO7CsXeJgZ08oPJ.' # was 6840
+
+# must define all groups not specified as users below    
+groups_elexis_main: [ dialout, cdrom, plugdev, netdev, adm, sudo, ssh ]
+users_elexis_main:
+  name:  elexis
+  mandant:  true
+  ensure: present
+  uid: 1300
+  gid: 1300
+  group:   elexis
+  groups:  [ dialout, cdrom, plugdev, netdev, adm, sudo, ssh ]
+  comment: 'Elexis User for Database and backup'
+  managehome: true
+  # password is elexisTest
+  password: '$6$4OQ1nIYTLfXE$xFV/8f6MIAo6XKZg8fYbF//w1lhFrCJ60JMcptwESgbHaH52c2UZbUUAAlydCRQy9wDYEgt5dUpTyHjFhCy5E.'
+  shell: /bin/bash
+
+users_elexis:
+  - 
+    name:  arzt2
+    mandant:  true
+    ensure: absent # will remove /home/arzt! (possible values absent, present, role)
+    uid: 1502
+    # mandanten sollen im Normalfall diversen privilegierten Gruppen angehören
+    groups:  [ dialout, cdrom, elexis, plugdev, netdev, adm, sudo, ssh ]
+    managehome: true
+    # password is elexisTest
+    password: '$6$4OQ1nIYTLfXE$xFV/8f6MIAo6XKZg8fYbF//w1lhFrCJ60JMcptwESgbHaH52c2UZbUUAAlydCRQy9wDYEgt5dUpTyHjFhCy5E.'
+    shell: /bin/bash
+  - 
+    name:  arzt
+    mandant:  true
+    ensure: present
+    uid: 1501
+    # mandanten sollen im Normalfall diversen privilegierten Gruppen angehören
+    groups:  [ dialout, cdrom, elexis, plugdev, netdev, adm, sudo, ssh ]
+#    comment: Dr. Max Müller
+    managehome: true
+    # password is elexisTest
+    password: '$6$4OQ1nIYTLfXE$xFV/8f6MIAo6XKZg8fYbF//w1lhFrCJ60JMcptwESgbHaH52c2UZbUUAAlydCRQy9wDYEgt5dUpTyHjFhCy5E.'
+    shell: /bin/bash
+  - 
+    name:  mpa
+    ensure: present
+    uid: 1601
+    # möglichst wenig privilegierte Gruppen für die MPA
+    groups:  [ dialout, cdrom, elexis, plugdev, netdev, backup ]
+    comment: Maria Bernasconi
+    managehome: true
+    # password is elexisTest
+    password: '$6$4OQ1nIYTLfXE$xFV/8f6MIAo6XKZg8fYbF//w1lhFrCJ60JMcptwESgbHaH52c2UZbUUAAlydCRQy9wDYEgt5dUpTyHjFhCy5E.'
+    shell: /bin/bash
+  - 
+    name:  mpa64
+    ensure: absent
+    uid: 1602
+    groups:  []
+    comment: Wurde pensioniert
+    managehome: true
+    shell: /bin/bash
+  
+users_devel:
+  - 
+    name:  rgw
+    ensure: present
+    uid: 1201
+    groups:  [ adm, dialout, cdrom, elexis, plugdev, netdev, sudo ]
+    comment: Without him there would be no Elexis. Thanks a lot!
+    managehome: true
+    shell: /bin/bash
+    password: '$6$y.DmNxI9ibt$u656hqnBunFDHZaOmO/VM60ENoVLxoTC9pyfofAcwbfef4sV39hXN/jYAM4V/SPbKbpYCuVZE743.ZDjFEVpC0' # was 8200
+  - 
+    name:  thomashu
+    ensure: present
+    uid: 1202
+    groups:  [ adm, dialout, cdrom, elexis, plugdev, netdev, sudo ]
+    comment: Core developer
+    managehome: true
+    shell: /bin/bash
+    password: '$6$XfboSHLp$2dbGluTUvur1WlGY3jcskxN/4iMp2m95C97PRyVxU1wsITkM45lkqjvz1nJRk.ujOJlvPdJO7CsXeJgZ08oPJ.' # was 6840
+  - 
+    name:  marcode79
+    ensure: present
+    uid: 1203
+    groups:  [ adm, dialout, cdrom, elexis, plugdev, netdev, sudo ]
+    comment: Core developer and responsible for the database versions
+    managehome: true
+    shell: /bin/bash
+    password: '$6$XfboSHLp$2dbGluTUvur1WlGY3jcskxN/4iMp2m95C97PRyVxU1wsITkM45lkqjvz1nJRk.ujOJlvPdJO7CsXeJgZ08oPJ.' # was 6840
+  - 
+    name:  jsigle
+    ensure: present
+    uid: 1204
+    groups:  [ adm, dialout, cdrom, elexis, plugdev, netdev, sudo ]
+    comment: Our LibreOffice guru and bug fixer
+    managehome: true
+    shell: /bin/bash
+    password: '$6$GJvs7SLbFkWzv3j$63jbsREdXBCGsbls.fsdNGeKzp3hHXEAxrw4r9YDjgHB8QCEj.M.BdqAO5cASLYclhKAfxINVXxjZz4UOOOqj0' # was 3004
+  - 
+    name:  freakyPenguin
+    ensure: present
+    uid: 1205
+    groups:  [ adm, dialout, cdrom, elexis, plugdev, netdev, sudo ]
+    comment: ODF text plugin and hilotec KG
+    managehome: true
+    shell: /bin/bash
+    password: '$6$0gxFH7BZp$AE/WvqtBBnTQovhkgxN6vaxQl4AFo7GH3i2eTxqA2UW5prnjikDNnbBauIoy8OwTqfcuzqxtlLbDZIw9LfCUd1'  # was 3550
+  - 
+    name:  niklaus
+    ensure: present
+    uid: 1206
+    groups:  [ adm, dialout, cdrom, elexis, plugdev, netdev, sudo ]
+    comment: The elexis release manager
+    managehome: true
+    shell: /bin/bash
+    # was 8753
+    password: '$6$YIy.xAQcKOXUY9CU$dqun8A3EZ7i/wKP9C/lqriWApx9GwRuDMy5psPlL2JSTm4d/dJvU4tSIYnFs81uSVyuE2FkwI.K/jzqj01JVH1'
+
+# For each of the trusted_hosts we will do the following
+# The users elexis and postgres (without shell) will be able to execute ssh (password-less) commands on each of the other hosts
+# This is done via generating for each host a separate RSA key under hieradata/private/<hostname>
+
+elexis::trusted_hosts:
+  elexis:
+    hosts:
+      - server
+      - backup 
+      - devel
+  postgres:
+    hosts:
+      - server
+      - backup 
+      - devel
+  vagrant:
+    hosts:
+      - server
+      - backup 
+      - devel
+
+ssh::access::allow:
+  - 'elexis'
+  - 'vagrant'
+#  - 'www-data'
+#  - '@sysadmins'
+ssh::access::deny:
+  - 'mallory'
+#  - '@dev'
+
+# ssh::keys::www-data:
+#   type: 'ssh-rsa'
+#   public_key: 'AAAAB3NzaC1yc2EAAAABJQAAAQBaSth67VpPf6i737TWFYwBUwZdovDyfr2df94YbINWOkOQTBoaR5TnUSgqorpTUGmif8w2khqWWb/ZI+l5HQckR8WVVgBDnFPnXcYZ2ok0qV85bD/ttlpw4QDMb82+f72YcBu4h5A2eKxroqFQCyigfXtE3JjgakIm3iW7OW6XQUkAT8MZFhy3xlodJCdNOxvxawd9CVpw70cTeA7bXBiS8AFUpcKp20Z45tixiESrH2E4TRCy8HHxnN6fGUG+Xt6No265fPpEc+Bg+/hkrguIVEuj2NoIoQcS4F8Kew73jnJte4qugNbJIwcKTWn3NvgjA2CwPIWxvkvJerx129cf'
+
+ssh::users:
+#  www-data:
+#    allow: [ 'elexis', 'www-data' ]
+#    deny:  [ 'mallory' ]
+#  tomcat1:
+#    allow: [ 'elexis', 'www-data' ]
+  
+ssh::keys::elexis:
+  type: 'ssh-rsa'
+  public_key: 'AAAAB3NzaC1yc2EAAAABJQAAAQBaSth67VpPf6i737TWFYwBUwZdovDyfr2df94YbINWOkOQTBoaR5TnUSgqorpTUGmif8w2khqWWb/ZI+l5HQckR8WVVgBDnFPnXcYZ2ok0qV85bD/ttlpw4QDMb82+f72YcBu4h5A2eKxroqFQCyigfXtE3JjgakIm3iW7OW6XQUkAT8MZFhy3xlodJCdNOxvxawd9CVpw70cTeA7bXBiS8AFUpcKp20Z45tixiESrH2E4TRCy8HHxnN6fGUG+Xt6No265fPpEc+Bg+/hkrguIVEuj2NoIoQcS4F8Kew73jnJte4qugNbJIwcKTWn3NvgjA2CwPIWxvkvJerx129cf'
+
+ssh::users:
+  elexis:
+    allow: [ 'elexis' ] 
+#    deny:  [ 'mallory' ]
+
+
+
+
+samba::server::interfaces_jjiahn: eth0
+samba::server::interfaces: [ eth0, lo ]
+samba::server::workgroup: 'Praxis Mustermann'
+samba::server::server_string: '%h'
+samba::server::security: 'user'
+samba::server::passwd_chat: '*Enter\snew\sUNIX\spassword:* %n\n *Retype\snew\sUNIX\spassword:* %n\n .'
+samba::server::passwd_program: '/usr/bin/passwd %u'
+samba::server::shares:
+  profile:
+    - 'comment = Benutzerprofile'
+    - 'path = /home/samba/profile'
+    - 'writable = true'
+    - 'browsable = false'
+
+#    'name = profile':
+#    'comment = Benutzerprofile':
+#    'path =  /home/samba/profile':
+#    'writable = true':
+#    'browsable = false':
+
+samba::server::pdc: true
+samba::server::shares_ajjahn-samba:
+  -
+    name: profile
+    comment: Benutzerprofile
+    path: /home/samba/profile
+    writable: true
+    browsable: false
+  -
+    name:    homes
+    path:    /home
+    comment: Home Directories
+    valid_users: '%S'
+    writable: true
+    create_mask: '0600'
+    browsable: false
+    directory_mask: '0700'
+    directory mask: '0700'
+    browsable: No
+
+  -
+    name: praxis
+    path: /home/samba/daten/praxis
+    writable: false
+    comment: Praxisbereich
+    valid_users: '@elexis'
+    write_list:  '@elexis'
+    force_user: elexis
+    force_group: elexis
+
+  -
+    name: AustauschReadOnly
+    path: /home/samba/daten/Austausch
+    # chmod 0777 /home/samba/daten/Austausch/
+    # needed 
+    writable: false
+    guest_ok: yes
+    comment: Hier dürfen all schreiben
+  -
+    name: AustauschWritable
+    path: /home/samba/daten/Austausch2
+    # chmod 0777 /home/samba/daten/Austausch/
+    # needed 
+    writable: true
+    guest_ok: yes
+    comment: Hier dürfen all schreiben
+  -
+    name: Lesestoff
+    path: /home/samba/daten/reader
+    # chmod 0777 /home/samba/daten/reader/
+    guest_ok: yes
+    comment: Hier dürfen alle lesen
+
+# https://wiki.debian.org/SystemPrinting#Debian_Printing_.28CUPS.29
+
+
+# next line(s) go into /etc/postgresql/9.1/main/postgresql_puppet_extras.conf
+pg::archive_timeout: 20s
+
+pg::puppet_extras: "archive_command = '/usr/bin/test ! -f /home/backup-pg/wal/%f && /bin/cp %p /home/backup-pg/wal/%f < /dev/null'\narchive_timeout = 20s\nautovacuum =      on"

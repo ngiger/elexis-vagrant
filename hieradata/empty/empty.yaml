@@ -1,0 +1,4 @@
+---
+# this file should not contain any hieradata except the definition for manage_note
+# see https://github.com/ngiger/elexis-vagrant/blob/master/readme.textile
+managed_note: '(c) Copyright 2014 by Niklaus Giger. Managed by puppet. Variables come from hieradata/empty.yaml'

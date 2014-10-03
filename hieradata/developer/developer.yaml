@@ -1,0 +1,63 @@
+---
+# encoding: utf-8
+# Copyright 2013 by Niklaus Giger <niklaus.giger@member.fsf.org>
+managed_note: "# (c) copyright 2014 by Niklaus Giger. Managed by puppet. Variables come from hieradata/developer/developer.yaml"
+
+# Here you find the default values for a virtual box setup for (future) Elexis developers
+
+X::display_manager: slim
+X::window_manager:  awesome
+x2go::ensure:         true
+# x2go::version:        baikal # install stable version
+x2go::client::ensure: true
+x2go::server::ensure: true
+elexis::mysql_server::ensure: present
+elexis::postgresql_server::ensure: present
+
+# must define all groups not specified as users below    
+groups_elexis_main: [ dialout, cdrom, plugdev, netdev, adm, sudo, ssh ]
+users_elexis_main:
+  name:  elexis
+  mandant:  true
+  ensure: present
+  uid: 1300
+  gid: 1300
+  group:   elexis
+  groups:  [ dialout, cdrom, plugdev, netdev, adm, sudo, ssh ]
+  comment: 'Elexis User for Database and backup'
+  managehome: true
+  # password is elexisTest
+  password: '$6$4OQ1nIYTLfXE$xFV/8f6MIAo6XKZg8fYbF//w1lhFrCJ60JMcptwESgbHaH52c2UZbUUAAlydCRQy9wDYEgt5dUpTyHjFhCy5E.'
+  shell: /bin/bash
+
+users_elexis:
+  - 
+    name:  arzt2
+    mandant:  true
+    ensure: absent # will remove /home/arzt! (possible values absent, present, role)
+    uid: 1502
+    # mandanten sollen im Normalfall diversen privilegierten Gruppen angehören
+    groups:  [ dialout, cdrom, elexis, plugdev, netdev, adm, sudo, ssh ]
+    managehome: true
+    # password is elexisTest
+    password: '$6$4OQ1nIYTLfXE$xFV/8f6MIAo6XKZg8fYbF//w1lhFrCJ60JMcptwESgbHaH52c2UZbUUAAlydCRQy9wDYEgt5dUpTyHjFhCy5E.'
+    shell: /bin/bash
+  - 
+    name:  freakyPenguin
+    ensure: present
+    uid: 1205
+    groups:  [ adm, dialout, cdrom, elexis, plugdev, netdev, sudo ]
+    comment: ODF text plugin and hilotec KG
+    managehome: true
+    shell: /bin/bash
+    password: '$6$0gxFH7BZp$AE/WvqtBBnTQovhkgxN6vaxQl4AFo7GH3i2eTxqA2UW5prnjikDNnbBauIoy8OwTqfcuzqxtlLbDZIw9LfCUd1'  # was 3550
+  - 
+    name:  niklaus
+    ensure: present
+    uid: 1206
+    groups:  [ adm, dialout, cdrom, elexis, plugdev, netdev, sudo ]
+    comment: The elexis release manager
+    managehome: true
+    shell: /bin/bash
+    # was 8753
+    password: '$6$YIy.xAQcKOXUY9CU$dqun8A3EZ7i/wKP9C/lqriWApx9GwRuDMy5psPlL2JSTm4d/dJvU4tSIYnFs81uSVyuE2FkwI.K/jzqj01JVH1'
