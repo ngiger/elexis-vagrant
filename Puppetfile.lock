@@ -15,6 +15,7 @@ FORGE
     jdowning-rbenv (1.3.0)
       puppetlabs-git (>= 0.0.3)
       puppetlabs-stdlib (>= 4.1.0)
+    maestrodev-wget (1.5.6)
     mthibaut-users (1.0.11)
       puppetlabs-stdlib (>= 0)
     puppetlabs-apache (1.1.1)
@@ -37,16 +38,18 @@ FORGE
     puppetlabs-stdlib (4.3.2)
     puppetlabs-vcsrepo (1.1.0)
     ripienaar-concat (0.2.0)
+    thias-fooacl (1.0.0)
+      puppetlabs-concat (>= 0)
+    thias-samba (0.1.4)
     thomasvandoren-etckeeper (0.0.9)
 
 GIT
   remote: https://github.com/ngiger/puppet-cockpit.git
   ref: master
-  sha: 504cd67723ba8292f19ce0e2aa4d9859cbbf0086
+  sha: f4263df6b96e4a27bf0ba25fddad1822a094fc63
   specs:
     ngiger-cockpit (0.1.0)
       jbussdieker-daemontools (>= 0.0.3)
-      jdowning-rbenv (>= 1.3)
       puppetlabs-apt (>= 1.0.0)
       puppetlabs-vcsrepo (>= 1.0.0)
 
@@ -61,7 +64,7 @@ GIT
 GIT
   remote: https://github.com/ngiger/puppet-dnsmasq.git
   ref: master
-  sha: eb5be045a14665586330d8ebbbffee740676c00b
+  sha: 46f2db9a5ce01588e57a6f70d5218b7bfa894f84
   specs:
     ngiger-dnsmasq (0.1.0)
       puppetlabs-apt (>= 1.0.0)
@@ -69,15 +72,24 @@ GIT
 GIT
   remote: https://github.com/ngiger/puppet-elexis.git
   ref: master
-  sha: f2590cf57aed08d184d094bd277e67588ed1f064
+  sha: b84649ebcdc8d958254039545f363532800b40b4
   specs:
     ngiger-elexis (0.1.0)
+      erwbgy-ssh (>= 0.2.0)
+      loic-rsnapshot (>= 1.0.0)
+      maestrodev-wget (>= 1.0.0)
       puppetlabs-apt (>= 1.0.0)
+      puppetlabs-concat (>= 1.0.0)
+      puppetlabs-java (>= 1.0.0)
+      puppetlabs-mysql (>= 1.0.0)
+      puppetlabs-postgresql (>= 1.0.0)
+      puppetlabs-vcsrepo (>= 1.0.0)
+      thias-samba (>= 0.1.4)
 
 GIT
   remote: https://github.com/ngiger/puppet-hinmail.git
   ref: master
-  sha: 071ae7bb9d572b61046b864af103700458fec1ad
+  sha: e55217508ea80bc048ed0ed10b2488bb661f7ab2
   specs:
     ngiger-hinmail (0.1.0)
       puppetlabs-apache (>= 1.0.0)
@@ -87,10 +99,10 @@ GIT
 GIT
   remote: https://github.com/ngiger/puppet-hylafax.git
   ref: master
-  sha: 6a4ddebbbb2b865db6120c237146fc6af9f4986a
+  sha: 21457efe93e3e60de90b5a84821eec340880a494
   specs:
     ngiger-hylafax (0.1.0)
-      puppetlabs-stdlib (>= 0)
+      thias-fooacl (>= 1.0.0)
 
 GIT
   remote: https://github.com/ngiger/puppet-luks_backup.git
@@ -100,9 +112,17 @@ GIT
     ngiger-luks_backup (0.1.0)
 
 GIT
+  remote: https://github.com/ngiger/puppet-rsnapshot.git
+  ref: master
+  sha: 37830c481ac7d61686d520e5fe6c4a7504b824d8
+  specs:
+    loic-rsnapshot (1.2.0)
+      puppetlabs-stdlib (>= 2.0.0)
+
+GIT
   remote: https://github.com/ngiger/puppet-x2go.git
   ref: master
-  sha: 63663e364366f798d757bf1db9dedc5d8f1d89fb
+  sha: d9db7018fe5327648148923fe8f1b993b744726f
   specs:
     ngiger-x2go (0.1.3)
       puppetlabs-apt (>= 1.0.0)
@@ -114,6 +134,8 @@ DEPENDENCIES
   jbeard-portmap (>= 0)
   jbussdieker-daemontools (>= 0)
   jdowning-rbenv (>= 0)
+  loic-rsnapshot (>= 0)
+  maestrodev-wget (>= 0)
   mthibaut-users (>= 0)
   ngiger-cockpit (>= 0)
   ngiger-desktop (>= 0)
@@ -132,5 +154,7 @@ DEPENDENCIES
   puppetlabs-stdlib (>= 0)
   puppetlabs-vcsrepo (>= 0)
   ripienaar-concat (>= 0)
+  thias-fooacl (>= 0)
+  thias-samba (>= 0)
   thomasvandoren-etckeeper (>= 0)
 

@@ -30,6 +30,8 @@ mod 'puppetlabs/postgresql'
 mod 'ripienaar/concat'
 mod "thomasvandoren/etckeeper"
 mod 'puppetlabs/apache'
+mod 'maestrodev/wget'
+mod 'thias/fooacl'
 mod 'erwbgy/ssh'
 mod 'puppetlabs/java'
 mod "puppetlabs/apt"
@@ -38,11 +40,17 @@ mod 'puppetlabs/vcsrepo'
 mod 'jdowning/rbenv'
 mod 'jbussdieker/daemontools'
 
-localOrRemote("ngiger/hylafax",     'puppet-hylafax')
-localOrRemote("ngiger/cockpit",     'puppet-cockpit')
-localOrRemote("ngiger/desktop",     'puppet-desktop')
-localOrRemote("ngiger/dnsmasq",     'puppet-dnsmasq')
-localOrRemote("ngiger/elexis",      'puppet-elexis')
-localOrRemote("ngiger/hinmail",     'puppet-hinmail')
-localOrRemote("ngiger/luks_backup", 'puppet-luks_backup')
-localOrRemote("ngiger/x2go",        'puppet-x2go')
+# mod 'jproyo/git'
+# mod 'loic/rsnapshot', :git => "https://github.com/ngiger/puppet-rsnapshot.git"
+localOrRemote('loic/rsnapshot',     'puppet-rsnapshot')
+
+# localOrRemote('puppetlabs/git',     'puppetlabs-git')
+localOrRemote('ngiger/hylafax',     'puppet-hylafax')
+localOrRemote('ngiger/cockpit',     'puppet-cockpit')
+localOrRemote('ngiger/desktop',     'puppet-desktop')
+localOrRemote('ngiger/dnsmasq',     'puppet-dnsmasq')
+localOrRemote('ngiger/elexis',      'puppet-elexis')
+localOrRemote('ngiger/hinmail',     'puppet-hinmail')
+localOrRemote('ngiger/luks_backup', 'puppet-luks_backup')
+localOrRemote('ngiger/x2go',        'puppet-x2go')
+mod 'thias/samba'
