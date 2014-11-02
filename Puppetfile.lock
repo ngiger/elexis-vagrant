@@ -21,7 +21,7 @@ FORGE
     puppetlabs-apache (1.1.1)
       puppetlabs-concat (>= 1.0.0)
       puppetlabs-stdlib (>= 2.4.0)
-    puppetlabs-apt (1.6.0)
+    puppetlabs-apt (1.7.0)
       puppetlabs-stdlib (>= 2.2.1)
     puppetlabs-concat (1.1.2)
       puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
@@ -96,7 +96,7 @@ GIT
 GIT
   remote: https://github.com/ngiger/puppet-hinmail.git
   ref: master
-  sha: f6498a85428b57bf93ab44f970d5b7140d50a604
+  sha: 081c9b509f56ca85d508937c5aece6df0ac5fb68
   specs:
     ngiger-hinmail (0.1.0)
       puppetlabs-apache (>= 1.0.0)
@@ -107,7 +107,7 @@ GIT
 GIT
   remote: https://github.com/ngiger/puppet-hylafax.git
   ref: master
-  sha: 21457efe93e3e60de90b5a84821eec340880a494
+  sha: 7fbde882aa5f5335f58c7dde955bd1b9ea65ceeb
   specs:
     ngiger-hylafax (0.1.0)
       thias-fooacl (>= 1.0.0)
