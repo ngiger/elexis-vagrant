@@ -23,7 +23,7 @@ FORGE
       puppetlabs-stdlib (>= 2.4.0)
     puppetlabs-apt (1.6.0)
       puppetlabs-stdlib (>= 2.2.1)
-    puppetlabs-concat (1.1.1)
+    puppetlabs-concat (1.1.2)
       puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
     puppetlabs-git (0.2.0)
       puppetlabs-vcsrepo (>= 0.1.0)
@@ -42,6 +42,13 @@ FORGE
       puppetlabs-concat (>= 0)
     thias-samba (0.1.4)
     thomasvandoren-etckeeper (0.0.9)
+
+GIT
+  remote: https://github.com/mxhero/puppet-dovecot
+  ref: master
+  sha: 9ef67c88feed416a20557c6a5c4609c63a579153
+  specs:
+    mxhero-dovecot (0.1.0)
 
 GIT
   remote: https://github.com/ngiger/puppet-cockpit.git
@@ -89,10 +96,11 @@ GIT
 GIT
   remote: https://github.com/ngiger/puppet-hinmail.git
   ref: master
-  sha: e55217508ea80bc048ed0ed10b2488bb661f7ab2
+  sha: f6498a85428b57bf93ab44f970d5b7140d50a604
   specs:
     ngiger-hinmail (0.1.0)
       puppetlabs-apache (>= 1.0.0)
+      puppetlabs-apt (>= 1.0.0)
       puppetlabs-concat (>= 1.0.0)
       puppetlabs-stdlib (>= 2.4.0)
 
@@ -137,6 +145,7 @@ DEPENDENCIES
   loic-rsnapshot (>= 0)
   maestrodev-wget (>= 0)
   mthibaut-users (>= 0)
+  mxhero-dovecot (>= 0)
   ngiger-cockpit (>= 0)
   ngiger-desktop (>= 0)
   ngiger-dnsmasq (>= 0)

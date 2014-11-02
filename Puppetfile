@@ -39,6 +39,7 @@ mod "puppetlabs/git"
 mod 'puppetlabs/vcsrepo'
 mod 'jdowning/rbenv'
 mod 'jbussdieker/daemontools'
+mod 'mxhero/dovecot', :git => "https://github.com/mxhero/puppet-dovecot"
 
 # mod 'jproyo/git'
 # mod 'loic/rsnapshot', :git => "https://github.com/ngiger/puppet-rsnapshot.git"
