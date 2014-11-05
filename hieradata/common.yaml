@@ -6,6 +6,58 @@ managed_note: '(c) Copyright 2014 by Niklaus Giger. Managed by puppet. Variables
 elexis::admin::ensure: true
 elexis::admin::packages: [fish, mosh, screen, lm-sensors, git, unzip, dlocate, mlocate, htop, curl, bzr, unattended-upgrades]
 
+elexis::acls::conf:
+    /var/www3:
+      permissions:
+        - 'user:backup:r-X'
+        - 'user:www-data:rwX'
+
+elexis::common::conf:
+    /var/www4:
+      permissions:
+        - 'user:backup:r-X'
+        - 'user:www-data:rwX'
+
+elexis::params::conf:
+    /var/www5:
+      permissions:
+        - 'user:backup:r-X'
+        - 'user:www-data:rwX'
+
+elexis::params::elexis_main:
+    name:  elexis
+    mandant:  true
+    ensure: present
+    uid: 4444
+    gid: 4444
+    groups:  [ dialout, cdrom, plugdev, saned, netdev, adm, sudo, ssh, mysql, postgres ]
+    comment: "Elexis User for Database and backup"
+    managehome: true
+    shell: /bin/bash
+
+elexis::samba::pdf_ausgabe: true
+elexis::common:
+  db_type: postgresql2
+elexis::params::elexis_main::gid: 4444
+elexis::params::common::gid: 5555
+elexis::params:
+  db_type: postgresql1
+  elexis_main:
+    name:  elexis
+    mandant:  true
+    ensure: present
+    uid: 3333
+    gid: 3333
+    group:   elexis
+    groups:  [ dialout, cdrom, plugdev, saned, netdev, adm, sudo, ssh, mysql, postgres ]
+    comment: "Elexis User for Database and backup"
+    managehome: true
+    shell: /bin/bash
+
+#ACLOPTS_GLOBAL+=" -m user:userA:rwX -m d:user:userA:rwX -m user:userB:rwX -m d:user:userB:rwX"
+
+# ACLOPTS[/var/www]+=" -m user:backup:r-X -m d:user:backup:r-X -m user:niklaus:r-X -m d:user:niklaus:r-X"
+
 ssh::access::allow:
   - 'elexis'
   - 'vagrant'
@@ -31,6 +83,13 @@ apt::sources:
      pin: '-10'
      include_src: 'true'
      include_deb: 'true'
+ 'puppetlabs':
+     location: 'http://apt.puppetlabs.com'
+     repos: 'main'
+     key: '4BD6EC30'
+     key_server: 'pgp.mit.edu'
+
+apt::sources::creates_havoc_if_added:
  'debian_jessie':
      location: 'http://mirror.switch.ch/ftp/mirror/debian/'
      release: 'jessie'
@@ -41,11 +100,6 @@ apt::sources:
      pin: '-10'
      include_src: 'true'
      include_deb: 'true'
- 'puppetlabs':
-     location: 'http://apt.puppetlabs.com'
-     repos: 'main'
-     key: '4BD6EC30'
-     key_server: 'pgp.mit.edu'
 
 # These are the default values for PostgreSQL
 # here goes the dump of postres DB
@@ -66,7 +120,7 @@ pg_dbs:
     db_name: elexis
     db_user: elexis
     # specify either db_password or db_pw_hash
-    # puppet apply --execute 'notify { "test": message => postgresql_password("elexis", "elexisTest") }' --modulepath /vagrant/modules/  
+    # puppet apply --execute 'notify { "test": message => postgresql_password("elexis", "elexisTest") }' --modulepath /vagrant/modules/
     db_password: elexisTest
 #    db_pw_hash: md5e0925320617bda379cf9db294f07caf2
     # SELECT or UPDATE are not supported, only worked with ALL
@@ -79,7 +133,7 @@ pg_dbs:
     db_privileges: ALL
     encoding: utf-8
     locale:   de_CH
-  -  
+  -
     db_name: elexis
     db_user: readerX
     db_password: elexisTest
@@ -139,7 +193,7 @@ elexis::mysql_server::grants:
     user:                    'reader@localhost'
 
 # some parameters for PostgreSQL users. We assume that we want it
-# Allows you to set parameters in pg_hba.conf    
+# Allows you to set parameters in pg_hba.conf
 pg::config_hash:
   ip_mask_deny_postgres_user: '0.0.0.0/32'
   ip_mask_allow_all_users:    '10.0.2.0/24'

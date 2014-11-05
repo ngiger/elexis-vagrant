@@ -26,7 +26,7 @@ if ("classes_for_$hostname" != "") {
     content => "$hostname_classes\n",
 #      require => [ Class[$hostname_classes], ] # fails when more than 1 class given, eg x2go::common
   }
-  include $hostname_classes
+#  include $hostname_classes
 }
 
 # https://forge.puppetlabs.com/puppetlabs/stdlib
@@ -57,21 +57,26 @@ if ("packages_for_$admin" != "") {
 
 # require apache
 require apt
-require cockpit
+# require cockpit
+require desktop
 require dnsmasq
+require elexis::acls
 require elexis::admin
+require elexis::backup
+require elexis::elexis_installations
+require elexis::nfs
 require elexis::mysql_server
 require elexis::postgresql_server
 require elexis::praxis_wiki
 require elexis::samba
-require elexis::users
-require etckeeper
+# require etckeeper
 # require hinmail
 require hylafax
 require hylafax::server
 # require desktop # lubuntu??
 # require kde
 # require kde::server
+
 require x2go
 require x2go::client
 require x2go::server

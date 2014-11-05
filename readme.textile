@@ -2,7 +2,7 @@ h1. Bootstrapping an Elexis development and testing environment made easy!
 
 Bootstrapping and testing Elexis took me (Niklaus) many hours when I started working on Elexis.
 Therefore I was always looking for clever shortcuts to create a simple, reproducible build environment.
-With this project I am coming much closer! 
+With this project I am coming much closer!
 
 Preparing the 0.1 release took me a few days of work and confronted me (again) with all the small, pesky details I had to overcome to run my Jenkins CI under
 http://ngiger.dyndns.org/jenkins/. The readme is found as readme.v1.textile.
@@ -17,11 +17,11 @@ h2. What you can do with your fancy new virtual machine(s)
 By default I only actived the node "devel" in the Vagrantfile in the variable systemsToBoot. Therefore a @vagrant up@ will just bring up a single machine where developers. In the Vagrantfile you find also a number of ports which you can use to access the different services offered by the virtual machine.
 
 * Login via as user vagrant with password vagrant. The vagrant user has (via sudo) all rights.
-* Several users (you must the password first via @sudo passwd myUser@). E.g. 
+* Several users (you must the password first via @sudo passwd myUser@). E.g.
 bq. grep rgw /etc/passwd
   rgw:x:1201:1201:Without him there would be no Elexis. Thanks a lot!:/home/rgw:/bin/bash
 
-* KDE 
+* KDE
 * Juno under /opt/eclipse/eclipse-rcp-juno-SR2/eclipse/ and the Debian Eclipse-RCP via /usr/bin/eclipse
 * Jubula /opt/jubula_6.0.01011
 * elexis-bootstrap under /home/elexis/elexis-bootstrap
@@ -64,6 +64,7 @@ h2. puppet testing on the target
 @cd /path/to/checkout@
 @vagrant ssh@
 @sudo puppet apply --modulepath /tmp/vagrant-puppet/modules-0 /tmp/vagrant-puppet/modules-0/java/tests/init.pp --debug@
+
 
 h2. git howto
 
@@ -117,6 +118,7 @@ Probably for Release 0.3
 * Add support for Elexis client testing under MacOSX
 * Support 32-bit and 64-bit Jubula GUI-tests in the Jenkins
 * Minimal setup for a medical practice (DB & backup)
+* include https://forge.puppetlabs.com/erwbgy/system/readme to for a simple way configure the system
 
 To be determined
 

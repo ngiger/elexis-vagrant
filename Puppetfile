@@ -1,5 +1,5 @@
 # Configuration for librarian-puppet. For example:
-# 
+#
 #forge 'https://forge.puppetlabs.com'
 forge 'https://forgeapi.puppetlabs.com'
 
@@ -20,16 +20,16 @@ def localOrRemote(name, path)
 end
 
 
-mod 'domcleal/augeasproviders'
 mod "puppetlabs/stdlib"
-mod 'jbeard/portmap'
-mod 'jbeard/nfs'
-mod "mthibaut/users" # has a travis.yml and specs
+mod 'domcleal/augeasproviders'
 mod "puppetlabs/mysql"
 mod 'puppetlabs/postgresql'
 mod 'ripienaar/concat'
-mod "thomasvandoren/etckeeper"
+# mod "thomasvandoren/etckeeper"
 mod 'puppetlabs/apache'
+mod 'jbeard/portmap'
+mod 'jbeard/nfs'
+mod "mthibaut/users" # has a travis.yml and specs
 mod 'maestrodev/wget'
 mod 'thias/fooacl'
 mod 'erwbgy/ssh'
@@ -40,12 +40,12 @@ mod 'puppetlabs/vcsrepo'
 mod 'jdowning/rbenv'
 mod 'jbussdieker/daemontools'
 mod 'mxhero/dovecot', :git => "https://github.com/mxhero/puppet-dovecot"
+mod 'thias/samba'
 
 # mod 'jproyo/git'
 # mod 'loic/rsnapshot', :git => "https://github.com/ngiger/puppet-rsnapshot.git"
-localOrRemote('loic/rsnapshot',     'puppet-rsnapshot')
 
-# localOrRemote('puppetlabs/git',     'puppetlabs-git')
+localOrRemote('loic/rsnapshot',     'puppet-rsnapshot')
 localOrRemote('ngiger/hylafax',     'puppet-hylafax')
 localOrRemote('ngiger/cockpit',     'puppet-cockpit')
 localOrRemote('ngiger/desktop',     'puppet-desktop')
@@ -54,4 +54,3 @@ localOrRemote('ngiger/elexis',      'puppet-elexis')
 localOrRemote('ngiger/hinmail',     'puppet-hinmail')
 localOrRemote('ngiger/luks_backup', 'puppet-luks_backup')
 localOrRemote('ngiger/x2go',        'puppet-x2go')
-mod 'thias/samba'
