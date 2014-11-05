@@ -47,7 +47,6 @@ macFirst2Bytes  = '0000'
 
 Vagrant.configure("2") do |config|
   config.vm.network "public_network", bridge: 'br0'
-  puts "Using boxUrl #{boxUrl}"
   config.vm.provision :shell, :path => "shell/install_puppet.sh"
 #  config.vm.provision :shell, inline: "/usr/bin/puppet apply --confdir=/vagrant /vagrant/manifests/site.pp --verbose --debug"
   config.vm.provider "virtualbox" do |v|
@@ -56,8 +55,8 @@ Vagrant.configure("2") do |config|
     v.cpus = 2
   end
   config.vm.provision :puppet do |puppet|
-    puppet.options = ['--environment', 'development']
-#    puppet.options = "--verbose --debug"
+    # puppet.options = [ '--debug', '--verbose'] # , '--environment', 'development']
+    puppet.options = [ '--verbose', '--confdir', '/vagrant'] # , '--environment', 'development']
     puppet.manifests_path = 'manifests'
     puppet.manifest_file = "site.pp"
     puppet.module_path = "modules"
